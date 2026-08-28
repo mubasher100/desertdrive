@@ -1,0 +1,59 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "stream",
+  "globalDependencies": [".env.template"],
+  "globalEnv": ["NODE_ENV"],
+  "globalPassThroughEnv": [
+    "CI",
+    "PORT",
+    "SKIP_ENV_VALIDATION",
+    "ALLOW_INMEMORY_INFRA",
+    "ANALYZE"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".medusa/**", ".next/**", "!.next/cache/**", ".open-next/**"],
+      "env": [
+        "DATABASE_URL",
+        "REDIS_URL",
+        "JWT_SECRET",
+        "COOKIE_SECRET",
+        "STORE_CORS",
+        "ADMIN_CORS",
+        "AUTH_CORS",
+        "MEDUSA_BACKEND_URL",
+        "MEDUSA_WORKER_MODE",
+        "DISABLE_MEDUSA_ADMIN",
+        "RESEND_API_KEY",
+        "RESEND_FROM_EMAIL",
+        "BOOKING_TOKEN_SECRET",
+        "AIRPORT_LAT",
+        "AIRPORT_LNG",
+        "SKIPCASH_CLIENT_ID",
+        "SKIPCASH_KEY_ID",
+        "SKIPCASH_KEY_SECRET",
+        "SKIPCASH_WEBHOOK_KEY",
+        "SKIPCASH_BASE_URL",
+        "NEXT_PUBLIC_MEDUSA_BACKEND_URL",
+        "NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY",
+        "NEXT_PUBLIC_BASE_URL",
+        "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "env": ["SKIP_ENV_VALIDATION"]
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "env": ["SKIP_ENV_VALIDATION"]
+    },
+    "test": {
+      "env": ["DATABASE_URL", "REDIS_URL", "TEST_TYPE"]
+    }
+  }
+}

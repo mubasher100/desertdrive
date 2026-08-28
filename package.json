@@ -1,0 +1,29 @@
+{
+  "name": "desertdrive",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Desert Drive — airport transfer booking platform for Qatar",
+  "license": "UNLICENSED",
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "backend:dev": "npm run dev --workspace=@dd/backend",
+    "backend:build": "npm run build --workspace=@dd/backend",
+    "storefront:dev": "npm run dev --workspace=@dd/storefront",
+    "storefront:build": "npm run build --workspace=@dd/storefront",
+    "setup:skills": "node scripts/link-skills.mjs",
+    "postinstall": "node scripts/link-skills.mjs"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.5"
+  }
+}

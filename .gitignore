@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+build/
+.next/
+out/
+.medusa/
+.open-next/
+.turbo/
+*.tsbuildinfo
+
+# Environment — NEVER commit. .env.template is the committed documentation.
+.env
+.env.*
+!.env.template
+!.env.test
+
+# Cloudflare
+.wrangler/
+.dev.vars
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+
+# Local Claude Code state. `.claude/skills` is a junction into .agents/skills —
+# the real files are committed there, so committing the junction would duplicate them.
+.claude/skills
+.claude/settings.local.json
+
+# Coverage / test output
+coverage/
