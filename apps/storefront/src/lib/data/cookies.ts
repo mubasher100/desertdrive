@@ -33,6 +33,25 @@ export const getCacheTag = async (tag: string): Promise<string> => {
   }
 }
 
+/**
+ * Cache options for PUBLIC data — the fleet, regions, marketing pages.
+ *
+ * Deliberately reads no cookie and is deliberately synchronous. Reading cookies
+ * during render forces a route out of static rendering, which stops the
+ * incremental cache from serving the prerendered page at all. Public data is
+ * identical for every visitor, so there is nothing to gain from a per-visitor
+ * tag and a fully cacheable page to lose.
+ *
+ * Use `getCacheOptions` instead for anything that belongs to one visitor — the
+ * cart and the order.
+ *
+ * ⚠️ Neither belongs on a quote. `/store/quotes` must be `no-store`: it is tied
+ * to one person's coordinates and party size.
+ */
+export const getPublicCacheOptions = (tag: string): { tags: string[] } => {
+  return { tags: [tag] }
+}
+
 export const getCacheOptions = async (
   tag: string
 ): Promise<{ tags: string[] } | {}> => {

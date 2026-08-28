@@ -1,20 +1,20 @@
 import { Metadata } from "next"
+import NotFoundMessage from "@modules/common/components/not-found-message"
 
-import InteractiveLink from "@modules/common/components/interactive-link"
-
+/**
+ * The 404 shown inside a locale, reached via the `[...notFound]` catch-all.
+ *
+ * The nav and footer from the (main) layout are still rendered around this, so
+ * the visitor has a way back — unlike the root not-found, which renders outside
+ * `[countryCode]` on a bare page.
+ */
 export const metadata: Metadata = {
   title: "404",
-  description: "Something went wrong",
+  // Nothing here is worth indexing, and indexing it competes with the real pages
+  // for crawl budget.
+  robots: { index: false, follow: true },
 }
 
 export default function NotFound() {
-  return (
-    <div className="flex flex-col gap-4 items-center justify-center min-h-[calc(100vh-64px)]">
-      <h1 className="text-2xl-semi text-ui-fg-base">Page not found</h1>
-      <p className="text-small-regular text-ui-fg-base">
-        The page you tried to access does not exist.
-      </p>
-      <InteractiveLink href="/">Go to frontpage</InteractiveLink>
-    </div>
-  )
+  return <NotFoundMessage />
 }

@@ -1,163 +1,92 @@
-import { MEDUSA_BACKEND_URL } from "@lib/backend-url"
-import { HttpTypes } from "@medusajs/types"
 import { NextRequest, NextResponse } from "next/server"
-
-const BACKEND_URL = MEDUSA_BACKEND_URL
-const PUBLISHABLE_API_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
-// Qatar is the only region this store serves.
-const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "qa"
-
-const regionMapCache = {
-  regionMap: new Map<string, HttpTypes.StoreRegion>(),
-  regionMapUpdated: Date.now(),
-}
-
-async function getRegionMap(cacheId: string) {
-  const { regionMap, regionMapUpdated } = regionMapCache
-
-  if (!BACKEND_URL) {
-    throw new Error(
-      "Middleware.ts: Error fetching regions. Did you set up regions in your Medusa Admin and define a MEDUSA_BACKEND_URL environment variable? Note that the variable is no longer named NEXT_PUBLIC_MEDUSA_BACKEND_URL."
-    )
-  }
-
-  if (
-    !regionMap.keys().next().value ||
-    regionMapUpdated < Date.now() - 3600 * 1000
-  ) {
-    // Fetch regions from Medusa. We can't use the JS client here because middleware is running on Edge and the client needs a Node environment.
-    const { regions } = await fetch(`${BACKEND_URL}/store/regions`, {
-      headers: {
-        "x-publishable-api-key": PUBLISHABLE_API_KEY!,
-      },
-      next: {
-        revalidate: 3600,
-        tags: [`regions-${cacheId}`],
-      },
-      cache: "force-cache",
-    }).then(async (response) => {
-      const json = await response.json()
-
-      if (!response.ok) {
-        throw new Error(json.message)
-      }
-
-      return json
-    })
-
-    if (!regions?.length) {
-      throw new Error(
-        "No regions found. Please set up regions in your Medusa Admin."
-      )
-    }
-
-    // Create a map of country codes to regions.
-    regions.forEach((region: HttpTypes.StoreRegion) => {
-      region.countries?.forEach((c) => {
-        regionMapCache.regionMap.set(c.iso_2 ?? "", region)
-      })
-    })
-
-    regionMapCache.regionMapUpdated = Date.now()
-  }
-
-  return regionMapCache.regionMap
-}
+import { DEFAULT_SEGMENT, resolveSegment } from "@lib/util/locale"
 
 /**
- * Fetches regions from Medusa and sets the region cookie.
- * @param request
- * @param response
+ * Puts every request under a locale segment: `/en-qa/...` or `/ar-qa/...`.
+ *
+ * The Medusa starter's middleware fetched the region list from the backend on
+ * every cold start just to decide whether a path prefix was valid. That made
+ * routing itself depend on the backend being reachable — if Medusa was down or
+ * slow, the site did not serve a degraded page, it failed to route at all.
+ *
+ * This store serves exactly one country and two languages, all known at build
+ * time, so the valid segments are a static list. Routing now cannot fail because
+ * of the backend, and there is no fetch on the edge path.
  */
-async function getCountryCode(
-  request: NextRequest,
-  regionMap: Map<string, HttpTypes.StoreRegion | number>
-) {
-  try {
-    let countryCode
 
-    const vercelCountryCode = request.headers
-      .get("x-vercel-ip-country")
-      ?.toLowerCase()
+const CACHE_ID_COOKIE = "_medusa_cache_id"
 
-    const urlCountryCode = request.nextUrl.pathname.split("/")[1]?.toLowerCase()
-
-    if (urlCountryCode && regionMap.has(urlCountryCode)) {
-      countryCode = urlCountryCode
-    } else if (vercelCountryCode && regionMap.has(vercelCountryCode)) {
-      countryCode = vercelCountryCode
-    } else if (regionMap.has(DEFAULT_REGION)) {
-      countryCode = DEFAULT_REGION
-    } else if (regionMap.keys().next().value) {
-      countryCode = regionMap.keys().next().value
-    }
-
-    return countryCode
-  } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.error(
-        "Middleware.ts: Error getting the country code. Did you set up regions in your Medusa Admin and define a MEDUSA_BACKEND_URL environment variable? Note that the variable is no longer named NEXT_PUBLIC_MEDUSA_BACKEND_URL."
-      )
-    }
-  }
+/** Paths that must never be rewritten under a locale. */
+function isExempt(pathname: string): boolean {
+  return (
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/_next") ||
+    // Anything with an extension is a file: favicon.ico, robots.txt, images.
+    pathname.includes(".")
+  )
 }
 
-/**
- * Middleware to handle region selection and onboarding status.
- */
 export async function middleware(request: NextRequest) {
-  let redirectUrl = request.nextUrl.href
+  const { pathname, search, origin } = request.nextUrl
 
-  let response = NextResponse.redirect(redirectUrl, 307)
-
-  let cacheIdCookie = request.cookies.get("_medusa_cache_id")
-
-  let cacheId = cacheIdCookie?.value || crypto.randomUUID()
-
-  const regionMap = await getRegionMap(cacheId)
-
-  const countryCode = regionMap && (await getCountryCode(request, regionMap))
-
-  const urlHasCountryCode =
-    countryCode && request.nextUrl.pathname.split("/")[1].includes(countryCode)
-
-  // if one of the country codes is in the url and the cache id is set, return next
-  if (urlHasCountryCode && cacheIdCookie) {
+  if (isExempt(pathname)) {
     return NextResponse.next()
   }
 
-  // if one of the country codes is in the url and the cache id is not set, set the cache id and redirect
-  if (urlHasCountryCode && !cacheIdCookie) {
-    response.cookies.set("_medusa_cache_id", cacheId, {
-      maxAge: 60 * 60 * 24,
-    })
+  const [, first, ...rest] = pathname.split("/")
+  const resolution = resolveSegment(first)
 
+  /**
+   * A per-visitor id used to build cache tags for that visitor's cart and order.
+   * Set here rather than during render: reading or writing cookies while
+   * rendering forces a route out of static generation, which stops the
+   * incremental cache serving prerendered pages at all.
+   */
+  const cacheId = request.cookies.get(CACHE_ID_COOKIE)?.value
+
+  const withCacheCookie = (response: NextResponse) => {
+    if (!cacheId) {
+      response.cookies.set(CACHE_ID_COOKIE, crypto.randomUUID(), {
+        maxAge: 60 * 60 * 24,
+        sameSite: "lax",
+        path: "/",
+      })
+    }
     return response
   }
 
-  // check if the url is a static asset
-  if (request.nextUrl.pathname.includes(".")) {
-    return NextResponse.next()
+  if (resolution.type === "valid") {
+    return withCacheCookie(NextResponse.next())
   }
 
-  const redirectPath =
-    request.nextUrl.pathname === "/" ? "" : request.nextUrl.pathname
-
-  const queryString = request.nextUrl.search ? request.nextUrl.search : ""
-
-  // If no country code is set, we redirect to the relevant region.
-  if (!urlHasCountryCode && countryCode) {
-    redirectUrl = `${request.nextUrl.origin}/${countryCode}${redirectPath}${queryString}`
-    response = NextResponse.redirect(`${redirectUrl}`, 307)
-  } else if (!urlHasCountryCode && !countryCode) {
-    // Handle case where no valid country code exists (empty regions)
-    return new NextResponse(
-      "No valid regions configured. Please set up regions with countries in your Medusa Admin.",
-      { status: 500 }
+  /**
+   * Either a bare country (`/qa/...`) or non-canonical casing (`/EN-QA/...`).
+   * Redirect rather than 404 — a bare country is a plausible thing for a person
+   * or an old link to contain, and losing them costs a booking.
+   *
+   * 308 rather than the starter's 307: this mapping is permanent and safe for
+   * search engines to remember, and it preserves the request method.
+   */
+  if (resolution.type === "redirect") {
+    const target = ["", resolution.segment, ...rest].join("/")
+    return withCacheCookie(
+      NextResponse.redirect(`${origin}${target}${search}`, 308)
     )
   }
 
-  return response
+  /**
+   * No locale prefix at all — `/` or `/results`. Send them to the default
+   * locale, keeping the path.
+   *
+   * A 307 here, not 308: which locale a bare path belongs to is a decision that
+   * could reasonably change (a future Accept-Language check, for instance), and
+   * a permanent redirect would be cached in browsers that we could not reach to
+   * correct.
+   */
+  const suffix = pathname === "/" ? "" : pathname
+  return withCacheCookie(
+    NextResponse.redirect(`${origin}/${DEFAULT_SEGMENT}${suffix}${search}`, 307)
+  )
 }
 
 export const config = {
