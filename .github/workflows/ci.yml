@@ -130,6 +130,16 @@ jobs:
         working-directory: apps/backend
         run: npm run test:integration:http
         env:
+          # @medusajs/test-utils IGNORES DATABASE_URL. It builds its own
+          # connection string from these DB_* parts and creates a throwaway
+          # database per run, so they are not optional — without DB_PASSWORD the
+          # run dies with "SASL: client password must be a string", which says
+          # nothing about the real cause.
+          DB_HOST: localhost
+          DB_PORT: "5432"
+          DB_USERNAME: medusa
+          DB_PASSWORD: medusa
+          # medusa-config.ts still needs a valid-looking DATABASE_URL to load.
           DATABASE_URL: postgres://medusa:medusa@localhost:5432/medusa_test
           REDIS_URL: redis://localhost:6379
           JWT_SECRET: ci-jwt-secret-not-a-real-secret
