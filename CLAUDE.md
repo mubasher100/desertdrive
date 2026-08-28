@@ -577,11 +577,11 @@ Run `npm run build` in `apps/storefront`, not just `tsc`, before pushing anythin
 
 | # | Phase | Status |
 |---|---|---|
-| 0 | Repo scaffold — Turborepo, both apps, Medusa agent skills, docs MCP | ⬜ Not started |
+| 0 | Repo scaffold — Turborepo, both apps, Medusa agent skills, docs MCP | ✅ Done |
 | 1 | Supabase + Railway + Redis; backend live | ⬜ Not started |
 | 2 | Cloudflare Worker + R2; storefront live on `workers.dev` | ⬜ Not started |
 | 3 | Branding — palette from the logo, fonts, vehicle photography | ⬜ Not started |
-| 4 | Fare bands + fleet products + seed scripts | ⬜ Not started |
+| 4 | Fare bands + fleet products + seed scripts | 🟡 Built; blocked on band B/C/D prices |
 | 5 | Booking funnel — search widget, results, details | ⬜ Not started |
 | 6 | Google Places + server-side band resolution | ⬜ Not started |
 | 7 | Checkout — SkipCash card + cash-to-driver | ⬜ Not started |

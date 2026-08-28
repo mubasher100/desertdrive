@@ -27,27 +27,30 @@ type CountrySelectProps = {
 }
 
 const CountrySelect = ({ toggleState, regions }: CountrySelectProps) => {
-  const [current, setCurrent] = useState<
-    | { country: string | undefined; region: string; label: string | undefined }
-    | undefined
-  >(undefined)
+  const [current, setCurrent] = useState<CountryOption | undefined>(undefined)
 
   const { countryCode } = useParams()
   const currentPath = usePathname().split(`/${countryCode}`)[1]
 
   const { state, close } = toggleState
 
-  const options = useMemo(() => {
-    return regions
-      ?.map((r) => {
-        return r.countries?.map((c) => ({
+  const options: CountryOption[] = useMemo(() => {
+    return (regions ?? [])
+      .flatMap((r) =>
+        (r.countries ?? []).map((c) => ({
           country: c.iso_2,
           region: r.id,
           label: c.display_name,
         }))
-      })
-      .flat()
-      .sort((a, b) => (a?.label ?? "").localeCompare(b?.label ?? ""))
+      )
+      // A country row missing its ISO code or display name cannot be selected —
+      // dropping it here is what lets everything downstream treat an option as
+      // fully populated.
+      .filter(
+        (o): o is CountryOption =>
+          typeof o.country === "string" && typeof o.label === "string"
+      )
+      .sort((a, b) => a.label.localeCompare(b.label))
   }, [regions])
 
   useEffect(() => {

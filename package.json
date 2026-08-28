@@ -2,6 +2,7 @@
   "name": "desertdrive",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "npm@11.9.0",
   "description": "Desert Drive — airport transfer booking platform for Qatar",
   "license": "UNLICENSED",
   "workspaces": [

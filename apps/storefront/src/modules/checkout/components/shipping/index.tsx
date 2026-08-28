@@ -16,12 +16,32 @@ import { useEffect, useState } from "react"
 const PICKUP_OPTION_ON = "__PICKUP_ON"
 const PICKUP_OPTION_OFF = "__PICKUP_OFF"
 
+/**
+ * `service_zone` only exists on the expanded variant of the type. The plain
+ * StoreCartShippingOption does not declare it, which is what the three uses
+ * below were tripping over.
+ */
 type ShippingProps = {
   cart: HttpTypes.StoreCart
-  availableShippingMethods: HttpTypes.StoreCartShippingOption[] | null
+  availableShippingMethods:
+    | HttpTypes.StoreCartShippingOptionWithServiceZone[]
+    | null
 }
 
-function formatAddress(address: HttpTypes.StoreCartAddress) {
+/**
+ * Typed structurally rather than as StoreCartAddress, because it is called with
+ * both that and StoreFulfillmentAddress — which differ only in whether their
+ * unused fields are `null` or `undefined`. Only these five are read.
+ */
+type FormattableAddress = {
+  address_1?: string | null
+  address_2?: string | null
+  postal_code?: string | null
+  city?: string | null
+  country_code?: string | null
+}
+
+function formatAddress(address?: FormattableAddress) {
   if (!address) {
     return ""
   }

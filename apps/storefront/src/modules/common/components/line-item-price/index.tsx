@@ -14,9 +14,12 @@ const LineItemPrice = ({
   style = "default",
   currencyCode,
 }: LineItemPriceProps) => {
-  const { total, original_total } = item
-  const originalPrice = original_total
-  const currentPrice = total
+  // `total` and `original_total` are optional on the SDK's line-item types: an
+  // item that has not been priced yet carries neither. Treating that as 0 keeps
+  // the comparison below honest — `undefined < undefined` is false, so a missing
+  // price would silently render as "no discount" and then print "undefined".
+  const originalPrice = item.original_total ?? 0
+  const currentPrice = item.total ?? 0
   const hasReducedPrice = currentPrice < originalPrice
 
   return (

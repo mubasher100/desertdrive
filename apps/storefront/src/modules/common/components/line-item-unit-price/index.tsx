@@ -13,12 +13,16 @@ const LineItemUnitPrice = ({
   style = "default",
   currencyCode,
 }: LineItemUnitPriceProps) => {
-  const { total, original_total } = item
+  // Optional on the SDK's line-item types — see line-item-price for why these
+  // default to 0 rather than being asserted non-null.
+  const total = item.total ?? 0
+  const original_total = item.original_total ?? 0
   const hasReducedPrice = total < original_total
 
-  const percentage_diff = Math.round(
-    ((original_total - total) / original_total) * 100
-  )
+  // Guarded: an unpriced item would otherwise divide by zero and render NaN%.
+  const percentage_diff = original_total
+    ? Math.round(((original_total - total) / original_total) * 100)
+    : 0
 
   return (
     <div className="flex flex-col text-ui-fg-muted justify-center h-full">
