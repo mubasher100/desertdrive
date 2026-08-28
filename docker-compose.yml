@@ -1,0 +1,51 @@
+# Local development infrastructure only.
+#
+# Production is Supabase (Postgres) and Railway (Redis). Nothing here is
+# deployed — this exists so that `medusa db:generate`, `db:migrate`, the seed
+# scripts and the integration tests can run on a laptop.
+#
+#   docker compose up -d
+#   docker compose down          # stop, keep data
+#   docker compose down -v       # stop and wipe the database
+#
+# The credentials below match apps/backend/.env.template and .env.test. They are
+# deliberately trivial and must never be reused anywhere real.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: desertdrive-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: medusa
+      POSTGRES_PASSWORD: medusa
+      POSTGRES_DB: medusa
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medusa"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Optional locally: with REDIS_URL unset, Medusa falls back to in-memory cache,
+  # events, workflows and locking, which is fine for most development. Point
+  # REDIS_URL at this when working on scheduled jobs, subscribers, or anything
+  # that has to survive a restart — those are precisely what the in-memory
+  # fallback breaks.
+  redis:
+    image: redis:7-alpine
+    container_name: desertdrive-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres-data:

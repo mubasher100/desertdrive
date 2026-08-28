@@ -416,15 +416,15 @@ export default async function seedFleet({ container }: ExecArgs) {
 
   if (missing.length) {
     logger.warn("FLEET SEEDED WITH GAPS — this store cannot quote every trip.")
-    logger.warn("")
+    logger.info("")
     logger.warn("No price supplied, so nothing was created for:")
     for (const item of missing) {
       logger.warn(`  - ${item}`)
     }
-    logger.warn("")
+    logger.info("")
     logger.warn("A trip resolving to an unpriced band returns NO quote. That is")
     logger.warn("deliberate: showing an invented fare is worse than showing none.")
-    logger.warn("")
+    logger.info("")
     logger.warn("Fill in FARES / ADD_ON_PRICES at the top of this file and re-run.")
   } else {
     logger.info("Fleet seeded. Every band and add-on is priced.")

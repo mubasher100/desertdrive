@@ -28,6 +28,13 @@ desertdrive/
 npm install          # installs all workspaces, links .claude/skills
 ```
 
+Start a local database (production uses Supabase and Railway; this is for
+development only):
+
+```bash
+docker compose up -d
+```
+
 Then configure each app:
 
 ```bash
@@ -47,6 +54,15 @@ npx medusa db:migrate
 npx medusa exec ./src/scripts/seed-qatar.ts   # region, currency, tax, shipping
 npx medusa exec ./src/scripts/seed-fleet.ts   # fare bands, vehicles, add-ons
 npx medusa user -e you@example.com -p yourpassword
+```
+
+After changing any data model, generate its migration before migrating —
+skipping this does not fail the build, it fails at runtime with
+`relation "..." does not exist`:
+
+```bash
+npx medusa db:generate fareBand   # module NAME, camelCase, not the directory
+npx medusa db:migrate
 ```
 
 `seed-qatar.ts` prints the publishable API key. Put it in

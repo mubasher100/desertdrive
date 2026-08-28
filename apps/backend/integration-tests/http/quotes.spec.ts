@@ -1,6 +1,7 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   createApiKeysWorkflow,
+  createRegionsWorkflow,
   createSalesChannelsWorkflow,
   linkSalesChannelsToApiKeyWorkflow,
 } from "@medusajs/medusa/core-flows"
@@ -53,6 +54,25 @@ medusaIntegrationTestRunner({
 
       headers = { "x-publishable-api-key": keys[0].token }
 
+      /**
+       * A QAR region is required, not incidental: variant prices are calculated
+       * against a region, so without one the pricing lookup has no context and
+       * the quote step cannot resolve any fare. seed-qatar.ts creates it in a
+       * real environment.
+       */
+      await createRegionsWorkflow(container).run({
+        input: {
+          regions: [
+            {
+              name: "Qatar",
+              currency_code: "qar",
+              countries: ["qa"],
+              payment_providers: ["pp_system_default"],
+            },
+          ],
+        },
+      })
+
       const fareBandService: any = container.resolve(FARE_BAND_MODULE)
       await fareBandService.createFareBands(BANDS)
     })
@@ -62,12 +82,15 @@ medusaIntegrationTestRunner({
        * The point of the endpoint: the client sends coordinates, the SERVER
        * decides the band. Nothing in the request names a band or a price.
        */
+      // Name and band come first so printf-style interpolation fills the two
+      // %s placeholders with them, rather than dumping the coordinate object
+      // into the test name.
       it.each([
-        ["Souq Waqif", SOUQ_WAQIF, "A"],
-        ["Lusail Marina", LUSAIL_MARINA, "B"],
-        ["Al Khor", AL_KHOR, "C"],
-        ["Al Zubarah", AL_ZUBARAH, "D"],
-      ])("resolves %s to band %s server-side", async (_name, coords, band) => {
+        ["Souq Waqif", "A", SOUQ_WAQIF],
+        ["Lusail Marina", "B", LUSAIL_MARINA],
+        ["Al Khor", "C", AL_KHOR],
+        ["Al Zubarah", "D", AL_ZUBARAH],
+      ])("resolves %s to band %s server-side", async (_name, band, coords) => {
         const response = await api.post(
           "/store/quotes",
           { ...coords, passengers: 2, luggage: 2 },
@@ -143,24 +166,46 @@ medusaIntegrationTestRunner({
       /**
        * Guards the shape of the contract. If a band, variant or amount field
        * ever becomes client-supplied, the pricing model is broken.
+       *
+       * The schema is strict, so these are rejected outright rather than merely
+       * ignored — a stronger guarantee, and worth pinning: loosening the schema
+       * to passthrough would turn a 400 into a silently accepted price hint.
        */
-      it("ignores any price-related fields the client tries to send", async () => {
+      it("rejects price-related fields the client tries to inject", async () => {
+        const response = await api
+          .post(
+            "/store/quotes",
+            {
+              ...AL_ZUBARAH,
+              passengers: 2,
+              luggage: 2,
+              band_code: "A",
+              amount: 1,
+              variant_id: "variant_injected",
+            },
+            { headers }
+          )
+          .catch((e: any) => e.response)
+
+        expect(response.status).toEqual(400)
+        expect(response.data.message).toContain("Unrecognized fields")
+      })
+
+      /**
+       * The airport end is fixed, so a band is always decided from the customer's
+       * coordinates alone. This pins that a far destination cannot be talked into
+       * a cheap band by any legitimate request either.
+       */
+      it("prices Al Zubarah as band D on distance alone", async () => {
         const response = await api.post(
           "/store/quotes",
-          {
-            ...AL_ZUBARAH,
-            passengers: 2,
-            luggage: 2,
-            band_code: "A",
-            amount: 1,
-            variant_id: "variant_injected",
-          },
+          { ...AL_ZUBARAH, passengers: 2, luggage: 2 },
           { headers }
         )
 
         expect(response.status).toEqual(200)
-        // Al Zubarah is band D. The injected "A" must have no effect.
         expect(response.data.band.code).toEqual("D")
+        expect(response.data.distance_km).toBeGreaterThan(90)
       })
     })
   },

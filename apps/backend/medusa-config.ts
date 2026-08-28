@@ -27,6 +27,14 @@ const REDIS_URL = process.env.REDIS_URL
 // explanation is strictly better.
 // ---------------------------------------------------------------------------
 
+/**
+ * Whether the database is on this machine. Drives the TLS decision below: a
+ * local Postgres container does not speak SSL, a managed one requires it.
+ */
+const IS_LOCAL_DATABASE = /@(localhost|127\.0\.0\.1|\[::1\]|host\.docker\.internal)[:/]/.test(
+  DATABASE_URL ?? ""
+)
+
 if (!DATABASE_URL) {
   throw new Error(
     "DATABASE_URL is not set. Copy .env.template to .env and fill in the Supabase " +
@@ -140,10 +148,20 @@ module.exports = defineConfig({
     databaseUrl: DATABASE_URL,
     databaseDriverOptions: {
       connection: {
-        // Supabase terminates TLS with a chain node-postgres will not verify on its
-        // own. Encryption is still on; only chain verification is relaxed. This is
-        // the supported way to do it — do not "fix" it by putting sslmode in the URL.
-        ssl: { rejectUnauthorized: false },
+        /**
+         * Supabase terminates TLS with a chain node-postgres will not verify on
+         * its own. Encryption stays on; only chain verification is relaxed. This
+         * is the supported way to do it — do not "fix" it by putting sslmode in
+         * the URL, which node-postgres reads as verify-full and which then fails
+         * with SELF_SIGNED_CERT_IN_CHAIN.
+         *
+         * Off for a local database, because a plain Postgres container does not
+         * speak SSL at all and refuses the connection outright with
+         * "The server does not support SSL connections". Deriving this from the
+         * host means local dev and Supabase both work with no extra variable to
+         * set — and no chance of someone disabling TLS globally to fix local dev.
+         */
+        ssl: IS_LOCAL_DATABASE ? false : { rejectUnauthorized: false },
       },
     },
     redisUrl: REDIS_URL,
