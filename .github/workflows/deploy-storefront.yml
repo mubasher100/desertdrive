@@ -28,12 +28,35 @@ jobs:
           node-version: "22"
           cache: npm
 
-      - run: npm ci
+      # Nothing is provisioned until the Cloudflare account and the Railway
+      # backend exist. Rather than fail every push to main until then, check
+      # first and skip with a notice — a red main that is red for a known and
+      # expected reason trains people to ignore it.
+      - name: Check deploy configuration
+        id: config
+        run: |
+          missing=""
+          [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] || missing="$missing CLOUDFLARE_API_TOKEN"
+          [ -n "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID"
+          [ -n "${{ secrets.MEDUSA_PUBLISHABLE_KEY }}" ] || missing="$missing MEDUSA_PUBLISHABLE_KEY"
+          [ -n "${{ vars.MEDUSA_BACKEND_URL }}" ] || missing="$missing MEDUSA_BACKEND_URL(var)"
+          [ -n "${{ vars.STOREFRONT_BASE_URL }}" ] || missing="$missing STOREFRONT_BASE_URL(var)"
+
+          if [ -n "$missing" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Storefront deploy skipped::Not configured yet. Missing:$missing"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.config.outputs.ready == 'true'
+        run: npm ci
 
       # `next build` statically generates pages that call the Store API, so this
       # step needs the LIVE Railway backend to be up. If it fails with
       # ECONNREFUSED, check the backend before suspecting the storefront.
       - name: Build for Cloudflare
+        if: steps.config.outputs.ready == 'true'
         working-directory: apps/storefront
         run: npm run cf:build
         env:
@@ -44,6 +67,7 @@ jobs:
           NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
 
       - name: Deploy
+        if: steps.config.outputs.ready == 'true'
         working-directory: apps/storefront
         run: npx wrangler deploy
         env:
