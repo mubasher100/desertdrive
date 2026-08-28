@@ -8,7 +8,7 @@ const DOH = { lat: 25.273056, lng: 51.608056 }
  * test below — if the seed bounds move, these expectations fail loudly.
  */
 const BANDS: BandBounds[] = [
-  { code: "A", max_km: 20, rank: 1 },
+  { code: "A", max_km: 18.5, rank: 1 },
   { code: "B", max_km: 40, rank: 2 },
   { code: "C", max_km: 75, rank: 3 },
   { code: "D", max_km: null, rank: 4 },
@@ -47,7 +47,7 @@ describe("Qatar destination calibration", () => {
     ["West Bay", 25.32, 51.53, 9.4, "A"],
     ["Al Wakrah", 25.1659, 51.6031, 11.9, "A"],
     ["Education City", 25.3145, 51.437, 17.8, "A"],
-    ["Lusail Marina", 25.4106, 51.4914, 19.3, "A"],
+    ["Lusail Marina", 25.4106, 51.4914, 19.3, "B"],
     ["Mesaieed", 24.9917, 51.55, 31.8, "B"],
     ["Al Khor", 25.684, 51.498, 47.0, "C"],
     ["Ras Laffan", 25.9, 51.55, 70.0, "C"],
@@ -65,29 +65,46 @@ describe("Qatar destination calibration", () => {
   )
 
   /**
-   * ⚠️ Lusail Marina sits 0.7 km inside the A/B boundary. Northern Lusail is
-   * past it, so two addresses a customer would both call "Lusail" can price
-   * differently. This is a live commercial decision for the owner, not a bug —
-   * this test exists to make sure nobody discovers it from a complaint.
+   * The A/B boundary is 18.5 km specifically so that ALL of Lusail prices the
+   * same way — as band B. At the original 20 km, Lusail Marina fell inside band
+   * A while northern Lusail fell outside it, so two addresses a customer would
+   * both call "Lusail" priced differently for no visible reason.
+   *
+   * This test is the guard on that decision: it fails if the boundary is ever
+   * raised back above Lusail Marina.
    */
-  it("documents how little headroom Lusail has inside band A", () => {
+  it("prices the whole of Lusail as band B", () => {
     const lusailMarina = haversineKm(DOH, { lat: 25.4106, lng: 51.4914 })
     const northLusail = haversineKm(DOH, { lat: 25.4462, lng: 51.4914 })
 
-    expect(20 - lusailMarina).toBeLessThan(1)
-    expect(resolveBand(lusailMarina, BANDS)?.code).toBe("A")
+    expect(resolveBand(lusailMarina, BANDS)?.code).toBe("B")
     expect(resolveBand(northLusail, BANDS)?.code).toBe("B")
+  })
+
+  /**
+   * The other side of the same boundary. Education City (17.8) and Lusail
+   * Marina (19.3) are only 1.5 km apart, so 18.5 is a deliberately balanced
+   * split rather than a round number — roughly 0.7 km of headroom either way.
+   * Anything tighter and normal GPS variation could move a booking's price.
+   */
+  it("keeps Education City in band A, with the boundary balanced between them", () => {
+    const educationCity = haversineKm(DOH, { lat: 25.3145, lng: 51.437 })
+    const lusailMarina = haversineKm(DOH, { lat: 25.4106, lng: 51.4914 })
+
+    expect(resolveBand(educationCity, BANDS)?.code).toBe("A")
+    expect(18.5 - educationCity).toBeGreaterThan(0.5)
+    expect(lusailMarina - 18.5).toBeGreaterThan(0.5)
   })
 })
 
 describe("resolveBand", () => {
   it("picks the first band by rank whose bound is not exceeded", () => {
     expect(resolveBand(0, BANDS)?.code).toBe("A")
-    expect(resolveBand(19.99, BANDS)?.code).toBe("A")
+    expect(resolveBand(18.49, BANDS)?.code).toBe("A")
   })
 
   it("treats max_km as inclusive", () => {
-    expect(resolveBand(20, BANDS)?.code).toBe("A")
+    expect(resolveBand(18.5, BANDS)?.code).toBe("A")
     expect(resolveBand(40, BANDS)?.code).toBe("B")
   })
 

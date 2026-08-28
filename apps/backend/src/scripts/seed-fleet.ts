@@ -84,10 +84,26 @@ const FARE_BANDS: Array<{
   rank: number
 }> = [
   {
+    /**
+     * 18.5, not 20.
+     *
+     * At 20 km, Lusail Marina (19.3) fell inside band A with only 0.7 km to
+     * spare, while northern Lusail fell outside it — so two addresses a customer
+     * would both call "Lusail" priced differently, for no reason they could see.
+     * The owner's call was to put Lusail in band B rather than absorb it.
+     *
+     * 18.5 is chosen rather than 18 or 19 because Education City (17.8) and
+     * Lusail Marina (19.3) are only 1.5 km apart: any boundary between them is
+     * tight by construction, and 18.5 leaves the most room on both sides
+     * (0.7 km and 0.8 km respectively).
+     *
+     * This is still calibrated against straight-line distance. Real road
+     * distances for these two would settle it properly.
+     */
     code: "A",
     name_en: "Doha & central",
     name_ar: "الدوحة والمناطق المركزية",
-    max_km: 20,
+    max_km: 18.5,
     rank: 1,
   },
   {
