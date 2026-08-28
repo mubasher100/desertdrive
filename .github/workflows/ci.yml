@@ -1,0 +1,149 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # 22, not 20: wrangler and miniflare require >=22, and Medusa requires >=20.
+  # On 20 the storefront toolchain installs with EBADENGINE warnings and
+  # `wrangler deploy` fails outright.
+  NODE_VERSION: "22"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # `next build` skips type and lint checks (ignoreBuildErrors / ignoreDuringBuilds
+  # in next.config.js), so a green build proves nothing about types. This job is
+  # what actually gates type safety for both apps.
+  # ---------------------------------------------------------------------------
+  lint-and-typecheck:
+    name: Lint & typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+        env:
+          # next.config.js is loaded by `next lint`, not just dev/build, and it
+          # demands a publishable key. CI has no storefront secrets.
+          SKIP_ENV_VALIDATION: "true"
+
+      - name: Typecheck
+        run: npm run typecheck
+        env:
+          SKIP_ENV_VALIDATION: "true"
+
+  # ---------------------------------------------------------------------------
+  # Builds the backend only. The storefront is deliberately NOT built here:
+  # `next build` statically generates pages that fetch the Store API and dies
+  # with ECONNREFUSED without a live backend. The real storefront build happens
+  # in deploy-storefront.yml, pointed at the live Railway backend.
+  # ---------------------------------------------------------------------------
+  build-backend:
+    name: Build backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: medusa build
+        run: npm run build --workspace=@dd/backend
+        env:
+          # Placeholders. Nothing here connects; the build only needs the config
+          # to load without throwing. Note the port is 5432 and there is no
+          # sslmode parameter — medusa-config.ts rejects both.
+          DATABASE_URL: postgres://medusa:medusa@localhost:5432/medusa
+          JWT_SECRET: ci-jwt-secret-not-a-real-secret
+          COOKIE_SECRET: ci-cookie-secret-not-a-real-secret
+          STORE_CORS: http://localhost:8000
+          ADMIN_CORS: http://localhost:9000
+          AUTH_CORS: http://localhost:9000
+          MEDUSA_BACKEND_URL: http://localhost:9000
+          # `medusa build` forces NODE_ENV=production, which trips the Redis
+          # guard. A build is not a deploy, so the escape hatch is correct here.
+          ALLOW_INMEMORY_INFRA: "true"
+
+  # ---------------------------------------------------------------------------
+  # Runs against throwaway containers. CI never touches Supabase.
+  # ---------------------------------------------------------------------------
+  test-backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: medusa
+          POSTGRES_PASSWORD: medusa
+          POSTGRES_DB: medusa_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U medusa"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Unit tests
+        working-directory: apps/backend
+        run: npm run test:unit
+
+      - name: HTTP integration tests
+        working-directory: apps/backend
+        run: npm run test:integration:http
+        env:
+          # @medusajs/test-utils IGNORES DATABASE_URL. It builds its own
+          # connection string from these DB_* parts and creates a throwaway
+          # database per run, so they are not optional — without DB_PASSWORD the
+          # run dies with "SASL: client password must be a string", which says
+          # nothing about the real cause.
+          DB_HOST: localhost
+          DB_PORT: "5432"
+          DB_USERNAME: medusa
+          DB_PASSWORD: medusa
+          # medusa-config.ts still needs a valid-looking DATABASE_URL to load.
+          DATABASE_URL: postgres://medusa:medusa@localhost:5432/medusa_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: ci-jwt-secret-not-a-real-secret
+          COOKIE_SECRET: ci-cookie-secret-not-a-real-secret
+          STORE_CORS: http://localhost:8000
+          ADMIN_CORS: http://localhost:9000
+          AUTH_CORS: http://localhost:9000

@@ -1,0 +1,68 @@
+/**
+ * Cloudflare Worker configuration for the Desert Drive storefront.
+ *
+ * Deployed by .github/workflows/deploy-storefront.yml on pushes to main that
+ * touch apps/storefront. Locally: `npm run cf:preview`.
+ *
+ * Ship on workers.dev first. Nothing in the build depends on the custom domain
+ * except CORS and canonical URLs, and both are single-variable changes.
+ *
+ * ⚠️ Secrets do NOT go in this file — it is committed. Set them with
+ * `npx wrangler secret put <NAME>`, or in the Cloudflare dashboard.
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "desertdrive",
+  "main": ".open-next/worker.js",
+
+  // Must be >= the @opennextjs/cloudflare release date.
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+
+  "observability": {
+    "enabled": true
+  },
+
+  /**
+   * Persistent store for prerendered pages and fetch results. Without it every
+   * Worker isolate re-renders from scratch.
+   *
+   * Create it once:  npx wrangler r2 bucket create desertdrive-cache
+   */
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "desertdrive-cache"
+    }
+  ],
+
+  /**
+   * Sharded Durable Objects backing the tag cache. This is what makes
+   * revalidateTag do anything at all — see open-next.config.ts.
+   */
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "NEXT_TAG_CACHE_DO_SHARDED",
+        "class_name": "DOShardedTagCache"
+      }
+    ]
+  },
+
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["DOShardedTagCache"]
+    }
+  ],
+
+  "vars": {
+    // Qatar is the only region this store serves.
+    "NEXT_PUBLIC_DEFAULT_REGION": "qa"
+  }
+}

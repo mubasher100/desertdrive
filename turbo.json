@@ -1,8 +1,12 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "stream",
-  "globalDependencies": [".env.template"],
-  "globalEnv": ["NODE_ENV"],
+  "globalDependencies": [
+    ".env.template"
+  ],
+  "globalEnv": [
+    "NODE_ENV"
+  ],
   "globalPassThroughEnv": [
     "CI",
     "PORT",
@@ -12,8 +16,15 @@
   ],
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".medusa/**", ".next/**", "!.next/cache/**", ".open-next/**"],
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        ".medusa/**",
+        ".next/**",
+        "!.next/cache/**",
+        ".open-next/**"
+      ],
       "env": [
         "DATABASE_URL",
         "REDIS_URL",
@@ -46,14 +57,21 @@
       "persistent": true
     },
     "lint": {
-      "env": ["SKIP_ENV_VALIDATION"]
+      "env": [
+        "SKIP_ENV_VALIDATION"
+      ]
     },
     "typecheck": {
-      "dependsOn": ["^build"],
-      "env": ["SKIP_ENV_VALIDATION"]
+      "env": [
+        "SKIP_ENV_VALIDATION"
+      ]
     },
     "test": {
-      "env": ["DATABASE_URL", "REDIS_URL", "TEST_TYPE"]
+      "env": [
+        "DATABASE_URL",
+        "REDIS_URL",
+        "TEST_TYPE"
+      ]
     }
   }
 }

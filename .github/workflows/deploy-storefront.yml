@@ -1,0 +1,51 @@
+name: Deploy storefront
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/storefront/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/deploy-storefront.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-storefront
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build & deploy to Cloudflare Workers
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      # `next build` statically generates pages that call the Store API, so this
+      # step needs the LIVE Railway backend to be up. If it fails with
+      # ECONNREFUSED, check the backend before suspecting the storefront.
+      - name: Build for Cloudflare
+        working-directory: apps/storefront
+        run: npm run cf:build
+        env:
+          MEDUSA_BACKEND_URL: ${{ vars.MEDUSA_BACKEND_URL }}
+          NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: ${{ secrets.MEDUSA_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_BASE_URL: ${{ vars.STOREFRONT_BASE_URL }}
+          NEXT_PUBLIC_DEFAULT_REGION: qa
+          NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+
+      - name: Deploy
+        working-directory: apps/storefront
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
