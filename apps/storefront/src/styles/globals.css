@@ -1,3 +1,30 @@
+/*
+ * Desert Drive storefront styles.
+ *
+ * ------------------------------------------------------------------------
+ * WRITING CSS THAT WORKS IN ARABIC
+ * ------------------------------------------------------------------------
+ * The site renders right-to-left on /ar-qa. Tailwind handles most of this for
+ * free, but NOT all of it, and the part it misses fails silently.
+ *
+ *   ✅ Logical properties mirror automatically off `dir`:
+ *      ps-* pe-*, ms-* me-*, start-* end-*, text-start text-end,
+ *      border-s-* border-e-*, rounded-s-* rounded-e-*
+ *
+ *   ❌ Transform utilities are PHYSICAL and do not mirror:
+ *      translate-x-*, -translate-x-*, rotate-*, skew-x-*
+ *
+ * The classic symptom: a side menu correctly positioned on the right in Arabic
+ * that still flies in from the left, because `-translate-x-full` means the same
+ * thing in both directions. Flip the sign explicitly with an `rtl:` variant:
+ *
+ *      class="-translate-x-full rtl:translate-x-full"
+ *
+ * Prefer ps/pe/ms/me over pl/pr/ml/mr everywhere. Reach for a physical
+ * direction only when you actually mean "left" regardless of language.
+ * ------------------------------------------------------------------------
+ */
+
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";

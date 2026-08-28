@@ -3,11 +3,12 @@
 import { sdk } from "@lib/config"
 import medusaError from "@lib/util/medusa-error"
 import { HttpTypes } from "@medusajs/types"
-import { getCacheOptions } from "./cookies"
+import { countryOf } from "@lib/util/locale"
+import { getPublicCacheOptions } from "./cookies"
 
 export const listRegions = async () => {
   const next = {
-    ...(await getCacheOptions("regions")),
+    ...getPublicCacheOptions("regions"),
   }
 
   return sdk.client
@@ -22,7 +23,7 @@ export const listRegions = async () => {
 
 export const retrieveRegion = async (id: string) => {
   const next = {
-    ...(await getCacheOptions(["regions", id].join("-"))),
+    ...getPublicCacheOptions(["regions", id].join("-")),
   }
 
   return sdk.client
@@ -37,8 +38,21 @@ export const retrieveRegion = async (id: string) => {
 
 const regionMap = new Map<string, HttpTypes.StoreRegion>()
 
-export const getRegion = async (countryCode: string) => {
+/**
+ * Resolves the region for a locale segment.
+ *
+ * Callers pass whatever is in the URL — `"en-qa"`, `"ar-qa"` or a bare `"qa"` —
+ * and this normalises it to the country code the Store API understands. Doing it
+ * here rather than at each call site means there is exactly ONE place where a
+ * locale segment can leak into an API call, and it is this one.
+ *
+ * Passing `"en-qa"` straight through would find no region and return null, and
+ * the page would then render with no prices rather than failing visibly.
+ */
+export const getRegion = async (segmentOrCountry: string) => {
   try {
+    const countryCode = countryOf(segmentOrCountry)
+
     if (regionMap.has(countryCode)) {
       return regionMap.get(countryCode)
     }
@@ -55,11 +69,7 @@ export const getRegion = async (countryCode: string) => {
       })
     })
 
-    const region = countryCode
-      ? regionMap.get(countryCode)
-      : regionMap.get("us")
-
-    return region
+    return regionMap.get(countryCode) ?? null
   } catch (e: any) {
     return null
   }
