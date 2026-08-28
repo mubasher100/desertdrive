@@ -25,5 +25,11 @@
   },
   "devDependencies": {
     "turbo": "^2.5.5"
+  },
+  "overrides": {
+    "react": "19.0.5",
+    "react-dom": "19.0.5",
+    "@types/react": "19.0.5",
+    "@types/react-dom": "19.0.5"
   }
 }

@@ -1,0 +1,4 @@
+# Most ignores live in the root .gitignore. These are backend-specific.
+/uploads
+medusa-db.sql
+.medusa
