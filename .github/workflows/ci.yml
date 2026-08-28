@@ -10,7 +10,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: "20"
+  # 22, not 20: wrangler and miniflare require >=22, and Medusa requires >=20.
+  # On 20 the storefront toolchain installs with EBADENGINE warnings and
+  # `wrangler deploy` fails outright.
+  NODE_VERSION: "22"
 
 jobs:
   # ---------------------------------------------------------------------------
