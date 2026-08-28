@@ -183,10 +183,17 @@ Because `code` maps 1:1 onto the option value, resolving km → band → variant
 
 | Band | Straight-line km from DOH | Sedan | Large SUV | Minivan |
 |---|---|---|---|---|
-| A | ≤ 20 | **40** | **65** | **80** |
+| A | ≤ 18.5 | **40** | **65** | **80** |
 | B | ≤ 40 | tbc | tbc | tbc |
 | C | ≤ 75 | tbc | tbc | tbc |
 | D | > 75 | tbc | tbc | tbc |
+
+> **Band A is 18.5 km, not 20.** At 20 km, Lusail Marina (19.3 straight-line) fell
+> inside band A while northern Lusail fell outside it, so two addresses a customer
+> would both call "Lusail" priced differently. The owner's call was to price all of
+> Lusail as band B. 18.5 rather than 18 or 19 because Education City (17.8) and
+> Lusail Marina (19.3) are only 1.5 km apart — any boundary between them is tight,
+> and 18.5 leaves the most room either side. Pinned in `geo.unit.spec.ts`.
 
 > **⚠️ Haversine is straight-line distance and runs roughly 20–30% short of road distance.**
 >
@@ -583,7 +590,7 @@ Run `npm run build` in `apps/storefront`, not just `tsc`, before pushing anythin
 | 3 | Branding — palette from the logo, fonts, vehicle photography | ⬜ Not started |
 | 4 | Fare bands + fleet products + seed scripts | 🟡 Built; blocked on band B/C/D prices |
 | 5 | Booking funnel — search widget, results, details | ⬜ Not started |
-| 6 | Google Places + server-side band resolution | ⬜ Not started |
+| 6 | Google Places + server-side band resolution | 🟡 Band resolution done (`POST /store/quotes`); Places pending |
 | 7 | Checkout — SkipCash card + cash-to-driver | ⬜ Not started |
 | 8 | Confirmation email (Resend) + signed-token lookup | ⬜ Not started |
 | 9 | Admin Bookings screen | ⬜ Not started |
