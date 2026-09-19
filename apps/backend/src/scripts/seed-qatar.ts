@@ -41,6 +41,7 @@ const NO_DELIVERY_OPTION = "No delivery"
 export default async function seedQatar({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const link = container.resolve(ContainerRegistrationKeys.LINK)
+  const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
   const storeService = container.resolve(Modules.STORE)
   const salesChannelService = container.resolve(Modules.SALES_CHANNEL)
@@ -59,18 +60,70 @@ export default async function seedQatar({ container }: ExecArgs) {
   // Sales channel
   // -------------------------------------------------------------------------
   logger.info("Sales channel...")
-  let [salesChannel] = await salesChannelService.listSalesChannels({
-    name: SALES_CHANNEL_NAME,
-  })
+
+  /**
+   * Medusa creates a "Default Sales Channel" and a "Default Publishable API
+   * Key" on first migration. An earlier version of this seed created a second
+   * channel and key alongside them, which left the store with two of each —
+   * and whichever key someone copied out of the admin had a 50% chance of
+   * being the one on the channel with no products, showing an empty store with
+   * no error anywhere.
+   *
+   * So: reuse Medusa's default channel by renaming it, rather than creating a
+   * parallel one. The store must end up with exactly ONE sales channel.
+   */
+  const allChannels = await salesChannelService.listSalesChannels({})
+  let salesChannel = allChannels.find((c) => c.name === SALES_CHANNEL_NAME)
 
   if (!salesChannel) {
-    const { result } = await createSalesChannelsWorkflow(container).run({
-      input: { salesChannelsData: [{ name: SALES_CHANNEL_NAME }] },
-    })
-    salesChannel = result[0]
-    logger.info(`  created "${SALES_CHANNEL_NAME}"`)
+    const medusaDefault = allChannels.find((c) => c.name === "Default Sales Channel")
+
+    if (medusaDefault) {
+      await salesChannelService.updateSalesChannels(medusaDefault.id, {
+        name: SALES_CHANNEL_NAME,
+        description: "The Desert Drive storefront",
+      })
+      salesChannel = { ...medusaDefault, name: SALES_CHANNEL_NAME }
+      logger.info(`  renamed Medusa's default channel to "${SALES_CHANNEL_NAME}"`)
+    } else {
+      const { result } = await createSalesChannelsWorkflow(container).run({
+        input: { salesChannelsData: [{ name: SALES_CHANNEL_NAME }] },
+      })
+      salesChannel = result[0]
+      logger.info(`  created "${SALES_CHANNEL_NAME}"`)
+    }
   } else {
     logger.info(`  "${SALES_CHANNEL_NAME}" already exists`)
+  }
+
+  // Remove any OTHER channel that has nothing on it, so there is one channel and
+  // no way to pick the wrong one. A channel with products is left alone and
+  // reported — that is a manual decision, not something a seed should make.
+  for (const other of allChannels) {
+    if (other.id === salesChannel.id) {
+      continue
+    }
+
+    // `products` is a linked entity, so it is absent from the module's own type.
+    const { data: linked } = await query.graph({
+      entity: "sales_channel",
+      fields: ["id", "products.id"],
+      filters: { id: other.id },
+    })
+    const productCount =
+      ((linked?.[0] as { products?: unknown[] } | undefined)?.products ?? [])
+        .length
+
+    if (productCount > 0) {
+      logger.warn(
+        `  channel "${other.name}" has ${productCount} product(s) on it — left in ` +
+          "place. Move them and delete it in the admin if it is not needed."
+      )
+      continue
+    }
+
+    await salesChannelService.softDeleteSalesChannels([other.id])
+    logger.info(`  removed empty channel "${other.name}"`)
   }
 
   // -------------------------------------------------------------------------
@@ -84,6 +137,7 @@ export default async function seedQatar({ container }: ExecArgs) {
     input: {
       selector: { id: store.id },
       update: {
+        name: "Desert Drive",
         supported_currencies: [{ currency_code: CURRENCY, is_default: true }],
         default_sales_channel_id: salesChannel.id,
       },
@@ -302,12 +356,15 @@ export default async function seedQatar({ container }: ExecArgs) {
   // and the key only works once it is linked to a sales channel.
   // -------------------------------------------------------------------------
   logger.info("Publishable API key...")
-  let [publishableKey] = await apiKeyService.listApiKeys({
-    title: SALES_CHANNEL_NAME,
-    type: "publishable",
-  })
 
-  if (!publishableKey) {
+  /**
+   * Medusa creates a "Default Publishable API Key" on first migration. Reuse it
+   * rather than creating a second one — two keys in the admin, only one of which
+   * works, is exactly the trap this seed exists to remove.
+   */
+  let publishableKeys = await apiKeyService.listApiKeys({ type: "publishable" })
+
+  if (!publishableKeys.length) {
     const { result } = await createApiKeysWorkflow(container).run({
       input: {
         api_keys: [
@@ -315,15 +372,26 @@ export default async function seedQatar({ container }: ExecArgs) {
         ],
       },
     })
-    publishableKey = result[0]
+    publishableKeys = result
     logger.info("  created")
   } else {
-    logger.info("  already exists")
+    logger.info(`  ${publishableKeys.length} key(s) already exist`)
   }
 
-  await linkSalesChannelsToApiKeyWorkflow(container).run({
-    input: { id: publishableKey.id, add: [salesChannel.id] },
-  })
+  /**
+   * Link EVERY publishable key to the channel, not just one. If two keys exist,
+   * this guarantees that whichever one gets copied out of the admin works. A
+   * key on no channel is the single most common cause of a storefront that
+   * loads but shows nothing.
+   */
+  for (const key of publishableKeys) {
+    await linkSalesChannelsToApiKeyWorkflow(container).run({
+      input: { id: key.id, add: [salesChannel.id] },
+    })
+    logger.info(`  "${key.title}" linked to "${SALES_CHANNEL_NAME}"`)
+  }
+
+  const publishableKey = publishableKeys[0]
 
   const rule = "-".repeat(72)
   logger.info("")

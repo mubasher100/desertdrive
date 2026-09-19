@@ -36,7 +36,14 @@ export default function RootLayout(props: { children: React.ReactNode }) {
   return (
     // These are the pre-hydration defaults. The script above corrects them from
     // the URL before paint, and DirectionSync maintains them thereafter.
-    <html lang="en" dir="ltr" data-mode="light">
+    //
+    // suppressHydrationWarning is required, not cosmetic: on /ar-qa the script
+    // has already set lang="ar" dir="rtl" by the time React hydrates, so React
+    // sees attributes that differ from what the server rendered and logs an
+    // error on every Arabic page load. The mismatch is intentional and React
+    // leaves the DOM alone either way; this just stops it being reported as a
+    // bug. It applies to this element's own attributes only, not its children.
+    <html lang="en" dir="ltr" data-mode="light" suppressHydrationWarning>
       <head>
         <script
           // eslint-disable-next-line react/no-danger
