@@ -125,7 +125,7 @@ function NotQuotable({
           href={whatsappLink()}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex min-h-[52px] items-center justify-center rounded-dd bg-dd-ink px-6 font-semibold text-dd-on-ink hover:bg-dd-ink-soft"
+          className="inline-flex min-h-[52px] items-center justify-center rounded-dd bg-dd-accent px-6 font-semibold text-dd-ink hover:bg-dd-accent-strong"
         >
           {t("confirmed.whatsapp")}
         </a>

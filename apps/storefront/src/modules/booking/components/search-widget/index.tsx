@@ -130,7 +130,7 @@ export default function SearchWidget({
                 className={clx(
                   "min-h-touch rounded-dd-sm px-3 text-sm font-medium transition-colors",
                   selected
-                    ? "bg-dd-ink text-dd-on-ink shadow-card"
+                    ? "bg-dd-accent text-dd-ink shadow-card"
                     : "text-dd-ink-soft hover:bg-dd-paper-deep"
                 )}
               >
@@ -242,7 +242,7 @@ export default function SearchWidget({
 
       <button
         type="submit"
-        className="min-h-[52px] w-full rounded-dd bg-dd-ink px-4 text-base font-semibold text-dd-on-ink transition-colors hover:bg-dd-ink-soft"
+        className="min-h-[52px] w-full rounded-dd bg-dd-accent px-4 text-base font-semibold text-dd-ink transition-colors hover:bg-dd-accent-strong"
       >
         {t("search.submit")}
       </button>

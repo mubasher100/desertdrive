@@ -78,6 +78,17 @@ export default async function Footer({ segment }: { segment: string }) {
         <div className="mt-10 flex flex-col gap-4 border-t border-dd-line pt-6 text-xs text-dd-muted small:flex-row small:items-center small:justify-between">
           <p>
             © {year} {CONTACT.legalName} · {CONTACT.cr} · {t("footer.rights")}
+            <span className="block small:inline small:before:content-['·'] small:before:mx-2">
+              {t("footer.photoCredit")}{" "}
+              <a
+                href="https://commons.wikimedia.org/wiki/File:Doha_Dhow_Harbour_Skyline_View_at_Night_03.jpg"
+                target="_blank"
+                rel="noopener noreferrer license"
+                className="underline underline-offset-2 hover:text-dd-ink"
+              >
+                Zairon, CC BY 4.0
+              </a>
+            </span>
           </p>
           <LanguageSwitcher />
         </div>
