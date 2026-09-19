@@ -61,8 +61,16 @@
     }
   ],
 
+  /**
+   * Runtime (server-side) variables. NEXT_PUBLIC_* values are also baked in at
+   * build time; MEDUSA_BACKEND_URL is read at request time by server
+   * components and actions, so it must exist here too. Secrets
+   * (BOOKING_TOKEN_SECRET) are set with `wrangler secret put`, never here.
+   */
   "vars": {
     // Qatar is the only region this store serves.
-    "NEXT_PUBLIC_DEFAULT_REGION": "qa"
+    "NEXT_PUBLIC_DEFAULT_REGION": "qa",
+    "MEDUSA_BACKEND_URL": "https://ddbackend-production-e9d1.up.railway.app",
+    "NEXT_PUBLIC_BASE_URL": "https://desertdrive.desertdrive.workers.dev"
   }
 }

@@ -65,7 +65,12 @@ jobs:
           NEXT_PUBLIC_BASE_URL: ${{ vars.STOREFRONT_BASE_URL }}
           NEXT_PUBLIC_DEFAULT_REGION: qa
           NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          BOOKING_TOKEN_SECRET: ${{ secrets.BOOKING_TOKEN_SECRET }}
 
+      # Plain `wrangler deploy`, not `opennextjs-cloudflare deploy`: the latter
+      # first pre-populates the R2 cache through a temporary helper Worker, and
+      # that step is both slow and fragile. Nothing user-visible depends on
+      # pre-population — the cache fills on first request.
       - name: Deploy
         if: steps.config.outputs.ready == 'true'
         working-directory: apps/storefront
@@ -73,3 +78,14 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # Worker secrets are separate from build-time env. The booking-lookup
+      # secret must match the backend's, or every email link says not found.
+      - name: Set Worker secrets
+        if: steps.config.outputs.ready == 'true'
+        working-directory: apps/storefront
+        run: printf '%s' "$BOOKING_TOKEN_SECRET" | npx wrangler secret put BOOKING_TOKEN_SECRET
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          BOOKING_TOKEN_SECRET: ${{ secrets.BOOKING_TOKEN_SECRET }}
