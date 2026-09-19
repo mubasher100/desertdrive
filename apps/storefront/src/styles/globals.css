@@ -30,6 +30,18 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@layer components {
+  /* Text pages. Plain element styling so the content can be plain markup. */
+  .prose-dd h2 { font-family: var(--dd-font-display); font-size: 1.375rem; font-weight: 600; color: var(--dd-ink); margin: 2rem 0 0.75rem; }
+  .prose-dd h3 { font-size: 1.0625rem; font-weight: 600; color: var(--dd-ink); margin: 1.5rem 0 0.5rem; }
+  .prose-dd p, .prose-dd li { color: var(--dd-ink-soft); line-height: 1.7; }
+  .prose-dd p { margin: 0 0 1rem; }
+  .prose-dd ul { margin: 0 0 1rem; padding-inline-start: 1.25rem; list-style: disc; }
+  .prose-dd li { margin: 0.25rem 0; }
+  .prose-dd a { color: var(--dd-accent-text); text-decoration: underline; text-underline-offset: 3px; }
+  .prose-dd .placeholder { background: var(--dd-paper-deep); border-inline-start: 3px solid var(--dd-grey); padding: 0.75rem 1rem; border-radius: var(--dd-radius-sm); color: var(--dd-text-muted); font-style: italic; }
+}
+
 @layer base {
   html {
     /* Never lets the body scroll sideways, whatever a child does. */

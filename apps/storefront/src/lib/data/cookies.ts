@@ -48,8 +48,17 @@ export const getCacheTag = async (tag: string): Promise<string> => {
  * ⚠️ Neither belongs on a quote. `/store/quotes` must be `no-store`: it is tied
  * to one person's coordinates and party size.
  */
-export const getPublicCacheOptions = (tag: string): { tags: string[] } => {
-  return { tags: [tag] }
+/**
+ * Five minutes. This IS the "cache window" that CLAUDE.md promises an admin
+ * fare change goes live within. Without it, `force-cache` fetches are kept
+ * until something calls revalidateTag — and nothing does yet — so a price
+ * edited in the admin would never appear. (Found by editing the fleet and
+ * watching the home page keep the old cars.)
+ */
+export const PUBLIC_REVALIDATE_SECONDS = 300
+
+export const getPublicCacheOptions = (tag: string): { tags: string[]; revalidate: number } => {
+  return { tags: [tag], revalidate: PUBLIC_REVALIDATE_SECONDS }
 }
 
 export const getCacheOptions = async (

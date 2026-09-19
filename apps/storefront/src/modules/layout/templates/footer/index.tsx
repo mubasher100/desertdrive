@@ -48,6 +48,11 @@ export default async function Footer({ segment }: { segment: string }) {
                   {CONTACT.email}
                 </a>
               </li>
+              <li>
+                <LocalizedClientLink href="/contact" className={footerLink}>
+                  {t("nav.contact")}
+                </LocalizedClientLink>
+              </li>
             </ul>
           </div>
 

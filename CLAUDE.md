@@ -157,13 +157,17 @@ This is the part with no ecommerce equivalent. Read it before touching the backe
 
 Three products, each with a single product option named **`Distance band`**:
 
-| Product | Passengers | Bags |
-|---|---|---|
-| Sedan (with driver) | 3 | 2 |
-| Large SUV (with driver) | 6 | 4 |
-| Minivan (with driver) | 7 | 6 |
+The real fleet (owner's WhatsApp Business catalogue, Sept 2026). Capacities are sensible defaults **to be confirmed by the owner**:
 
-Each product has one **variant per band**. Four bands × three classes ≈ 12 variants, each carrying a real QAR price.
+| Product | Passengers | Bags | Band A |
+|---|---|---|---|
+| Toyota Rush | 4 | 3 | 100 |
+| Family MPV *(model tbc)* | 6 | 4 | 120 |
+| Hyundai H1 | 7 | 6 | 200 |
+| Toyota Hiace | 12 | 12 | 180 |
+| Tesla Model 3 | 3 | 2 | 300 |
+
+Each product has one **variant per band**. Four bands × five vehicles = 20 variants, each carrying a real QAR price. Photos live in `apps/storefront/public/fleet/<handle>.jpg`, mapped in `src/lib/data/fleet-images.ts`.
 
 **This is the whole point of the design.** The owner changes a fare in the Medusa admin and it is live within the cache window — no code, no deploy, no migration. Do not replace this with hard-coded prices, a config file, or a custom pricing engine.
 
@@ -187,12 +191,14 @@ Because `code` maps 1:1 onto the option value, resolving km → band → variant
 
 **Starting values. Prices marked `tbc` are not yet supplied by the owner — ask before seeding.**
 
-| Band | Straight-line km from DOH | Sedan | Large SUV | Minivan |
-|---|---|---|---|---|
-| A | ≤ 18.5 | **40** | **65** | **80** |
-| B | ≤ 40 | tbc | tbc | tbc |
-| C | ≤ 75 | tbc | tbc | tbc |
-| D | > 75 | tbc | tbc | tbc |
+| Band | Straight-line km from DOH | Prices |
+|---|---|---|
+| A | ≤ 18.5 | the catalogue prices above |
+| B | ≤ 40 | tbc |
+| C | ≤ 75 | tbc |
+| D | > 75 | tbc |
+
+> The original brief's band A (Sedan 40 · SUV 65 · Minivan 80) is superseded by the catalogue. **Open question for the owner:** is the catalogue price flat regardless of destination? If so, set B–D equal to A in `seed-fleet.ts` and the band machinery simply never changes the price.
 
 > **Band A is 18.5 km, not 20.** At 20 km, Lusail Marina (19.3 straight-line) fell
 > inside band A while northern Lusail fell outside it, so two addresses a customer
@@ -599,11 +605,11 @@ Run `npm run build` in `apps/storefront`, not just `tsc`, before pushing anythin
 | 5 | Booking funnel — search widget, results, details | ✅ Done — all five steps, both languages |
 | 6 | Google Places + server-side band resolution | 🟡 Band resolution done (`POST /store/quotes`); Places pending |
 | 7 | Checkout — SkipCash card + cash-to-driver | ✅ Done — both paths verified against the SkipCash sandbox incl. 3DS |
-| 8 | Confirmation email (Resend) + signed-token lookup | 🟡 Signed-token lookup done; email next |
+| 8 | Confirmation email + signed-token lookup | ✅ Done — SMTP provider (works with the Outlook mailbox), EN + AR templates, verified with a local mail catcher |
 | 9 | Admin Bookings screen | ⬜ Not started |
 | 10 | Arabic / RTL | 🟡 Locale routing, dictionary, RTL, fonts done; native review pending |
 | 11 | Accessibility audit — target zero axe violations | ⬜ Not started |
-| 12 | Legal pages, SEO, custom domain | ⬜ Not started |
+| 12 | Legal pages, SEO, custom domain | 🟡 Pages exist (privacy written; terms + cancellation are structural drafts awaiting the owner's terms); domain pending |
 | 13 | Later: hourly chauffeur, day tours, self-drive rental | 🔒 Later |
 
 ### SkipCash notes
@@ -649,9 +655,9 @@ Do not build these without asking. Each was considered and cut:
 
 Ask the owner. Several of these block real work:
 
-1. **Band prices for B, C and D.** Only band A is confirmed (Sedan 40 · SUV 65 · Minivan 80 QAR). `seed-fleet.ts` cannot be finished without them.
+1. **Band prices for B, C and D** — or confirmation that the catalogue price is flat. Band A is the catalogue (Rush 100 · MPV 120 · Hiace 180 · H1 200 · Tesla 300).
 2. **Hamad International coordinates** — approximately `25.273 N, 51.608 E`. **Verify precisely before committing.** Every fare in the system keys off this one point.
-3. **Fleet detail** — exact vehicle models per class, real passenger and luggage capacity, photography.
+3. **Fleet detail** — the 120 QAR vehicle's make/model, real passenger and luggage capacities for all five, and photography (`public/fleet/<handle>.jpg`).
 4. ~~Logo and brand colours~~ — supplied and sampled. Still wanted: an SVG or transparent original, and a mark-only version.
 5. **Contact details** — public phone, WhatsApp number, ops email, and the commercial registration number for the footer.
 6. **Domain** — the live domain is `desertdriverental.com` (Namecheap, DNS on Cloudflare in the `officialyuvraj24@gmail.com` account). `desertdrive.qa` is unregistered and still an option: a plain `.qa` needs **no** Qatari commercial registration (only `.com.qa` does), but must be bought through a Qatar-accredited registrar or reseller.

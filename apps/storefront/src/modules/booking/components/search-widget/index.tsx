@@ -207,7 +207,7 @@ export default function SearchWidget({
             onChange={(e) => setPassengers(Number(e.target.value))}
             className={selectClass}
           >
-            {range(1, 7).map((n) => (
+            {range(1, 14).map((n) => (
               <option key={n} value={n}>
                 {n}
               </option>
@@ -222,7 +222,7 @@ export default function SearchWidget({
             onChange={(e) => setLuggage(Number(e.target.value))}
             className={selectClass}
           >
-            {range(0, 8).map((n) => (
+            {range(0, 14).map((n) => (
               <option key={n} value={n}>
                 {n}
               </option>
