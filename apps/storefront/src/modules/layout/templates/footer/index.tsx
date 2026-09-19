@@ -84,15 +84,9 @@ export default async function Footer({ segment }: { segment: string }) {
           <p>
             © {year} {CONTACT.legalName} · {CONTACT.cr} · {t("footer.rights")}
             <span className="block small:inline small:before:content-['·'] small:before:mx-2">
-              {t("footer.photoCredit")}{" "}
-              <a
-                href="https://commons.wikimedia.org/wiki/File:Doha_Corniche_Skyline_View_2.jpg"
-                target="_blank"
-                rel="noopener noreferrer license"
-                className="underline underline-offset-2 hover:text-dd-ink"
-              >
-                Zairon, CC BY 4.0
-              </a>
+              <LocalizedClientLink href="/credits" className="underline underline-offset-2 hover:text-dd-ink">
+                {t("footer.credits")}
+              </LocalizedClientLink>
             </span>
           </p>
           <LanguageSwitcher />
