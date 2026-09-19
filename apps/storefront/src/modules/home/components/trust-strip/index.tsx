@@ -24,7 +24,7 @@ export default function TrustStrip({ segment }: { segment: string }) {
           <li key={key} className="flex gap-x-3">
             <span
               aria-hidden="true"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-dd bg-dd-paper text-dd-grey"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-dd bg-dd-accent-soft text-dd-accent-text"
             >
               <Icon />
             </span>

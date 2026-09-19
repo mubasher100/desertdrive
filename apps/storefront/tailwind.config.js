@@ -28,7 +28,8 @@ module.exports = {
        */
       colors: {
         dd: {
-          ink: "var(--dd-ink)",
+          // rgb(... / <alpha-value>) so bg-dd-ink/60 and friends actually work.
+          ink: "rgb(var(--dd-ink-rgb) / <alpha-value>)",
           "ink-soft": "var(--dd-ink-soft)",
           muted: "var(--dd-text-muted)",
           grey: "var(--dd-grey)",
@@ -39,6 +40,10 @@ module.exports = {
           "paper-deep": "var(--dd-paper-deep)",
           "on-ink": "var(--dd-on-ink)",
           "on-ink-2": "var(--dd-on-ink-2)",
+          accent: "rgb(var(--dd-accent-rgb) / <alpha-value>)",
+          "accent-strong": "var(--dd-accent-strong)",
+          "accent-text": "var(--dd-accent-text)",
+          "accent-soft": "var(--dd-accent-soft)",
           danger: "var(--dd-danger)",
           "danger-soft": "var(--dd-danger-soft)",
           success: "var(--dd-success)",

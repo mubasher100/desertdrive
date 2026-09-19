@@ -42,6 +42,23 @@
  * swapping in --dd-grey for text; swap in --dd-text-muted.
  *
  * --------------------------------------------------------------------------
+ * ACCENT — one colour, on purpose
+ * --------------------------------------------------------------------------
+ * The reference is black and white with exactly ONE accent on its primary
+ * actions, and a photograph doing the rest. The logo carries no accent, so
+ * this is the one brand decision made outside it: a warm desert amber, which
+ * is the name of the business.
+ *
+ *   accent      #d4922e   ink text on it  6.95:1 ✅   white text on it 2.64:1 ❌
+ *   accent-text #8a5a14   on white        5.91:1 ✅
+ *   accent-soft #fbf1e0   background tint only
+ *
+ * So the primary button is INK TEXT ON AMBER, never white on amber. Amber as
+ * text on white uses accent-text, not accent. Keep it to primary actions,
+ * selected states and small highlights — a second accent, or amber on every
+ * surface, is how a premium page turns into a coupon.
+ *
+ * --------------------------------------------------------------------------
  * FUNCTIONAL COLOURS
  * --------------------------------------------------------------------------
  * A monochrome brand still needs a way to say "this field is wrong" and "your
@@ -56,6 +73,15 @@
 :root {
   /* ---- Colour ----------------------------------------------------------- */
   --dd-ink: #111518;
+  /*
+   * The same two colours as space-separated RGB channels. Tailwind can only
+   * apply an opacity modifier (bg-dd-ink/60) to a colour declared as
+   * `rgb(var(--x-rgb) / <alpha-value>)`; against a plain hex variable the
+   * modifier silently does nothing, which is how the hero scrim shipped
+   * transparent the first time. Keep these in step with the hex above.
+   */
+  --dd-ink-rgb: 17 21 24;
+  --dd-accent-rgb: 212 146 46;
   --dd-ink-soft: #3a4247;
   --dd-text-muted: #5a6366;
   --dd-grey: #727c7e;
@@ -68,6 +94,11 @@
 
   --dd-on-ink: #ffffff;
   --dd-on-ink-2: #c9ced0;
+
+  --dd-accent: #d4922e;
+  --dd-accent-strong: #c2821f; /* hover */
+  --dd-accent-text: #8a5a14;
+  --dd-accent-soft: #fbf1e0;
 
   --dd-danger: #b42318;
   --dd-danger-soft: #fef3f2;

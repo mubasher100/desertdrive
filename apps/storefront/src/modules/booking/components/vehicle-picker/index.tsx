@@ -66,7 +66,7 @@ export default function VehiclePicker({
               className={clx(
                 "group flex w-full overflow-hidden rounded-dd-lg border-2 bg-dd-surface text-start shadow-card transition-colors small:flex-col",
                 isSelected
-                  ? "border-dd-ink"
+                  ? "border-dd-accent bg-dd-accent-soft/40"
                   : "border-dd-line hover:border-dd-line-strong"
               )}
             >
@@ -110,10 +110,10 @@ export default function VehiclePicker({
                   <span
                     className={clx(
                       "flex h-4 w-4 items-center justify-center rounded-full border-2",
-                      isSelected ? "border-dd-ink bg-dd-ink" : "border-dd-line-strong"
+                      isSelected ? "border-dd-accent bg-dd-accent" : "border-dd-line-strong"
                     )}
                   >
-                    {isSelected && <span className="h-1.5 w-1.5 rounded-full bg-dd-on-ink" />}
+                    {isSelected && <span className="h-1.5 w-1.5 rounded-full bg-dd-ink" />}
                   </span>
                   {isSelected ? t("results.selected") : t("results.select")}
                 </span>
@@ -138,7 +138,7 @@ export default function VehiclePicker({
             type="button"
             onClick={onContinue}
             disabled={!chosen}
-            className="min-h-[52px] shrink-0 rounded-dd bg-dd-ink px-6 text-base font-semibold text-dd-on-ink transition-colors hover:bg-dd-ink-soft disabled:opacity-50"
+            className="min-h-[52px] shrink-0 rounded-dd bg-dd-accent px-6 text-base font-semibold text-dd-ink transition-colors hover:bg-dd-accent-strong disabled:opacity-50"
           >
             {t("common.continue")}
           </button>

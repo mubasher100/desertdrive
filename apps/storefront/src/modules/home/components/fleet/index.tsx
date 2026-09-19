@@ -82,7 +82,7 @@ function VehicleCard({
               <span className="block text-xs text-dd-muted">
                 {t("home.fleet.fromLabel")}
               </span>
-              <span className="block text-lg font-semibold tabular-nums text-dd-ink">
+              <span className="block text-lg font-semibold tabular-nums text-dd-accent-text">
                 {vehicle.from_amount}{" "}
                 <span className="text-sm font-medium text-dd-muted">
                   {t("common.currency")}
