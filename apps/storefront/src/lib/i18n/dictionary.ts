@@ -116,6 +116,18 @@ export const dictionary = {
     "results.passengers": "Up to {count} passengers",
     "results.luggage": "Up to {count} bags",
     "results.select": "Select",
+    "results.selected": "Selected",
+    "results.passengersShort": "{count} pax",
+    "results.luggageShort": "{count} bags",
+    "results.error.body":
+      "We couldn't get a price just now. Try again in a moment, or contact us and we'll book it for you.",
+
+    "trip.route": "Route",
+    "trip.when": "Pickup time",
+    "trip.party": "Party",
+    "trip.change": "Change",
+    "trip.airportTo": "Airport → {place}",
+    "trip.placeToAirport": "{place} → Airport",
     "results.empty.title": "We can't price this trip online yet",
     "results.empty.body":
       "We haven't published a fare for this area. Contact us and we'll quote you directly.",
@@ -237,6 +249,18 @@ export const dictionary = {
     "results.passengers": "حتى {count} ركاب",
     "results.luggage": "حتى {count} حقائب",
     "results.select": "اختيار",
+    "results.selected": "تم الاختيار",
+    "results.passengersShort": "{count} ركاب",
+    "results.luggageShort": "{count} حقائب",
+    "results.error.body":
+      "تعذّر الحصول على السعر الآن. حاول مجددًا بعد قليل، أو تواصل معنا وسنحجز لك.",
+
+    "trip.route": "المسار",
+    "trip.when": "وقت الاستقبال",
+    "trip.party": "عدد الركاب",
+    "trip.change": "تعديل",
+    "trip.airportTo": "المطار ← {place}",
+    "trip.placeToAirport": "{place} ← المطار",
     "results.empty.title": "لا يمكننا تسعير هذه الرحلة عبر الموقع حاليًا",
     "results.empty.body":
       "لم نحدد سعرًا لهذه المنطقة بعد. تواصل معنا وسنزوّدك بالسعر مباشرة.",
