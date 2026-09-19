@@ -44,6 +44,8 @@ module.exports = {
           "accent-strong": "var(--dd-accent-strong)",
           "accent-text": "var(--dd-accent-text)",
           "accent-soft": "var(--dd-accent-soft)",
+          "on-accent": "var(--dd-on-accent)",
+          navy: "rgb(var(--dd-navy-rgb) / <alpha-value>)",
           danger: "var(--dd-danger)",
           "danger-soft": "var(--dd-danger-soft)",
           success: "var(--dd-success)",
@@ -103,6 +105,7 @@ module.exports = {
       fontFamily: {
         // Resolves to Inter or IBM Plex Sans Arabic depending on <html lang>.
         brand: ["var(--dd-font)"],
+        display: ["var(--dd-font-display)"],
         sans: [
           "Inter",
           "-apple-system",

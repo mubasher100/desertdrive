@@ -36,6 +36,12 @@
     overflow-x: hidden;
   }
 
+  /* Headings take the display face; everything else the body face. */
+  h1, h2, h3, h4 {
+    font-family: var(--dd-font-display);
+    letter-spacing: -0.01em;
+  }
+
   body {
     font-family: var(--dd-font);
     color: var(--dd-ink);

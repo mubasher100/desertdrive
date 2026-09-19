@@ -14,7 +14,7 @@ export default function HowItWorks({ segment }: { segment: string }) {
             <li key={n} className="flex gap-x-4">
               <span
                 aria-hidden="true"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-dd-accent text-base font-semibold text-dd-ink"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-dd-accent text-base font-semibold text-dd-on-accent"
               >
                 {n}
               </span>

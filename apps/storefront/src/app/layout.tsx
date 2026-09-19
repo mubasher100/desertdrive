@@ -1,6 +1,7 @@
 import { getBaseURL } from "@lib/util/env"
 import { Metadata } from "next"
-import { IBM_Plex_Sans_Arabic, Inter } from "next/font/google"
+import { Geist, IBM_Plex_Sans_Arabic } from "next/font/google"
+import localFont from "next/font/local"
 import "styles/globals.css"
 
 /**
@@ -12,9 +13,21 @@ import "styles/globals.css"
  * switcher is a client-side navigation — loading the Arabic face only on
  * /ar-qa would flash fallback glyphs on the first switch.
  */
-const inter = Inter({
+const geist = Geist({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-geist",
+  display: "swap",
+})
+
+/**
+ * Google Sans Flex is served by Google Fonts but is newer than the list baked
+ * into this Next version's next/font/google, so it is self-hosted: the
+ * variable woff2 (latin subset, weights 300–800) lives in src/fonts.
+ */
+const googleSansFlex = localFont({
+  src: "../fonts/GoogleSansFlex-latin.woff2",
+  weight: "300 800",
+  variable: "--font-google-sans-flex",
   display: "swap",
 })
 
@@ -70,7 +83,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
       lang="en"
       dir="ltr"
       data-mode="light"
-      className={`${inter.variable} ${plexArabic.variable}`}
+      className={`${geist.variable} ${googleSansFlex.variable} ${plexArabic.variable}`}
       suppressHydrationWarning
     >
       <head>
