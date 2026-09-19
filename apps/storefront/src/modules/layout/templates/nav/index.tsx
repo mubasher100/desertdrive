@@ -1,58 +1,75 @@
-import { Suspense } from "react"
-
-import { listRegions } from "@lib/data/regions"
-import { StoreRegion } from "@medusajs/types"
+import Image from "next/image"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import CartButton from "@modules/layout/components/cart-button"
-import SideMenu from "@modules/layout/components/side-menu"
 import LanguageSwitcher from "@modules/layout/components/language-switcher"
+import { getTranslations } from "@lib/i18n/get-translations"
+import { CONTACT } from "@lib/data/contact"
 
-export default async function Nav() {
-  const regions = await listRegions().then((regions: StoreRegion[]) => regions)
+/**
+ * The header. Deliberately minimal — there is no shop to navigate, so there is
+ * no menu. Three things a visitor on a phone needs: the way home, a way to
+ * call a human, and the other language.
+ *
+ * Sticky, because the phone number should stay reachable from anywhere in the
+ * funnel. Height is fixed (--dd-nav-height) so anchored scrolls and the sticky
+ * results-page CTA can account for it.
+ */
+export default async function Nav({ segment }: { segment: string }) {
+  const t = getTranslations(segment)
 
   return (
-    <div className="sticky top-0 inset-x-0 z-50 group">
-      <header className="relative h-16 mx-auto border-b duration-200 bg-white border-ui-border-base">
-        <nav className="content-container txt-xsmall-plus text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
-          <div className="flex-1 basis-0 h-full flex items-center">
-            <div className="h-full">
-              <SideMenu regions={regions} />
-            </div>
-          </div>
+    <header className="sticky inset-x-0 top-0 z-50 border-b border-dd-line bg-dd-surface">
+      <nav
+        aria-label="Primary"
+        className="mx-auto flex h-16 w-full max-w-content items-center justify-between px-4"
+      >
+        <LocalizedClientLink
+          href="/"
+          className="flex min-h-touch items-center"
+          aria-label={t("common.brand")}
+        >
+          {/*
+            The transparent logo, sized for the 64px bar. `priority` because it
+            is above the fold on every page and its absence shifts the layout.
+          */}
+          <Image
+            src="/brand/logo-transparent.png"
+            alt={t("common.brand")}
+            width={608}
+            height={293}
+            priority
+            className="h-9 w-auto small:h-10"
+          />
+        </LocalizedClientLink>
 
-          <div className="flex items-center h-full">
-            <LocalizedClientLink
-              href="/"
-              className="txt-compact-xlarge-plus hover:text-ui-fg-base uppercase"
-              data-testid="nav-store-link"
-            >
-              Medusa Store
-            </LocalizedClientLink>
-          </div>
+        <div className="flex items-center gap-x-1 small:gap-x-4">
+          <a
+            href={`tel:${CONTACT.phone.e164}`}
+            className="inline-flex min-h-touch items-center gap-x-2 rounded-dd px-2 text-sm font-medium text-dd-ink hover:bg-dd-paper small:px-3"
+          >
+            <PhoneIcon />
+            <span className="hidden small:inline">{CONTACT.phone.display}</span>
+            <span className="sr-only small:hidden">{t("nav.call")}</span>
+          </a>
+          <LanguageSwitcher className="text-sm font-medium" />
+        </div>
+      </nav>
+    </header>
+  )
+}
 
-          <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
-            {/*
-              The language switch is a primary control here, not a footer link:
-              a large share of visitors read Arabic first, and burying it in a
-              side menu makes them hunt for it on a phone.
-            */}
-            <LanguageSwitcher className="flex items-center h-full" />
-            <Suspense
-              fallback={
-                <LocalizedClientLink
-                  className="hover:text-ui-fg-base flex gap-2"
-                  href="/cart"
-                  data-testid="nav-cart-link"
-                >
-                  Cart (0)
-                </LocalizedClientLink>
-              }
-            >
-              <CartButton />
-            </Suspense>
-          </div>
-        </nav>
-      </header>
-    </div>
+function PhoneIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.9 2z" />
+    </svg>
   )
 }

@@ -1,36 +1,35 @@
-import { Github } from "@medusajs/icons"
-import { Button, Heading } from "@medusajs/ui"
+import SearchWidget from "@modules/booking/components/search-widget"
+import { getTranslations } from "@lib/i18n/get-translations"
 
-const Hero = () => {
+/**
+ * The hero. The search widget is IN it, not below it: on a phone, the first
+ * screen is the headline and the form, and nothing else. A visitor should be
+ * able to start booking without scrolling.
+ *
+ * Dark ink surface with white type — this is the reference's register and the
+ * logo's own palette. `.on-ink` flips the focus ring so keyboard focus stays
+ * visible against the dark background.
+ */
+export default function Hero({ segment }: { segment: string }) {
+  const t = getTranslations(segment)
+
   return (
-    <div className="h-[75vh] w-full border-b border-ui-border-base relative bg-ui-bg-subtle">
-      <div className="absolute inset-0 z-10 flex flex-col justify-center items-center text-center small:p-32 gap-6">
-        <span>
-          <Heading
-            level="h1"
-            className="text-3xl leading-10 text-ui-fg-base font-normal"
-          >
-            Ecommerce Starter Template
-          </Heading>
-          <Heading
-            level="h2"
-            className="text-3xl leading-10 text-ui-fg-subtle font-normal"
-          >
-            Powered by Medusa and Next.js
-          </Heading>
-        </span>
-        <a
-          href="https://github.com/medusajs/nextjs-starter-medusa"
-          target="_blank"
-        >
-          <Button variant="secondary">
-            View on GitHub
-            <Github />
-          </Button>
-        </a>
+    <section className="on-ink bg-dd-ink text-dd-on-ink">
+      <div className="mx-auto grid w-full max-w-content gap-8 px-4 pb-10 pt-8 small:grid-cols-[1.1fr_1fr] small:items-center small:gap-12 small:py-20">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-dd-on-ink-2">
+            {t("home.hero.eyebrow")}
+          </p>
+          <h1 className="mt-3 text-3xl font-semibold leading-tight small:text-5xl small:leading-[1.1]">
+            {t("search.title")}
+          </h1>
+          <p className="mt-4 max-w-prose text-base text-dd-on-ink-2 small:text-lg">
+            {t("search.subtitle")}
+          </p>
+        </div>
+
+        <SearchWidget className="text-dd-ink" />
       </div>
-    </div>
+    </section>
   )
 }
-
-export default Hero

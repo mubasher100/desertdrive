@@ -20,7 +20,30 @@ module.exports = {
         visibility: "visibility",
         padding: "padding-top padding-right padding-bottom padding-left",
       },
+      /**
+       * Brand tokens. Values live in src/styles/brand.css as CSS variables and
+       * are referenced here by name only, so a rebrand edits one file. Use the
+       * `dd-*` names in components; the `grey` scale below is the Medusa
+       * starter's and is kept for the checkout components that still use it.
+       */
       colors: {
+        dd: {
+          ink: "var(--dd-ink)",
+          "ink-soft": "var(--dd-ink-soft)",
+          muted: "var(--dd-text-muted)",
+          grey: "var(--dd-grey)",
+          line: "var(--dd-line)",
+          "line-strong": "var(--dd-line-strong)",
+          surface: "var(--dd-surface)",
+          paper: "var(--dd-paper)",
+          "paper-deep": "var(--dd-paper-deep)",
+          "on-ink": "var(--dd-on-ink)",
+          "on-ink-2": "var(--dd-on-ink-2)",
+          danger: "var(--dd-danger)",
+          "danger-soft": "var(--dd-danger-soft)",
+          success: "var(--dd-success)",
+          "success-soft": "var(--dd-success-soft)",
+        },
         grey: {
           0: "#FFFFFF",
           5: "#F9FAFB",
@@ -36,6 +59,9 @@ module.exports = {
         },
       },
       borderRadius: {
+        "dd-sm": "var(--dd-radius-sm)",
+        dd: "var(--dd-radius)",
+        "dd-lg": "var(--dd-radius-lg)",
         none: "0px",
         soft: "2px",
         base: "4px",
@@ -45,6 +71,17 @@ module.exports = {
       },
       maxWidth: {
         "8xl": "100rem",
+        content: "var(--dd-content-max)",
+      },
+      minHeight: {
+        touch: "var(--dd-touch)",
+      },
+      minWidth: {
+        touch: "var(--dd-touch)",
+      },
+      boxShadow: {
+        card: "var(--dd-shadow-card)",
+        float: "var(--dd-shadow-float)",
       },
       screens: {
         "2xsmall": "320px",
@@ -59,6 +96,8 @@ module.exports = {
         "3xl": "2rem",
       },
       fontFamily: {
+        // Resolves to Inter or IBM Plex Sans Arabic depending on <html lang>.
+        brand: ["var(--dd-font)"],
         sans: [
           "Inter",
           "-apple-system",

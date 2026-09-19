@@ -1,0 +1,133 @@
+/*
+ * ==========================================================================
+ * DESERT DRIVE — BRAND TOKENS
+ * ==========================================================================
+ *
+ * Every colour, font and spacing token in ONE place. Tailwind reads these
+ * through CSS variables (see tailwind.config.js), so a rebrand touches this
+ * file and nothing else. Never hard-code a hex value in a component.
+ *
+ * --------------------------------------------------------------------------
+ * WHERE THE PALETTE COMES FROM
+ * --------------------------------------------------------------------------
+ * Sampled from the supplied logo (public/brand/logo.png, 640×640), not chosen.
+ * The mark is MONOCHROME — a near-black car silhouette and wordmark with a
+ * single cool-grey swoosh. There are no sand or desert tones in it, so there
+ * are none here. That reads as premium chauffeur, which is the reference
+ * (Blacklane) and the correct positioning for a fixed-price airport service.
+ *
+ *   ink    #111518   modal colour of the wordmark and silhouette (1.0% of px)
+ *   grey   #727c7e   modal colour of the swoosh                   (0.1% of px)
+ *   paper  #f7f7f7   the PNG's own background                     (82% of px)
+ *
+ * --------------------------------------------------------------------------
+ * CONTRAST — MEASURED, NOT ASSUMED (WCAG 2.1 AA)
+ * --------------------------------------------------------------------------
+ * Body text needs 4.5:1. Large text (≥24px, or ≥19px bold) and UI components
+ * need 3:1. Ratios below are computed from the relative luminance formula.
+ *
+ *   token                     on white   on paper   on ink
+ *   ink        #111518         18.35      17.13       —      body ✅
+ *   ink-soft   #3a4247         10.24       9.56       —      body ✅
+ *   text-muted #5a6366          6.16       5.75       —      body ✅
+ *   grey       #727c7e          4.29       4.00      4.28    ⚠️ LARGE TEXT / UI ONLY
+ *   line       #d9dcdd          1.38       1.29     13.31    borders only, never text
+ *   on-ink     #ffffff            —          —      18.35    body ✅ on dark surfaces
+ *   on-ink-2   #c9ced0            —          —      11.56    body ✅ on dark surfaces
+ *
+ * The logo grey is the trap CLAUDE.md warns about: it is the brand's accent
+ * and it FAILS AA for body text by a hair. It is used for icons, large
+ * headings, borders and the swoosh — and `text-muted` is its derived companion
+ * for any running text that wants to feel grey. Do not "fix" a component by
+ * swapping in --dd-grey for text; swap in --dd-text-muted.
+ *
+ * --------------------------------------------------------------------------
+ * FUNCTIONAL COLOURS
+ * --------------------------------------------------------------------------
+ * A monochrome brand still needs a way to say "this field is wrong" and "your
+ * booking is confirmed". These are functional, not brand, and are the only
+ * chromatic values in the system. Both clear 4.5:1 on white.
+ *
+ *   danger   #b42318   6.57:1 on white, 6.05:1 on its soft tint
+ *   success  #067647   5.69:1 on white, 5.40:1 on its soft tint
+ * ==========================================================================
+ */
+
+:root {
+  /* ---- Colour ----------------------------------------------------------- */
+  --dd-ink: #111518;
+  --dd-ink-soft: #3a4247;
+  --dd-text-muted: #5a6366;
+  --dd-grey: #727c7e;
+  --dd-line: #d9dcdd;
+  --dd-line-strong: #b9bfc1;
+
+  --dd-surface: #ffffff;
+  --dd-paper: #f7f7f7;
+  --dd-paper-deep: #eceeef;
+
+  --dd-on-ink: #ffffff;
+  --dd-on-ink-2: #c9ced0;
+
+  --dd-danger: #b42318;
+  --dd-danger-soft: #fef3f2;
+  --dd-success: #067647;
+  --dd-success-soft: #ecfdf3;
+
+  /*
+   * Focus ring. Monochrome, so it has to work by contrast against both light
+   * and dark surfaces: a 2px ink ring with a 2px white gap does that on white,
+   * and the inverse pair is applied on dark surfaces via .on-ink.
+   */
+  --dd-focus: var(--dd-ink);
+  --dd-focus-gap: var(--dd-surface);
+
+  /* ---- Type ------------------------------------------------------------- */
+  /*
+   * Latin: Inter — the working font of the reference, neutral and dense at
+   * small sizes, which matters on a 375px form.
+   * Arabic: IBM Plex Sans Arabic — a contemporary sans that sits at the same
+   * visual weight as Inter, so mixed-script lines (a QAR price next to Arabic
+   * copy) do not jump. Selected by :lang(ar), see globals.css.
+   * Both loaded through next/font so there is no layout shift and no third
+   * party request at runtime.
+   */
+  --dd-font-latin: var(--font-inter), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --dd-font-arabic: var(--font-plex-arabic), "Segoe UI", Tahoma, sans-serif;
+  --dd-font: var(--dd-font-latin);
+
+  /* ---- Shape ------------------------------------------------------------ */
+  /*
+   * The reference is square-cornered and restrained. Radii are small on
+   * purpose; the one large value is for the search widget card, which needs
+   * to read as a distinct object floating over the hero.
+   */
+  --dd-radius-sm: 4px;
+  --dd-radius: 8px;
+  --dd-radius-lg: 16px;
+  --dd-radius-pill: 9999px;
+
+  /* ---- Layout ----------------------------------------------------------- */
+  --dd-gutter: 16px; /* ≥16px at every width — the body never scrolls sideways */
+  --dd-content-max: 1200px;
+  --dd-touch: 44px; /* minimum tap target, everywhere, no exceptions */
+  --dd-nav-height: 64px;
+
+  /* ---- Elevation -------------------------------------------------------- */
+  --dd-shadow-card: 0 1px 2px rgb(17 21 24 / 0.06), 0 1px 3px rgb(17 21 24 / 0.1);
+  --dd-shadow-float: 0 10px 30px -10px rgb(17 21 24 / 0.35);
+}
+
+/* Arabic pages swap the working font. Latin numerals and codes inside Arabic
+ * copy (a flight number, a price) still render in the Arabic family's own Latin
+ * glyphs, which are designed to sit at the same weight. */
+:lang(ar) {
+  --dd-font: var(--dd-font-arabic);
+}
+
+/* On a dark (ink) surface the focus ring inverts so it stays visible. */
+.on-ink {
+  --dd-focus: var(--dd-on-ink);
+  --dd-focus-gap: var(--dd-ink);
+}

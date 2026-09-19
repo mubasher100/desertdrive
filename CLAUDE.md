@@ -23,15 +23,19 @@ The customer flow is: pick a destination → see a fixed fare per vehicle class 
 
 > ## 🎨 Branding
 >
-> The logo and vehicle photography exist and are supplied by the owner. **Derive the palette from the actual logo** — do not invent one. Desert/sand tones are the obvious direction, but they must come from the real mark.
+> The logo is supplied (`apps/storefront/public/brand/`). **The palette is derived from it, not invented** — and the mark is **monochrome**: ink `#111518`, a cool grey `#727c7e`, white. There are no sand tones in the logo, so there are none in the palette. That reads as premium chauffeur, which matches the reference.
 >
-> Keep every colour, font and spacing token in **one file** — `apps/storefront/src/styles/brand.css` — with Tailwind referencing them through CSS variables, so a rebrand touches one file. Never hard-code a hex value in a component.
+> Every colour, font and spacing token lives in **one file** — `apps/storefront/src/styles/brand.css` — with Tailwind reading them as CSS variables (`dd-*` classes), so a rebrand touches one file. Never hard-code a hex value in a component. Contrast ratios are computed and recorded in that file: the logo grey is **4.29:1 on white and fails AA for body text** — use `--dd-text-muted` for running text, `--dd-grey` for icons, large text and borders only.
+>
+> Fonts: Inter (Latin) and IBM Plex Sans Arabic (Arabic), self-hosted via `next/font`, switched by `:lang(ar)`.
 
-> ## ⚖️ Booking.com is a reference, not a target
+> ## ⚖️ Blacklane is a reference, not a target
 >
-> The design reference is the [Booking.com airport-taxi funnel](https://www.booking.com/taxi/index.html). Take the **funnel structure** — search widget → vehicle-class results → details → pay → voucher — and the information hierarchy that makes it convert.
+> The design reference is [Blacklane's Doha airport transfer page](https://www.blacklane.com/en/countries/qatar/doha/airport-transfer/) (owner's choice, Sept 2026 — it replaced Booking.com). Take the **structure**: booking widget in the hero, USP strip, vehicle-class cards with seats and bags, service copy, how-it-works, footer. And take the register: black/white, restrained, professional.
 >
-> Do **not** take Booking.com's blue, their logotype, their name, their copy, or their photography. The cloned output is a scaffold for measurement, not a site to ship. The cloner template's own README prohibits impersonation, and so does this project.
+> Two deliberate departures: their "By the hour" tab is out (hourly is v2) and replaced by the **From / To airport** toggle; and we show the **fixed price** once a destination is chosen, which they don't — that is our pitch.
+>
+> Do **not** take their logotype, name, copy, or photography. Cloned output is a scaffold for measurement, not a site to ship. The cloner template's own README prohibits impersonation, and so does this project.
 
 ---
 
@@ -587,14 +591,14 @@ Run `npm run build` in `apps/storefront`, not just `tsc`, before pushing anythin
 | 0 | Repo scaffold — Turborepo, both apps, Medusa agent skills, docs MCP | ✅ Done |
 | 1 | Supabase + Railway + Redis; backend live | ⬜ Not started |
 | 2 | Cloudflare Worker + R2; storefront live on `workers.dev` | ⬜ Not started |
-| 3 | Branding — palette from the logo, fonts, vehicle photography | ⬜ Not started |
+| 3 | Branding — palette from the logo, fonts, vehicle photography | 🟡 Palette, fonts, brand.css done; photography pending |
 | 4 | Fare bands + fleet products + seed scripts | 🟡 Built; blocked on band B/C/D prices |
-| 5 | Booking funnel — search widget, results, details | ⬜ Not started |
+| 5 | Booking funnel — search widget, results, details | 🟡 Home + search widget done; results, details next |
 | 6 | Google Places + server-side band resolution | 🟡 Band resolution done (`POST /store/quotes`); Places pending |
 | 7 | Checkout — SkipCash card + cash-to-driver | ⬜ Not started |
 | 8 | Confirmation email (Resend) + signed-token lookup | ⬜ Not started |
 | 9 | Admin Bookings screen | ⬜ Not started |
-| 10 | Arabic / RTL | ⬜ Not started |
+| 10 | Arabic / RTL | 🟡 Locale routing, dictionary, RTL, fonts done; native review pending |
 | 11 | Accessibility audit — target zero axe violations | ⬜ Not started |
 | 12 | Legal pages, SEO, custom domain | ⬜ Not started |
 | 13 | Later: hourly chauffeur, day tours, self-drive rental | 🔒 Later |
@@ -639,8 +643,8 @@ Ask the owner. Several of these block real work:
 1. **Band prices for B, C and D.** Only band A is confirmed (Sedan 40 · SUV 65 · Minivan 80 QAR). `seed-fleet.ts` cannot be finished without them.
 2. **Hamad International coordinates** — approximately `25.273 N, 51.608 E`. **Verify precisely before committing.** Every fare in the system keys off this one point.
 3. **Fleet detail** — exact vehicle models per class, real passenger and luggage capacity, photography.
-4. **Logo and brand colours** — the owner has these. The palette is derived from them, not invented.
+4. ~~Logo and brand colours~~ — supplied and sampled. Still wanted: an SVG or transparent original, and a mark-only version.
 5. **Contact details** — public phone, WhatsApp number, ops email, and the commercial registration number for the footer.
-6. **`desertdrive.qa`** — not yet secured. `.qa` registration goes through Qatar's Communications Regulatory Authority and generally requires a Qatari commercial registration. This has lead time; start it in parallel with the build rather than at the end.
+6. **Domain** — the live domain is `desertdriverental.com` (Namecheap, DNS on Cloudflare in the `officialyuvraj24@gmail.com` account). `desertdrive.qa` is unregistered and still an option: a plain `.qa` needs **no** Qatari commercial registration (only `.com.qa` does), but must be bought through a Qatar-accredited registrar or reseller.
 7. **SkipCash credentials** — confirm whether these are sandbox, production, or both.
 8. **Cancellation and refund policy** — the actual terms, from the owner. Required for SkipCash onboarding, and it cannot be invented.

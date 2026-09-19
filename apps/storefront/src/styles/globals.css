@@ -25,9 +25,35 @@
  * ------------------------------------------------------------------------
  */
 
+@import "./brand.css";
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+@layer base {
+  html {
+    /* Never lets the body scroll sideways, whatever a child does. */
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: var(--dd-font);
+    color: var(--dd-ink);
+    background-color: var(--dd-surface);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /*
+   * One focus style for every interactive element. A 2px ring with a 2px gap
+   * stays visible on white, on the paper tint and (via .on-ink) on dark hero
+   * surfaces. Applied on :focus-visible only, so mouse clicks do not paint it.
+   */
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--dd-focus);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--dd-focus-gap);
+  }
+}
 
 @layer utilities {
   /* Chrome, Safari and Opera */
