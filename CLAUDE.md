@@ -446,7 +446,7 @@ Traps worth not walking into:
 | `MEDUSA_WORKER_MODE` | `shared` for now; split to `server` + `worker` when traffic warrants |
 | `RESEND_API_KEY` | Confirmation email |
 | `RESEND_FROM_EMAIL` | Verified sender |
-| `BOOKING_TOKEN_SECRET` | HMAC secret for the signed booking-lookup link |
+| `BOOKING_TOKEN_SECRET` | HMAC secret for the signed booking-lookup link. **Set the same value on the storefront** — the backend signs the email link, the storefront verifies it |
 | `AIRPORT_LAT` / `AIRPORT_LNG` | Hamad International origin point for the distance calculation |
 | `SKIPCASH_CLIENT_ID` · `SKIPCASH_KEY_ID` · `SKIPCASH_KEY_SECRET` · `SKIPCASH_WEBHOOK_KEY` · `SKIPCASH_BASE_URL` | Payment gateway |
 
@@ -458,6 +458,7 @@ Traps worth not walking into:
 | `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | From Admin → Settings → API Key Management. **Store API requests fail without it** |
 | `NEXT_PUBLIC_BASE_URL` | Storefront's own public URL |
 | `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Places Autocomplete. Referrer-restricted, Places API only |
+| `BOOKING_TOKEN_SECRET` | Same value as the backend's. Server-side only, never `NEXT_PUBLIC_` |
 
 ### GitHub Actions secrets
 
@@ -595,10 +596,10 @@ Run `npm run build` in `apps/storefront`, not just `tsc`, before pushing anythin
 | 2 | Cloudflare Worker + R2; storefront live on `workers.dev` | ⬜ Not started |
 | 3 | Branding — palette from the logo, fonts, vehicle photography | 🟡 Palette, fonts, brand.css done; photography pending |
 | 4 | Fare bands + fleet products + seed scripts | 🟡 Built; blocked on band B/C/D prices |
-| 5 | Booking funnel — search widget, results, details | 🟡 Home + search widget done; results, details next |
+| 5 | Booking funnel — search widget, results, details | ✅ Done — all five steps, both languages |
 | 6 | Google Places + server-side band resolution | 🟡 Band resolution done (`POST /store/quotes`); Places pending |
-| 7 | Checkout — SkipCash card + cash-to-driver | ⬜ Not started |
-| 8 | Confirmation email (Resend) + signed-token lookup | ⬜ Not started |
+| 7 | Checkout — SkipCash card + cash-to-driver | 🟡 Cash-to-driver done; SkipCash next |
+| 8 | Confirmation email (Resend) + signed-token lookup | 🟡 Signed-token lookup done; email next |
 | 9 | Admin Bookings screen | ⬜ Not started |
 | 10 | Arabic / RTL | 🟡 Locale routing, dictionary, RTL, fonts done; native review pending |
 | 11 | Accessibility audit — target zero axe violations | ⬜ Not started |
