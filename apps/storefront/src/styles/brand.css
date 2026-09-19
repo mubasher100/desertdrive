@@ -46,17 +46,19 @@
  * --------------------------------------------------------------------------
  * The reference is black and white with exactly ONE accent on its primary
  * actions, and a photograph doing the rest. The logo carries no accent, so
- * this is the one brand decision made outside it: a warm desert amber, which
- * is the name of the business.
+ * this is the one brand decision made outside it. The owner's call (Sept
+ * 2026): blue, in the register of the reference — but a blue of our own, not
+ * theirs (Blacklane is #0f63bd; this is not).
  *
- *   accent      #d4922e   ink text on it  6.95:1 ✅   white text on it 2.64:1 ❌
- *   accent-text #8a5a14   on white        5.91:1 ✅
- *   accent-soft #fbf1e0   background tint only
+ *   accent        #0a4fb3   white text on it  7.55:1 ✅   as text on white 7.55:1 ✅
+ *   accent-strong #083f8f   hover; white on it 9.92:1 ✅
+ *   accent-soft   #e8f0fb   background tint; accent text on it 6.57:1 ✅
+ *   navy          #0b1f3a   dark surfaces (hero); white on it 16.52:1 ✅
  *
- * So the primary button is INK TEXT ON AMBER, never white on amber. Amber as
- * text on white uses accent-text, not accent. Keep it to primary actions,
- * selected states and small highlights — a second accent, or amber on every
- * surface, is how a premium page turns into a coupon.
+ * Unlike an amber, this blue carries white text comfortably, so primary buttons
+ * are WHITE ON BLUE. Keep it to primary actions, selected states and small
+ * highlights — a second accent, or blue on every surface, is how a premium page
+ * turns into a bank.
  *
  * --------------------------------------------------------------------------
  * FUNCTIONAL COLOURS
@@ -81,7 +83,8 @@
    * transparent the first time. Keep these in step with the hex above.
    */
   --dd-ink-rgb: 17 21 24;
-  --dd-accent-rgb: 212 146 46;
+  --dd-accent-rgb: 10 79 179;
+  --dd-navy-rgb: 11 31 58;
   --dd-ink-soft: #3a4247;
   --dd-text-muted: #5a6366;
   --dd-grey: #727c7e;
@@ -95,10 +98,14 @@
   --dd-on-ink: #ffffff;
   --dd-on-ink-2: #c9ced0;
 
-  --dd-accent: #d4922e;
-  --dd-accent-strong: #c2821f; /* hover */
-  --dd-accent-text: #8a5a14;
-  --dd-accent-soft: #fbf1e0;
+  --dd-accent: #0a4fb3;
+  --dd-accent-strong: #083f8f; /* hover */
+  --dd-accent-text: #0a4fb3;
+  --dd-accent-soft: #e8f0fb;
+  --dd-on-accent: #ffffff;
+
+  /* Dark surface for the hero. Navy rather than ink so the page reads blue. */
+  --dd-navy: #0b1f3a;
 
   --dd-danger: #b42318;
   --dd-danger-soft: #fef3f2;
@@ -115,18 +122,24 @@
 
   /* ---- Type ------------------------------------------------------------- */
   /*
-   * Latin: Inter — the working font of the reference, neutral and dense at
-   * small sizes, which matters on a 375px form.
-   * Arabic: IBM Plex Sans Arabic — a contemporary sans that sits at the same
-   * visual weight as Inter, so mixed-script lines (a QAR price next to Arabic
-   * copy) do not jump. Selected by :lang(ar), see globals.css.
-   * Both loaded through next/font so there is no layout shift and no third
-   * party request at runtime.
+   * Body (Latin): Geist — owner's choice. Neutral and dense at small sizes,
+   * which matters on a 375px form.
+   * Display (Latin): Google Sans Flex — owner's choice, for headings. It is
+   * not in next/font/google's list yet, so the variable woff2 is self-hosted
+   * from src/fonts and loaded with next/font/local.
+   * Arabic: IBM Plex Sans Arabic for both roles. Neither Latin face has Arabic
+   * glyphs, and mixing a Latin display face into Arabic headings looks broken.
+   * Selected by :lang(ar) below.
+   * All loaded through next/font: no layout shift, no runtime request to
+   * Google, works inside the Cloudflare Worker.
    */
-  --dd-font-latin: var(--font-inter), -apple-system, BlinkMacSystemFont,
+  --dd-font-latin: var(--font-geist), -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --dd-font-display-latin: var(--font-google-sans-flex), var(--font-geist),
+    "Segoe UI", sans-serif;
   --dd-font-arabic: var(--font-plex-arabic), "Segoe UI", Tahoma, sans-serif;
   --dd-font: var(--dd-font-latin);
+  --dd-font-display: var(--dd-font-display-latin);
 
   /* ---- Shape ------------------------------------------------------------ */
   /*
@@ -155,6 +168,7 @@
  * glyphs, which are designed to sit at the same weight. */
 :lang(ar) {
   --dd-font: var(--dd-font-arabic);
+  --dd-font-display: var(--dd-font-arabic);
 }
 
 /* On a dark (ink) surface the focus ring inverts so it stays visible. */

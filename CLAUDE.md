@@ -23,11 +23,13 @@ The customer flow is: pick a destination → see a fixed fare per vehicle class 
 
 > ## 🎨 Branding
 >
-> The logo is supplied (`apps/storefront/public/brand/`). **The palette is derived from it, not invented** — and the mark is **monochrome**: ink `#111518`, a cool grey `#727c7e`, white. There are no sand tones in the logo, so there are none in the palette. That reads as premium chauffeur, which matches the reference.
+> The logo is supplied (`apps/storefront/public/brand/`) and is **monochrome**: ink `#111518`, a cool grey `#727c7e`, white. Text and surfaces come from it. The **one accent** is the owner's call (Sept 2026): **blue, `#0a4fb3`**, in the register of the reference but deliberately not Blacklane's `#0f63bd`. White text on it clears 7.55:1, so primary buttons are white-on-blue. Navy `#0b1f3a` is the dark hero surface. Keep the accent to primary actions, selected states and small highlights.
 >
-> Every colour, font and spacing token lives in **one file** — `apps/storefront/src/styles/brand.css` — with Tailwind reading them as CSS variables (`dd-*` classes), so a rebrand touches one file. Never hard-code a hex value in a component. Contrast ratios are computed and recorded in that file: the logo grey is **4.29:1 on white and fails AA for body text** — use `--dd-text-muted` for running text, `--dd-grey` for icons, large text and borders only.
+> Every colour, font and spacing token lives in **one file** — `apps/storefront/src/styles/brand.css` — with Tailwind reading them as CSS variables (`dd-*` classes), so a rebrand touches one file. Never hard-code a hex value in a component. Contrast ratios are computed and recorded in that file: the logo grey is **4.29:1 on white and fails AA for body text** — use `--dd-text-muted` for running text, `--dd-grey` for icons, large text and borders only. Ink, accent and navy are declared as `rgb(var(--x-rgb) / <alpha-value>)` so Tailwind opacity modifiers (`bg-dd-navy/70`) work — against a plain hex variable they silently do nothing.
 >
-> Fonts: Inter (Latin) and IBM Plex Sans Arabic (Arabic), self-hosted via `next/font`, switched by `:lang(ar)`.
+> Fonts (owner's choice): **Geist** for body, **Google Sans Flex** for headings — the latter self-hosted from `src/fonts/` via `next/font/local` because it is newer than `next/font/google`'s list. **IBM Plex Sans Arabic** for both roles in Arabic; switched by `:lang(ar)`.
+>
+> Hero photo: daytime West Bay skyline from Wikimedia Commons, CC BY 4.0, credited in the footer and `public/images/CREDITS.md`. Replace with the owner's own photography when supplied; keep the credit line only as long as the CC image is used.
 
 > ## ⚖️ Blacklane is a reference, not a target
 >

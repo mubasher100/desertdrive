@@ -19,7 +19,7 @@ export default function Hero({ segment }: { segment: string }) {
   const t = getTranslations(segment)
 
   return (
-    <section className="on-ink relative isolate overflow-hidden bg-dd-ink text-dd-on-ink">
+    <section className="on-ink relative isolate overflow-hidden bg-dd-navy text-dd-on-ink">
       <Image
         src="/images/hero-doha-1920.jpg"
         alt=""
@@ -35,12 +35,12 @@ export default function Hero({ segment }: { segment: string }) {
       */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-gradient-to-b from-dd-ink/80 via-dd-ink/60 to-dd-ink/85 small:bg-gradient-to-r small:from-dd-ink/90 small:via-dd-ink/60 small:to-dd-ink/40"
+        className="absolute inset-0 -z-10 bg-gradient-to-b from-dd-navy/85 via-dd-navy/70 to-dd-navy/90 small:bg-gradient-to-r small:from-dd-navy/95 small:via-dd-navy/70 small:to-dd-navy/35"
       />
 
       <div className="mx-auto grid w-full max-w-content gap-8 px-4 pb-10 pt-8 small:grid-cols-[1.1fr_1fr] small:items-center small:gap-12 small:py-24">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-dd-accent">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-dd-on-ink-2">
             {t("home.hero.eyebrow")}
           </p>
           <h1 className="mt-3 text-3xl font-semibold leading-tight small:text-5xl small:leading-[1.1]">

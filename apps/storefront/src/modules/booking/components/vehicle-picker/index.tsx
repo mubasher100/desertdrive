@@ -113,7 +113,7 @@ export default function VehiclePicker({
                       isSelected ? "border-dd-accent bg-dd-accent" : "border-dd-line-strong"
                     )}
                   >
-                    {isSelected && <span className="h-1.5 w-1.5 rounded-full bg-dd-ink" />}
+                    {isSelected && <span className="h-1.5 w-1.5 rounded-full bg-dd-on-accent" />}
                   </span>
                   {isSelected ? t("results.selected") : t("results.select")}
                 </span>
@@ -138,7 +138,7 @@ export default function VehiclePicker({
             type="button"
             onClick={onContinue}
             disabled={!chosen}
-            className="min-h-[52px] shrink-0 rounded-dd bg-dd-accent px-6 text-base font-semibold text-dd-ink transition-colors hover:bg-dd-accent-strong disabled:opacity-50"
+            className="min-h-[52px] shrink-0 rounded-dd bg-dd-accent px-6 text-base font-semibold text-dd-on-accent transition-colors hover:bg-dd-accent-strong disabled:opacity-50"
           >
             {t("common.continue")}
           </button>
