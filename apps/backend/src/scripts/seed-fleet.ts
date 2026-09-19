@@ -145,6 +145,7 @@ const VEHICLES: Array<{
   title: string
   title_ar: string
   description: string
+  description_ar: string
   passengers: number
   luggage: number
 }> = [
@@ -155,6 +156,7 @@ const VEHICLES: Array<{
     title_ar: "سيدان مع سائق",
     description:
       "A comfortable saloon for up to 3 passengers with 2 bags. The everyday airport transfer.",
+    description_ar: "سيارة سيدان مريحة تتسع حتى 3 ركاب وحقيبتين. الخيار المعتاد للتوصيل من المطار.",
     passengers: 3,
     luggage: 2,
   },
@@ -165,6 +167,7 @@ const VEHICLES: Array<{
     title_ar: "دفع رباعي كبير مع سائق",
     description:
       "Extra space for up to 6 passengers with 4 bags. Suits families and small groups.",
+    description_ar: "مساحة أرحب حتى 6 ركاب و4 حقائب. مناسبة للعائلات والمجموعات الصغيرة.",
     passengers: 6,
     luggage: 4,
   },
@@ -175,6 +178,7 @@ const VEHICLES: Array<{
     title_ar: "ميني فان مع سائق",
     description:
       "The largest vehicle, for up to 7 passengers with 6 bags. Built for group arrivals.",
+    description_ar: "أكبر سياراتنا، حتى 7 ركاب و6 حقائب. مثالية لوصول المجموعات.",
     passengers: 7,
     luggage: 6,
   },
@@ -322,6 +326,7 @@ export default async function seedFleet({ container }: ExecArgs) {
               // Interface copy is translated in the storefront dictionary; the
               // catalogue is translated here.
               title_ar: vehicle.title_ar,
+              description_ar: vehicle.description_ar,
             },
             options: [
               {

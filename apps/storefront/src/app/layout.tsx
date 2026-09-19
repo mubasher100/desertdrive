@@ -1,6 +1,29 @@
 import { getBaseURL } from "@lib/util/env"
 import { Metadata } from "next"
+import { IBM_Plex_Sans_Arabic, Inter } from "next/font/google"
 import "styles/globals.css"
+
+/**
+ * Both scripts' fonts are loaded here, once, as CSS variables that brand.css
+ * picks up. next/font self-hosts them at build time: no request to Google at
+ * runtime, no layout shift, and they work inside the Cloudflare Worker.
+ *
+ * Both are loaded on every page rather than per locale because the language
+ * switcher is a client-side navigation — loading the Arabic face only on
+ * /ar-qa would flash fallback glyphs on the first switch.
+ */
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+})
+
+const plexArabic = IBM_Plex_Sans_Arabic({
+  subsets: ["arabic", "latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-plex-arabic",
+  display: "swap",
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
@@ -43,7 +66,13 @@ export default function RootLayout(props: { children: React.ReactNode }) {
     // error on every Arabic page load. The mismatch is intentional and React
     // leaves the DOM alone either way; this just stops it being reported as a
     // bug. It applies to this element's own attributes only, not its children.
-    <html lang="en" dir="ltr" data-mode="light" suppressHydrationWarning>
+    <html
+      lang="en"
+      dir="ltr"
+      data-mode="light"
+      className={`${inter.variable} ${plexArabic.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script
           // eslint-disable-next-line react/no-danger
