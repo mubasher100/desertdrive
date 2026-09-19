@@ -122,8 +122,22 @@ export default async function seedQatar({ container }: ExecArgs) {
       continue
     }
 
+    /**
+     * Unlink every publishable key from the channel BEFORE deleting it. A
+     * soft-deleted channel leaves its key links behind, and Medusa's
+     * publishable-key middleware then maps over a channel that no longer
+     * resolves — every cart creation fails with "Cannot read properties of
+     * undefined (reading 'id')", which says nothing about sales channels.
+     */
+    const keysOnIt = await apiKeyService.listApiKeys({ type: "publishable" })
+    for (const key of keysOnIt) {
+      await linkSalesChannelsToApiKeyWorkflow(container).run({
+        input: { id: key.id, remove: [other.id] },
+      })
+    }
+
     await salesChannelService.softDeleteSalesChannels([other.id])
-    logger.info(`  removed empty channel "${other.name}"`)
+    logger.info(`  removed empty channel "${other.name}" and its key links`)
   }
 
   // -------------------------------------------------------------------------
