@@ -46,7 +46,15 @@ async function clearCartId() {
 
 export type BookingCart = HttpTypes.StoreCart
 
-/** The booking in progress, or null. Never cached. */
+/**
+ * The booking in progress, or null. Never cached.
+ *
+ * A cart that has already become an order reads as absent. The cookie cannot
+ * always be cleared at the moment of completion — the SkipCash return page is
+ * a Server Component render, where Next forbids cookie writes — so the cookie
+ * may outlive the cart by up to two hours. Treating a completed cart as "no
+ * booking in progress" makes that harmless.
+ */
 export async function retrieveBookingCart(): Promise<BookingCart | null> {
   const id = await getCartId()
   if (!id) return null
@@ -54,10 +62,10 @@ export async function retrieveBookingCart(): Promise<BookingCart | null> {
   return sdk.client
     .fetch<HttpTypes.StoreCartResponse>(`/store/carts/${id}`, {
       method: "GET",
-      query: { fields: CART_FIELDS },
+      query: { fields: CART_FIELDS + ",completed_at" },
       cache: "no-store",
     })
-    .then(({ cart }) => cart)
+    .then(({ cart }) => (cart.completed_at ? null : cart))
     .catch(() => null)
 }
 
@@ -202,6 +210,101 @@ export async function confirmCashBooking(segment: string): Promise<{ message: st
 
   await clearCartId()
   redirect(`/${segment}/confirmed/${orderId}?t=${signBookingToken(orderId)}`)
+}
+
+const SKIPCASH_PROVIDER = "pp_skipcash_skipcash"
+
+/** Whether card payment is available: the provider is enabled on the region. */
+export async function cardPaymentAvailable(segment: string): Promise<boolean> {
+  const region = await getRegion(segment)
+  if (!region) return false
+  return sdk.client
+    .fetch<{ payment_providers: Array<{ id: string }> }>("/store/payment-providers", {
+      method: "GET",
+      query: { region_id: region.id },
+      cache: "no-store",
+    })
+    .then(({ payment_providers }) => payment_providers.some((p) => p.id === SKIPCASH_PROVIDER))
+    .catch(() => false)
+}
+
+/**
+ * Step 4, card path. Opens a SkipCash payment for the cart and sends the
+ * customer to SkipCash's hosted page. They come back to /payment/return, where
+ * the cart is completed and SkipCash is asked whether it was actually paid.
+ *
+ * Nothing about the amount is sent from here — Medusa gives the provider the
+ * cart total. What goes across is who is paying and where to come back to.
+ */
+export async function startCardPayment(segment: string): Promise<{ message: string } | never> {
+  const t = createTranslator(localeOf(segment))
+  const cart = await retrieveBookingCart()
+  if (!cart) {
+    redirect(`/${segment}`)
+  }
+
+  const m = (cart.metadata ?? {}) as Record<string, unknown>
+  const name = String(m.contact_name ?? "").trim()
+  const [first_name, ...rest] = name.split(/\s+/)
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:8000"
+
+  let payUrl: string | undefined
+  try {
+    const { payment_collection } = await sdk.store.payment.initiatePaymentSession(cart, {
+      provider_id: SKIPCASH_PROVIDER,
+      data: {
+        first_name: first_name || "Customer",
+        last_name: rest.join(" ") || "-",
+        phone: String(m.contact_phone ?? ""),
+        email: String(m.contact_email ?? cart.email ?? ""),
+        return_url: `${baseUrl}/${segment}/payment/return`,
+        reference: cart.id,
+      },
+    })
+    const session = payment_collection?.payment_sessions?.find((s) => s.provider_id === SKIPCASH_PROVIDER)
+    payUrl = (session?.data as { pay_url?: string } | undefined)?.pay_url
+  } catch (e) {
+    console.error("startCardPayment failed", e)
+  }
+
+  if (!payUrl) {
+    return { message: t("payment.error.generic") }
+  }
+
+  redirect(payUrl)
+}
+
+export type CardReturnResult =
+  | { status: "confirmed"; orderId: string; token: string }
+  | { status: "unpaid" }
+  | { status: "expired" }
+
+/**
+ * Back from SkipCash. Completing the cart makes Medusa ask the provider to
+ * authorise, and the provider asks SkipCash whether the payment is actually
+ * paid — the redirect itself proves nothing and is not trusted. If the
+ * webhook already completed the cart, Medusa hands back the existing order.
+ */
+export async function completeCardBooking(): Promise<CardReturnResult> {
+  const cart = await retrieveBookingCart()
+  if (!cart) {
+    return { status: "expired" }
+  }
+
+  try {
+    const result = await sdk.store.cart.complete(cart.id)
+    if (result.type === "order") {
+      // No clearCartId() here: this runs during the return page's render, and
+      // Next only allows cookie writes in Server Actions and Route Handlers.
+      // retrieveBookingCart() ignores completed carts, so the cookie is inert.
+      return { status: "confirmed", orderId: result.order.id, token: signBookingToken(result.order.id) }
+    }
+    console.warn("completeCardBooking: cart not completed", result.error)
+    return { status: "unpaid" }
+  } catch (e) {
+    console.error("completeCardBooking failed", e)
+    return { status: "unpaid" }
+  }
 }
 
 export type Booking = HttpTypes.StoreOrder

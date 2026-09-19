@@ -2,7 +2,7 @@ import { Metadata } from "next"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import PaymentChooser from "@modules/booking/components/payment-chooser"
 import BookingSummary from "@modules/booking/components/booking-summary"
-import { retrieveBookingCart } from "@lib/data/booking"
+import { cardPaymentAvailable, retrieveBookingCart } from "@lib/data/booking"
 import { getTranslations } from "@lib/i18n/get-translations"
 
 type Props = { params: Promise<{ countryCode: string }> }
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PaymentPage({ params }: Props) {
   const { countryCode } = await params
   const t = getTranslations(countryCode)
-  const cart = await retrieveBookingCart()
+  const [cart, cardAvailable] = await Promise.all([retrieveBookingCart(), cardPaymentAvailable(countryCode)])
 
   if (!cart || !cart.items?.length) {
     return (
@@ -55,8 +55,7 @@ export default async function PaymentPage({ params }: Props) {
           />
         </div>
         <div className="small:order-1">
-          {/* SkipCash lands in the next phase; until then the card option is shown disabled. */}
-          <PaymentChooser segment={countryCode} amount={cart.total ?? 0} cardAvailable={false} />
+          <PaymentChooser segment={countryCode} amount={cart.total ?? 0} cardAvailable={cardAvailable} />
         </div>
       </div>
     </main>

@@ -193,6 +193,34 @@ module.exports = defineConfig({
     // Desert Drive's own modules.
     { resolve: "./src/modules/fare-band" },
 
+    /**
+     * Payment. The manual provider (pp_system_default) is always present and is
+     * the cash-to-driver path. SkipCash is added only when its credentials are
+     * set, so a dev machine without them still boots — the storefront shows
+     * card as unavailable rather than the backend refusing to start.
+     */
+    {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: process.env.SKIPCASH_KEY_SECRET
+          ? [
+              {
+                resolve: "./src/modules/skipcash",
+                id: "skipcash",
+                options: {
+                  base_url: process.env.SKIPCASH_BASE_URL || "https://skipcashtest.azurewebsites.net",
+                  client_id: process.env.SKIPCASH_CLIENT_ID,
+                  key_id: process.env.SKIPCASH_KEY_ID,
+                  key_secret: process.env.SKIPCASH_KEY_SECRET,
+                  webhook_key: process.env.SKIPCASH_WEBHOOK_KEY,
+                  backend_url: process.env.MEDUSA_BACKEND_URL || "http://localhost:9000",
+                },
+              },
+            ]
+          : [],
+      },
+    },
+
     // Infrastructure. Empty in local dev, where Medusa's in-memory defaults apply.
     ...redisModules,
   ],

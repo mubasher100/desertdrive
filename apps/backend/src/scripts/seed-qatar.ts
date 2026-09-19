@@ -11,6 +11,7 @@ import {
   deleteRegionsWorkflow,
   linkSalesChannelsToApiKeyWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
+  updateRegionsWorkflow,
   updateStoresWorkflow,
 } from "@medusajs/medusa/core-flows"
 
@@ -192,9 +193,10 @@ export default async function seedQatar({ container }: ExecArgs) {
             name: REGION_NAME,
             currency_code: CURRENCY,
             countries: [COUNTRY],
-            // Cash-to-driver is not a payment provider — it is the manual
-            // provider with the order marked as awaiting cash. SkipCash gets
-            // registered separately once its provider module lands.
+            // Cash-to-driver is the manual provider with the order marked as
+            // awaiting cash. SkipCash is enabled on the region below, after
+            // the region exists, so this list stays valid on a machine
+            // without SkipCash credentials.
             payment_providers: ["pp_system_default"],
           },
         ],
@@ -204,6 +206,25 @@ export default async function seedQatar({ container }: ExecArgs) {
     logger.info(`  created "${REGION_NAME}" (${CURRENCY.toUpperCase()})`)
   } else {
     logger.info(`  "${region.name}" already exists`)
+  }
+
+  /**
+   * Enable SkipCash on the region when the provider is loaded. Idempotent:
+   * Medusa ignores a provider that is already linked. Skipped on a machine
+   * without credentials, where the provider is not registered at all.
+   */
+  const paymentService = container.resolve(Modules.PAYMENT)
+  const providers = await paymentService.listPaymentProviders({ id: ["pp_skipcash_skipcash"] })
+  if (providers.length) {
+    await updateRegionsWorkflow(container).run({
+      input: {
+        selector: { id: region.id },
+        update: { payment_providers: ["pp_system_default", "pp_skipcash_skipcash"] },
+      },
+    })
+    logger.info("  SkipCash enabled on the region")
+  } else {
+    logger.info("  SkipCash not configured (SKIPCASH_* unset) — cash only")
   }
 
   // -------------------------------------------------------------------------

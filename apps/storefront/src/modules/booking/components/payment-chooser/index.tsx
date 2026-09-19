@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { clx } from "@medusajs/ui"
-import { confirmCashBooking } from "@lib/data/booking"
+import { confirmCashBooking, startCardPayment } from "@lib/data/booking"
 import { useTranslations } from "@lib/i18n/use-translations"
 
 type Method = "card" | "cash"
@@ -32,9 +32,9 @@ export default function PaymentChooser({
 
   function confirm() {
     setMessage(null)
-    if (method !== "cash") return
     startTransition(async () => {
-      const result = await confirmCashBooking(segment)
+      // Both actions redirect on success and only return on failure.
+      const result = method === "card" ? await startCardPayment(segment) : await confirmCashBooking(segment)
       if (result?.message) setMessage(result.message)
     })
   }
@@ -47,7 +47,7 @@ export default function PaymentChooser({
           disabled={!cardAvailable}
           onSelect={() => cardAvailable && setMethod("card")}
           title={t("payment.card")}
-          body={cardAvailable ? undefined : t("payment.card.soon")}
+          body={cardAvailable ? t("payment.card.help") : t("payment.card.soon")}
         />
         <Option
           selected={method === "cash"}
@@ -73,10 +73,14 @@ export default function PaymentChooser({
         <button
           type="button"
           onClick={confirm}
-          disabled={pending || method !== "cash"}
+          disabled={pending}
           className="min-h-[52px] w-full rounded-dd bg-dd-accent px-4 text-base font-semibold text-dd-on-accent transition-colors hover:bg-dd-accent-strong disabled:opacity-60"
         >
-          {pending ? t("common.loading") + "…" : t("payment.cash.confirm")}
+          {pending
+            ? t("common.loading") + "…"
+            : method === "card"
+              ? t("payment.card.confirm", { amount })
+              : t("payment.cash.confirm")}
         </button>
       </div>
     </div>
