@@ -102,6 +102,7 @@ export const dictionary = {
     "footer.privacy": "Privacy policy",
     "footer.rights": "All rights reserved.",
     "footer.photoCredit": "Skyline photo:",
+    "footer.credits": "Image credits",
 
     "trust.licensed.title": "Licensed drivers",
     "trust.licensed.body": "Every driver is licensed and knows Qatar.",
@@ -276,6 +277,7 @@ export const dictionary = {
     "footer.privacy": "سياسة الخصوصية",
     "footer.rights": "جميع الحقوق محفوظة.",
     "footer.photoCredit": "صورة الأفق:",
+    "footer.credits": "حقوق الصور",
 
     "trust.licensed.title": "سائقون مرخصون",
     "trust.licensed.body": "جميع سائقينا مرخصون ويعرفون قطر جيدًا.",
