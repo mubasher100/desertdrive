@@ -598,7 +598,7 @@ Run `npm run build` in `apps/storefront`, not just `tsc`, before pushing anythin
 | 4 | Fare bands + fleet products + seed scripts | 🟡 Built; blocked on band B/C/D prices |
 | 5 | Booking funnel — search widget, results, details | ✅ Done — all five steps, both languages |
 | 6 | Google Places + server-side band resolution | 🟡 Band resolution done (`POST /store/quotes`); Places pending |
-| 7 | Checkout — SkipCash card + cash-to-driver | 🟡 Cash-to-driver done; SkipCash next |
+| 7 | Checkout — SkipCash card + cash-to-driver | ✅ Done — both paths verified against the SkipCash sandbox incl. 3DS |
 | 8 | Confirmation email (Resend) + signed-token lookup | 🟡 Signed-token lookup done; email next |
 | 9 | Admin Bookings screen | ⬜ Not started |
 | 10 | Arabic / RTL | 🟡 Locale routing, dictionary, RTL, fonts done; native review pending |
@@ -612,13 +612,19 @@ Custom payment provider at `apps/backend/src/modules/skipcash/`, extending `Abst
 
 Methods to implement: `initiatePayment`, `authorizePayment`, `capturePayment`, `refundPayment`, `cancelPayment`, `getPaymentStatus`, `getWebhookActionAndData`.
 
-Known API surface — **verify against the official SkipCash integration manual before writing code**, not against third-party packages:
+API surface, **verified against the sandbox** (a real payment was created, paid through 3-D Secure, and confirmed) and taken from SkipCash's own first-party Magento module, not third-party packages:
 
 - Sandbox `https://skipcashtest.azurewebsites.net` · Production `https://api.skipcash.app`
-- Redirect flow: create payment → response `resultObj.payUrl` → redirect customer → webhook confirms (`statusId === 2` means paid)
-- Requests are HMAC-SHA256 signed over an ordered concatenation of fields. **The exact field order must come from the manual** — getting it wrong yields opaque signature-rejection errors.
+- `POST /api/v1/payments` — `Authorization: base64(HMAC-SHA256(plaintext, KeySecret))` where plaintext is `Uid=…,KeyId=…,Amount=…,FirstName=…,LastName=…,Phone=…,Email=…,[Street,City,State,Country,PostalCode,]TransactionId=…,Custom1=…` — non-empty fields only, in that order; `returnUrl`/`webhookUrl` go in the body but are **not** signed. Amount is `"40.00"`.
+- `GET /api/v1/payments/{id}` — `Authorization: <ClientId>` (the client id, not a signature — a different scheme, returns a bare 403 if wrong).
+- Status ids: 0 new · 1 pending · **2 paid** · 3 cancelled · 4 failed · 5 rejected · 6–8 refund states.
+- Webhook → `/hooks/payment/skipcash_skipcash`, signed with the Webhook Key over `PaymentId,Amount,StatusId,TransactionId,Custom1,VisaId`. Our provider verifies it (SkipCash's own Magento module does not) **and still asks SkipCash's API before marking anything paid** — a forged-but-signed webhook cannot mark a failed payment as paid.
+- The Medusa payment session id rides on `Custom1`; that is how the webhook finds its session.
+- Refunds: not implemented against the API (endpoint unverified). Issued from the merchant portal.
 
-**Credentials already exist** for this project, so payment is not blocked. There is no need for a demo/simulated gateway — build against the SkipCash sandbox from the start.
+Sandbox test cards are at https://dev.skipcash.app/doc/test-cases/ — the 3DS challenge prints its OTP on the page.
+
+**Portal settings still to make once the backend is on Railway:** Webhook URL = `<MEDUSA_BACKEND_URL>/hooks/payment/skipcash_skipcash`. The Return URL is set per payment by the storefront.
 
 The cash-to-driver path is not a payment provider. It is the manual provider (`pp_system_default`) with the order marked as awaiting cash, and a way for the owner to mark it collected in the admin.
 
@@ -649,5 +655,5 @@ Ask the owner. Several of these block real work:
 4. ~~Logo and brand colours~~ — supplied and sampled. Still wanted: an SVG or transparent original, and a mark-only version.
 5. **Contact details** — public phone, WhatsApp number, ops email, and the commercial registration number for the footer.
 6. **Domain** — the live domain is `desertdriverental.com` (Namecheap, DNS on Cloudflare in the `officialyuvraj24@gmail.com` account). `desertdrive.qa` is unregistered and still an option: a plain `.qa` needs **no** Qatari commercial registration (only `.com.qa` does), but must be bought through a Qatar-accredited registrar or reseller.
-7. **SkipCash credentials** — confirm whether these are sandbox, production, or both.
+7. ~~SkipCash credentials~~ — sandbox supplied and working. Production keys go straight into Railway variables when the owner is ready.
 8. **Cancellation and refund policy** — the actual terms, from the owner. Required for SkipCash onboarding, and it cannot be invented.
