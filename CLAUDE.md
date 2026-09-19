@@ -500,7 +500,7 @@ CI never touches Supabase. **CI deliberately does not build the storefront** —
 > GitHub gates branch protection and rulesets behind Pro for private repos. If this repo is private on the Free plan, `main` is protected by convention only. Upgrade to Pro (~$4/mo) or make the repo public if mechanical protection is wanted.
 
 **Deploys:**
-- Backend → Railway, watching `apps/backend/**` on `main`. Config lives in `railway.json` **at the repo root** (not `apps/backend/`) — the build must run from the root so npm workspaces resolve. Migrations run as a pre-deploy step, not at boot.
+- Backend → Railway, watching `apps/backend/**` on `main`. **Railway has deprecated `railway.json` config-as-code** (Sept 2026, in favour of `.railway/railway.ts`); the API refuses to set `railwayConfigFile`. The settings are therefore stored **on the service itself** (Settings → Build/Deploy), set via the API on 2026-09-19: root directory `/`, build `npm run build --workspace=@dd/backend`, start `cd apps/backend/.medusa/server && npm run start`, pre-deploy `cd apps/backend/.medusa/server && npx medusa db:migrate`, health `/health`, region `sin`, `PORT=9000`. The `railway.json` in the repo documents the intended shape but is not read.
 - Storefront → `.github/workflows/deploy-storefront.yml`, watching `apps/storefront/**` on `main`.
 
 `railway.json` shape:
@@ -532,12 +532,12 @@ Fill in as each piece goes live. **Ship on `workers.dev` first** — nothing in 
 
 | | |
 |---|---|
-| Backend API | *(Railway URL — tbd)* |
-| Admin | *(Railway URL + `/app`)* |
-| Storefront | `https://desertdrive.<account>.workers.dev` → later `https://desertdrive.qa` |
-| Railway project | Singapore — services `@dd/backend` and `redis` |
-| Cloudflare | worker `desertdrive`, R2 bucket `desertdrive-cache` |
-| Database | Supabase, **session pooler**, Singapore |
+| Backend API | `https://ddbackend-production-e9d1.up.railway.app` ✅ live |
+| Admin | `https://ddbackend-production-e9d1.up.railway.app/app` ✅ live |
+| Storefront | `https://desertdrive.desertdrive.workers.dev` (pending workers.dev subdomain + a Workers-scoped token) → later `https://desertdriverental.com` |
+| Railway project | `trustworthy-miracle`, Singapore — services `@dd/backend` (+ Redis with a `/data` volume, `redis.railway.internal`) |
+| Cloudflare | account `officialyuvraj24@gmail.com`; R2 bucket `desertdrive-cache` ✅; Worker `desertdrive` pending |
+| Database | Supabase `desertdrive` (`nlkicwkeqadkooumeavr`), **session pooler**, Singapore ✅ migrated + seeded |
 
 Adding a new storefront origin means updating **`STORE_CORS` and `AUTH_CORS` on Railway**, not just Cloudflare.
 
@@ -598,8 +598,8 @@ Run `npm run build` in `apps/storefront`, not just `tsc`, before pushing anythin
 | # | Phase | Status |
 |---|---|---|
 | 0 | Repo scaffold — Turborepo, both apps, Medusa agent skills, docs MCP | ✅ Done |
-| 1 | Supabase + Railway + Redis; backend live | ⬜ Not started |
-| 2 | Cloudflare Worker + R2; storefront live on `workers.dev` | ⬜ Not started |
+| 1 | Supabase + Railway + Redis; backend live | ✅ Done — live, migrated, seeded |
+| 2 | Cloudflare Worker + R2; storefront live on `workers.dev` | 🟡 R2 + workflow + secrets done; needs workers.dev subdomain + a Workers-scoped token |
 | 3 | Branding — palette from the logo, fonts, vehicle photography | 🟡 Palette, fonts, brand.css done; photography pending |
 | 4 | Fare bands + fleet products + seed scripts | 🟡 Built; blocked on band B/C/D prices |
 | 5 | Booking funnel — search widget, results, details | ✅ Done — all five steps, both languages |
