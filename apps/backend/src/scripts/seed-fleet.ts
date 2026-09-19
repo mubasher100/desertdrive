@@ -41,13 +41,23 @@ import { FARE_BAND_MODULE } from "../modules/fare-band"
 // entire change. Nothing else in this file needs touching.
 // ---------------------------------------------------------------------------
 type BandCode = "A" | "B" | "C" | "D"
-type VehicleKey = "sedan" | "suv" | "minivan"
+type VehicleKey = "toyota-rush" | "mpv" | "toyota-hiace" | "hyundai-h1" | "tesla-model-3"
 
+/**
+ * Band A prices are the owner's published "Airport Transfer" prices from the
+ * Desert Drive WhatsApp Business catalogue (Sept 2026). They supersede the
+ * Sedan 40 / SUV 65 / Minivan 80 figures in the original brief, which were for
+ * abstract classes that do not match the real fleet.
+ *
+ * ⚠️ STILL TO CONFIRM WITH THE OWNER: whether the catalogue price is a flat
+ * fare regardless of destination (in which case set B, C and D equal to A),
+ * or the central-Doha fare with longer trips priced higher.
+ */
 const FARES: Record<BandCode, Record<VehicleKey, number | null>> = {
-  A: { sedan: 40, suv: 65, minivan: 80 },
-  B: { sedan: null, suv: null, minivan: null },
-  C: { sedan: null, suv: null, minivan: null },
-  D: { sedan: null, suv: null, minivan: null },
+  A: { "toyota-rush": 100, mpv: 120, "toyota-hiace": 180, "hyundai-h1": 200, "tesla-model-3": 300 },
+  B: { "toyota-rush": null, mpv: null, "toyota-hiace": null, "hyundai-h1": null, "tesla-model-3": null },
+  C: { "toyota-rush": null, mpv: null, "toyota-hiace": null, "hyundai-h1": null, "tesla-model-3": null },
+  D: { "toyota-rush": null, mpv: null, "toyota-hiace": null, "hyundai-h1": null, "tesla-model-3": null },
 }
 
 /** Prices for the add-on products. Same rule: `null` means do not create it. */
@@ -132,12 +142,17 @@ const FARE_BANDS: Array<{
 ]
 
 // ---------------------------------------------------------------------------
-// Vehicle classes
+// The fleet — the owner's actual vehicles, from the WhatsApp Business catalogue.
 //
-// Passenger and luggage capacity live on product metadata and drive the results
-// page: a booking for 5 passengers hides the Sedan.
+// Passenger and luggage capacity drive the results page: a booking for 5
+// passengers hides the Tesla and the Rush. The numbers below are sensible
+// defaults for each model and are ⚠️ TO BE CONFIRMED by the owner — a Hiace
+// configured with 10 seats and one with 14 are different offers.
 //
-// Exact models and real capacities are still to be confirmed by the owner.
+// Photography: the storefront looks for /fleet/<handle>.jpg — see
+// apps/storefront/src/lib/data/fleet-images.ts.
+//
+// Arabic names need a native reviewer before launch.
 // ---------------------------------------------------------------------------
 const VEHICLES: Array<{
   key: VehicleKey
@@ -150,37 +165,56 @@ const VEHICLES: Array<{
   luggage: number
 }> = [
   {
-    key: "sedan",
-    handle: "sedan",
-    title: "Sedan (with driver)",
-    title_ar: "سيدان مع سائق",
-    description:
-      "A comfortable saloon for up to 3 passengers with 2 bags. The everyday airport transfer.",
-    description_ar: "سيارة سيدان مريحة تتسع حتى 3 ركاب وحقيبتين. الخيار المعتاد للتوصيل من المطار.",
-    passengers: 3,
-    luggage: 2,
+    key: "toyota-rush",
+    handle: "toyota-rush",
+    title: "Toyota Rush",
+    title_ar: "تويوتا راش",
+    description: "A compact SUV for up to 4 passengers with 3 bags. Our most affordable transfer.",
+    description_ar: "سيارة دفع رباعي مدمجة تتسع حتى 4 ركاب و3 حقائب. خيارنا الأوفر.",
+    passengers: 4,
+    luggage: 3,
   },
   {
-    key: "suv",
-    handle: "large-suv",
-    title: "Large SUV (with driver)",
-    title_ar: "دفع رباعي كبير مع سائق",
-    description:
-      "Extra space for up to 6 passengers with 4 bags. Suits families and small groups.",
-    description_ar: "مساحة أرحب حتى 6 ركاب و4 حقائب. مناسبة للعائلات والمجموعات الصغيرة.",
+    // ⚠️ Model name not given in the catalogue — listed only as "Airport
+    // Transfer" at 120 QAR. Owner to confirm the make and model.
+    key: "mpv",
+    handle: "mpv",
+    title: "Family MPV",
+    title_ar: "سيارة عائلية متعددة الاستخدامات",
+    description: "A roomy people-carrier for up to 6 passengers with 4 bags. Ideal for families.",
+    description_ar: "سيارة عائلية واسعة تتسع حتى 6 ركاب و4 حقائب. مثالية للعائلات.",
     passengers: 6,
     luggage: 4,
   },
   {
-    key: "minivan",
-    handle: "minivan",
-    title: "Minivan (with driver)",
-    title_ar: "ميني فان مع سائق",
-    description:
-      "The largest vehicle, for up to 7 passengers with 6 bags. Built for group arrivals.",
-    description_ar: "أكبر سياراتنا، حتى 7 ركاب و6 حقائب. مثالية لوصول المجموعات.",
+    key: "hyundai-h1",
+    handle: "hyundai-h1",
+    title: "Hyundai H1",
+    title_ar: "هيونداي H1",
+    description: "A comfortable van for up to 7 passengers with 6 bags. Suits groups with luggage.",
+    description_ar: "فان مريح يتسع حتى 7 ركاب و6 حقائب. مناسب للمجموعات مع الأمتعة.",
     passengers: 7,
     luggage: 6,
+  },
+  {
+    key: "toyota-hiace",
+    handle: "toyota-hiace",
+    title: "Toyota Hiace",
+    title_ar: "تويوتا هايس",
+    description: "Our largest vehicle: up to 12 passengers with 12 bags. Built for group arrivals.",
+    description_ar: "أكبر سياراتنا: حتى 12 راكبًا و12 حقيبة. مثالية لوصول المجموعات.",
+    passengers: 12,
+    luggage: 12,
+  },
+  {
+    key: "tesla-model-3",
+    handle: "tesla-model-3",
+    title: "Tesla Model 3",
+    title_ar: "تسلا موديل 3",
+    description: "A premium electric sedan for up to 3 passengers with 2 bags. Arrive in style.",
+    description_ar: "سيارة سيدان كهربائية فاخرة تتسع حتى 3 ركاب وحقيبتين. وصول بأناقة.",
+    passengers: 3,
+    luggage: 2,
   },
 ]
 
@@ -361,6 +395,18 @@ export default async function seedFleet({ container }: ExecArgs) {
       `  ${vehicle.title} created with ${pricedBands.length} band variant(s): ` +
         pricedBands.map((b) => b.code).join(", ")
     )
+  }
+
+  // Anything in the catalogue that looks like a vehicle but is not in VEHICLES
+  // is reported. It is NOT deleted — a seed must never destroy the owner's
+  // data — but a stale vehicle would keep appearing in results.
+  const [allProducts] = await productService.listAndCountProducts({}, { take: 200 })
+  const known = new Set(VEHICLES.map((v) => v.handle))
+  for (const p of allProducts) {
+    const meta = (p.metadata ?? {}) as Record<string, unknown>
+    if (meta.vehicle_key && !known.has(p.handle ?? "")) {
+      logger.warn(`  "${p.title}" (${p.handle}) is not in the current fleet — delete it in the admin if retired`)
+    }
   }
 
   // -------------------------------------------------------------------------

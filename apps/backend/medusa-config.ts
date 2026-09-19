@@ -221,6 +221,37 @@ module.exports = defineConfig({
       },
     },
 
+    /**
+     * Email. Plain SMTP, so the business's existing Microsoft 365 mailbox works
+     * today and any other provider works later by changing SMTP_* only.
+     * Registered only when configured — without it, order.placed logs that no
+     * confirmation was sent and the order is unaffected.
+     */
+    ...(process.env.SMTP_HOST
+      ? [
+          {
+            resolve: "@medusajs/medusa/notification",
+            options: {
+              providers: [
+                {
+                  resolve: "./src/modules/smtp-notification",
+                  id: "smtp",
+                  options: {
+                    channels: ["email"],
+                    host: process.env.SMTP_HOST,
+                    port: Number(process.env.SMTP_PORT || 587),
+                    secure: process.env.SMTP_SECURE === "true",
+                    user: process.env.SMTP_USER,
+                    pass: process.env.SMTP_PASS,
+                    from: process.env.SMTP_FROM,
+                  },
+                },
+              ],
+            },
+          },
+        ]
+      : []),
+
     // Infrastructure. Empty in local dev, where Medusa's in-memory defaults apply.
     ...redisModules,
   ],

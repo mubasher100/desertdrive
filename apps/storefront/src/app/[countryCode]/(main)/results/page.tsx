@@ -85,7 +85,7 @@ export default async function ResultsPage({ params, searchParams }: Props) {
         <NotQuotable
           t={t}
           reason={quote ? "unpriced" : "error"}
-          tooMany={trip.passengers > 7}
+          tooMany={trip.passengers > 12}
           passengers={trip.passengers}
         />
       )}

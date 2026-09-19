@@ -2,6 +2,7 @@ import Image from "next/image"
 import { listFleet, type FleetVehicle } from "@lib/data/fleet"
 import { getTranslations } from "@lib/i18n/get-translations"
 import { localeOf } from "@lib/util/locale"
+import { fleetImage } from "@lib/data/fleet-images"
 
 /**
  * The three vehicle classes with their "from" price. Reads the live catalogue,
@@ -24,7 +25,7 @@ export default async function Fleet({ segment }: { segment: string }) {
       </h2>
       <p className="mt-2 max-w-prose text-dd-muted">{t("home.fleet.subtitle")}</p>
 
-      <ul className="mt-8 grid gap-6 small:grid-cols-3">
+      <ul className="mt-8 grid gap-6 xsmall:grid-cols-2 medium:grid-cols-3">
         {vehicles.map((v) => (
           <VehicleCard key={v.id} vehicle={v} language={language} t={t} />
         ))}
@@ -48,6 +49,7 @@ function VehicleCard({
     language === "ar" && vehicle.description_ar
       ? vehicle.description_ar
       : vehicle.description
+  const photo = fleetImage(vehicle.handle)
 
   return (
     <li className="overflow-hidden rounded-dd-lg border border-dd-line bg-dd-surface shadow-card">
@@ -56,12 +58,20 @@ function VehicleCard({
         the exact size, so swapping the image in later moves nothing.
       */}
       <div className="relative aspect-[3/2] w-full bg-dd-paper">
-        {vehicle.thumbnail ? (
+        {photo ? (
+          <Image
+            src={photo.src}
+            alt={title}
+            fill
+            sizes="(min-width: 1280px) 380px, (min-width: 512px) 50vw, 100vw"
+            className="object-cover"
+          />
+        ) : vehicle.thumbnail ? (
           <Image
             src={vehicle.thumbnail}
-            alt=""
+            alt={title}
             fill
-            sizes="(min-width: 1024px) 380px, 100vw"
+            sizes="(min-width: 1280px) 380px, (min-width: 512px) 50vw, 100vw"
             className="object-cover"
           />
         ) : (

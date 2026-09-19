@@ -6,6 +6,7 @@ import { useId, useState } from "react"
 import { clx } from "@medusajs/ui"
 import type { QuoteVehicle } from "@lib/data/quotes"
 import { useLanguage, useTranslations } from "@lib/i18n/use-translations"
+import { fleetImage } from "@lib/data/fleet-images"
 
 /**
  * The vehicle choice on the results page.
@@ -55,6 +56,7 @@ export default function VehiclePicker({
         {vehicles.map((v) => {
           const isSelected = v.variant_id === selected
           const title = language === "ar" && v.title_ar ? v.title_ar : v.title
+          const photo = fleetImage(v.handle)
 
           return (
             <button
@@ -71,10 +73,10 @@ export default function VehiclePicker({
               )}
             >
               <div className="relative aspect-square w-28 shrink-0 bg-dd-paper small:aspect-[3/2] small:w-full">
-                {v.thumbnail ? (
+                {photo || v.thumbnail ? (
                   <Image
-                    src={v.thumbnail}
-                    alt=""
+                    src={photo?.src ?? v.thumbnail!}
+                    alt={title}
                     fill
                     sizes="(min-width: 1024px) 380px, 112px"
                     className="object-cover"
