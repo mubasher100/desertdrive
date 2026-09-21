@@ -129,6 +129,7 @@ export const dictionary = {
     "trip.party": "Party",
     "trip.change": "Change",
     "trip.airportTo": "Airport → {place}",
+    "common.airport": "Hamad International Airport",
     "trip.placeToAirport": "{place} → Airport",
     "results.empty.title": "We can't price this trip online yet",
     "results.empty.body":
@@ -173,6 +174,10 @@ export const dictionary = {
     "payment.expired.title": "Your booking session has expired",
     "payment.expired.body": "Start again from the search — it only takes a minute.",
     "payment.expired.action": "Start again",
+    "payment.consent.prefix": "I have read and agree to the",
+    "payment.consent.and": "and the",
+    "payment.consent.age": "and I confirm I am 18 or older.",
+    "payment.consent.required": "Please accept the terms to continue.",
 
     "confirmed.subtitle": "We've sent the details to {email}. Your driver will be in touch before pickup.",
     "confirmed.pickup": "Pickup",
@@ -299,6 +304,7 @@ export const dictionary = {
     "results.error.body":
       "تعذّر الحصول على السعر الآن. حاول مجددًا بعد قليل، أو تواصل معنا وسنحجز لك.",
 
+    "common.airport": "مطار حمد الدولي",
     "trip.route": "المسار",
     "trip.when": "وقت الاستقبال",
     "trip.party": "عدد الركاب",
@@ -348,6 +354,10 @@ export const dictionary = {
     "payment.expired.title": "انتهت جلسة الحجز",
     "payment.expired.body": "ابدأ من جديد من البحث — لا يستغرق سوى دقيقة.",
     "payment.expired.action": "ابدأ من جديد",
+    "payment.consent.prefix": "قرأت وأوافق على",
+    "payment.consent.and": "و",
+    "payment.consent.age": "وأؤكد أن عمري 18 عامًا أو أكثر.",
+    "payment.consent.required": "يرجى الموافقة على الشروط للمتابعة.",
 
     "confirmed.subtitle": "أرسلنا التفاصيل إلى {email}. سيتواصل معك سائقك قبل موعد الاستقبال.",
     "confirmed.pickup": "الاستقبال",

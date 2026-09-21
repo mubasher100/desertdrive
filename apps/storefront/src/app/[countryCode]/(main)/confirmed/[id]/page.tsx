@@ -107,6 +107,13 @@ export default async function ConfirmedPage({ params, searchParams }: Props) {
           >
             {t("nav.call")} · {CONTACT.phone.display}
           </a>
+          <a
+            href={`/${countryCode}/confirmed/${order.id}/calendar?t=${encodeURIComponent(token ?? "")}`}
+            download={`${reference}.ics`}
+            className="inline-flex min-h-[52px] items-center justify-center rounded-dd border border-dd-line-strong bg-dd-surface px-6 font-semibold text-dd-ink hover:bg-dd-paper"
+          >
+            {t("confirmed.addToCalendar")}
+          </a>
         </div>
 
         <p className="mt-6 text-sm text-dd-muted">{t("confirmed.help")}</p>

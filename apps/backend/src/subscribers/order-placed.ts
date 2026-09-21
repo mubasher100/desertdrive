@@ -75,6 +75,10 @@ export default async function orderPlacedHandler({ event: { data }, container }:
         phone: process.env.BUSINESS_PHONE || "",
         whatsapp_url: process.env.BUSINESS_WHATSAPP_URL || "",
         email: process.env.RESEND_FROM_EMAIL || process.env.SMTP_FROM_ADDRESS || "",
+        // Trader identity on the confirmation — required by Qatar's E-Commerce
+        // Law (No. 16 of 2010). Empty values render nothing rather than a fake.
+        address: process.env.BUSINESS_ADDRESS || "",
+        registration: process.env.BUSINESS_CR || "",
       },
     },
   })

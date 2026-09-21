@@ -90,7 +90,7 @@ export default function VehiclePicker({
 
               <div className="flex min-w-0 flex-1 flex-col p-4">
                 <div className="flex items-start justify-between gap-3">
-                  <h3 className="text-base font-semibold text-dd-ink small:text-lg">{title}</h3>
+                  <h2 className="text-base font-semibold text-dd-ink small:text-lg">{title}</h2>
                   <p className="shrink-0 text-lg font-semibold tabular-nums text-dd-ink">
                     {v.amount}{" "}
                     <span className="text-sm font-medium text-dd-muted">{v.currency_code.toUpperCase() === "QAR" ? t("common.currency") : v.currency_code}</span>

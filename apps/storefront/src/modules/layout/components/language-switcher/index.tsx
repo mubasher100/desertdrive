@@ -34,7 +34,9 @@ export default function LanguageSwitcher({
   const others = LANGUAGES.filter((language) => language !== current)
 
   return (
-    <nav aria-label={t("language.label")} className={className}>
+    // A group rather than a <nav>: the switcher appears in both the header and
+    // the footer, and two navigation landmarks with the same name fail axe.
+    <div role="group" aria-label={t("language.label")} className={className}>
       <ul className="flex items-center gap-x-3">
         {others.map((language) => (
           <li key={language}>
@@ -51,7 +53,7 @@ export default function LanguageSwitcher({
           </li>
         ))}
       </ul>
-    </nav>
+    </div>
   )
 }
 
