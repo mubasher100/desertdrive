@@ -2,11 +2,14 @@ import Image from "next/image"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import LanguageSwitcher from "@modules/layout/components/language-switcher"
 import { getTranslations } from "@lib/i18n/get-translations"
+import { localeOf } from "@lib/util/locale"
 import { CONTACT, whatsappLink } from "@lib/data/contact"
 
 export default async function Footer({ segment }: { segment: string }) {
   const t = getTranslations(segment)
   const year = new Date().getFullYear()
+  // Trader identity (E-Commerce Law No. 16 of 2010): name, registration, address.
+  const address = CONTACT.address[localeOf(segment) === "ar" ? "ar" : "en"] || CONTACT.address.en
 
   return (
     <footer className="mt-16 border-t border-dd-line bg-dd-paper">
@@ -82,7 +85,8 @@ export default async function Footer({ segment }: { segment: string }) {
 
         <div className="mt-10 flex flex-col gap-4 border-t border-dd-line pt-6 text-xs text-dd-muted small:flex-row small:items-center small:justify-between">
           <p>
-            © {year} {CONTACT.legalName} · {CONTACT.cr} · {t("footer.rights")}
+            © {year} {CONTACT.legalName} · {CONTACT.cr}
+            {address && <> · {address}</>} · {t("footer.rights")}
             <span className="block small:inline small:before:content-['·'] small:before:mx-2">
               <LocalizedClientLink href="/credits" className="underline underline-offset-2 hover:text-dd-ink">
                 {t("footer.credits")}

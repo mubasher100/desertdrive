@@ -608,11 +608,25 @@ Run `npm run build` in `apps/storefront`, not just `tsc`, before pushing anythin
 | 6 | Google Places + server-side band resolution | 🟡 Band resolution done (`POST /store/quotes`); Places pending |
 | 7 | Checkout — SkipCash card + cash-to-driver | ✅ Done — both paths verified against the SkipCash sandbox incl. 3DS |
 | 8 | Confirmation email + signed-token lookup | ✅ Done — SMTP provider (works with the Outlook mailbox), EN + AR templates, verified with a local mail catcher |
-| 9 | Admin Bookings screen | ⬜ Not started |
+| 9 | Admin Bookings screen | ✅ Done — `Bookings` page (job sheet by pickup time) + Booking card on every order with *Mark cash collected* |
 | 10 | Arabic / RTL | 🟡 Locale routing, dictionary, RTL, fonts done; native review pending |
-| 11 | Accessibility audit — target zero axe violations | ⬜ Not started |
-| 12 | Legal pages, SEO, custom domain | 🟡 Pages exist (privacy written; terms + cancellation are structural drafts awaiting the owner's terms); domain pending |
+| 11 | Accessibility audit — target zero axe violations | ✅ 0 violations (axe-core, 7 pages × en/ar × 375/1280, 2026-09-21); re-run after UI changes |
+| 12 | Legal pages, SEO, custom domain | 🟡 Pages exist (privacy written; terms + cancellation are structural drafts awaiting the owner's terms); consent + trader identity done (see *Legal compliance*); domain pending |
 | 13 | Later: hourly chauffeur, day tours, self-drive rental | 🔒 Later |
+
+### Legal compliance (Qatar)
+
+What the site does to meet the laws that actually apply to it — Qatar has no COPPA, CAN-SPAM, auto-renewal or DMCA equivalents, and the site has no accounts, analytics, marketing email or subscriptions, so those checklists do not apply. What does:
+
+| Law | Requirement | Where it is met |
+|---|---|---|
+| E-Commerce Law No. 16 of 2010 | Terms available and accepted before the contract; trader name, registration and address shown before contracting and on the confirmation | Consent checkbox on `/payment` (`payment-chooser`), recorded as `terms_accepted_at` + `terms_version` on the order; footer, `/contact` and the email footer print name · CR · address from `CONTACT` / `BUSINESS_*` |
+| Personal Data Privacy Protection Law No. 13 of 2016 | Consent to processing; purpose, recipients and retention disclosed; access/erasure route | Same checkbox covers the privacy policy; `/privacy` is written from what the system actually does; erasure by email |
+| Civil Code (capacity at 18) | Contract with an adult | The consent line includes "I confirm I am 18 or older" |
+| Consumer Protection Law No. 8 of 2008 | Price shown is the price charged; no hidden fees | Results page says so explicitly; tax region is 0% |
+| Copyright Law No. 7 of 2002 | Licensed imagery | CC-licensed photos credited on `/credits` until the owner's own photography replaces them |
+
+Fonts are self-hosted by `next/font` (no request to Google at runtime — verified: the live page references only its own origin and `wa.me`). No analytics, session replay or tracking cookies exist; the one cookie is the two-hour booking cart. Bump `TERMS_VERSION` in `src/lib/data/booking.ts` when the legal pages change materially.
 
 ### SkipCash notes
 
@@ -661,7 +675,7 @@ Ask the owner. Several of these block real work:
 2. **Hamad International coordinates** — approximately `25.273 N, 51.608 E`. **Verify precisely before committing.** Every fare in the system keys off this one point.
 3. **Fleet detail** — the 120 QAR vehicle's make/model, real passenger and luggage capacities for all five, and photography (`public/fleet/<handle>.jpg`).
 4. ~~Logo and brand colours~~ — supplied and sampled. Still wanted: an SVG or transparent original, and a mark-only version.
-5. **Contact details** — public phone, WhatsApp number, ops email, and the commercial registration number for the footer.
+5. **Contact details** — phone/WhatsApp `+974 5151 4161` ✅ (2026-09-21). Still needed: the commercial registration number and the registered address (`CONTACT.cr`, `CONTACT.address` in `src/lib/data/contact.ts`; `BUSINESS_CR`, `BUSINESS_ADDRESS` on Railway).
 6. **Domain** — the live domain is `desertdriverental.com` (Namecheap, DNS on Cloudflare in the `officialyuvraj24@gmail.com` account). `desertdrive.qa` is unregistered and still an option: a plain `.qa` needs **no** Qatari commercial registration (only `.com.qa` does), but must be bought through a Qatar-accredited registrar or reseller.
 7. ~~SkipCash credentials~~ — sandbox supplied and working. Production keys go straight into Railway variables when the owner is ready.
 8. **Cancellation and refund policy** — the actual terms, from the owner. Required for SkipCash onboarding, and it cannot be invented.

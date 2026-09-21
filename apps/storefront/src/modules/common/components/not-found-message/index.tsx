@@ -14,7 +14,7 @@ export default function NotFoundMessage() {
   const t = useTranslations()
 
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-6 text-center">
+    <main className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-6 text-center">
       <h1 className="text-2xl-semi text-ui-fg-base">
         {t("error.notFound.title")}
       </h1>
@@ -27,6 +27,6 @@ export default function NotFoundMessage() {
       >
         {t("error.notFound.action")}
       </LocalizedClientLink>
-    </div>
+    </main>
   )
 }

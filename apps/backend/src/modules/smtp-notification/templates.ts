@@ -29,7 +29,7 @@ export type BookingEmailData = {
   total: number
   currency: string
   payment: "cash" | "card"
-  business: { name: string; phone: string; whatsapp_url: string; email: string }
+  business: { name: string; phone: string; whatsapp_url: string; email: string; address?: string; registration?: string }
 }
 
 const esc = (v: unknown) =>
@@ -68,6 +68,7 @@ const COPY = {
     help: "Need to change something? Reply to this email or message us on WhatsApp with your booking reference.",
     whatsapp: "WhatsApp",
     arrivalNote: "Your driver will meet you in the arrivals hall holding a sign with your name.",
+    transactional: "This is a booking confirmation, not a marketing email. We only email you about bookings you make.",
   },
   ar: {
     subject: (ref: string) => `تم تأكيد حجزك — ${ref}`,
@@ -92,6 +93,7 @@ const COPY = {
     help: "تريد تعديل شيء؟ رد على هذه الرسالة أو راسلنا على واتساب مع رقم الحجز.",
     whatsapp: "واتساب",
     arrivalNote: "سيستقبلك سائقك في صالة الوصول حاملًا لافتة باسمك.",
+    transactional: "هذه رسالة تأكيد حجز وليست رسالة تسويقية. لا نراسلك إلا بشأن حجوزاتك.",
   },
 } as const
 
@@ -160,6 +162,10 @@ export function renderBookingConfirmation(d: BookingEmailData): { subject: strin
             &nbsp;·&nbsp; <a href="mailto:${esc(d.business.email)}" style="color:#0a4fb3">${esc(d.business.email)}</a>
           </p>
         </td></tr>
+        <tr><td style="padding:16px 24px;border-top:1px solid #d9dcdd;color:#5a6366;font-size:12px;line-height:1.5">
+          ${esc(d.business.name)}${d.business.registration ? ` · ${esc(d.business.registration)}` : ""}${d.business.address ? `<br>${esc(d.business.address)}` : ""}
+          <br>${esc(t.transactional)}
+        </td></tr>
       </table>
     </td></tr>
   </table>
@@ -176,6 +182,9 @@ export function renderBookingConfirmation(d: BookingEmailData): { subject: strin
     "",
     t.help,
     `${t.whatsapp}: ${d.business.whatsapp_url}`,
+    "",
+    [d.business.name, d.business.registration, d.business.address].filter(Boolean).join(" · "),
+    t.transactional,
   ].join("\n")
 
   return { subject: t.subject(d.reference), html, text }

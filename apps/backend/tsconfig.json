@@ -17,7 +17,15 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "checkJs": false,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    // The monorepo root hoists @types/react 19 (storefront); the backend and
+    // its admin bundle are on React 18. Without this pin, @medusajs/ui's types
+    // resolve against the root copy and every admin JSX element fails to type.
+    "baseUrl": ".",
+    "paths": {
+      "react": ["./node_modules/@types/react"],
+      "react/jsx-runtime": ["./node_modules/@types/react/jsx-runtime"]
+    }
   },
   "ts-node": {
     "swc": true

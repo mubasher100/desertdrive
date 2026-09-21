@@ -40,7 +40,7 @@ export default async function Home({ params }: Props) {
   const t = getTranslations(countryCode)
 
   return (
-    <>
+    <main>
       <Hero segment={countryCode} />
       <TrustStrip segment={countryCode} />
       <Fleet segment={countryCode} />
@@ -56,6 +56,6 @@ export default async function Home({ params }: Props) {
       </section>
 
       <Faq segment={countryCode} />
-    </>
+    </main>
   )
 }

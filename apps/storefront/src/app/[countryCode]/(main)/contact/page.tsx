@@ -56,7 +56,9 @@ export default async function ContactPage({ params }: Props) {
       <p>
         {CONTACT.legalName} · {CONTACT.cr}
         <br />
-        <span className="placeholder">{ar ? "[المالك: العنوان المسجّل]" : "[Owner: registered address]"}</span>
+        {(ar ? CONTACT.address.ar || CONTACT.address.en : CONTACT.address.en) || (
+          <span className="placeholder">{ar ? "[المالك: العنوان المسجّل]" : "[Owner: registered address]"}</span>
+        )}
       </p>
     </ProsePage>
   )

@@ -182,7 +182,7 @@ export async function createBookingCart(
  * Uses Medusa's manual provider (pp_system_default). It authorises without
  * taking money; capture is the owner's "cash received" click.
  */
-export async function confirmCashBooking(segment: string): Promise<{ message: string } | never> {
+export async function confirmCashBooking(segment: string, accepted: boolean): Promise<{ message: string } | never> {
   const t = createTranslator(localeOf(segment))
   const cart = await retrieveBookingCart()
   if (!cart) {
@@ -191,6 +191,9 @@ export async function confirmCashBooking(segment: string): Promise<{ message: st
 
   let orderId: string
   try {
+    if (!(await recordConsent(cart, accepted))) {
+      return { message: t("payment.consent.required") }
+    }
     const { payment_collection } = await sdk.store.payment.initiatePaymentSession(cart, {
       provider_id: "pp_system_default",
     })
@@ -214,6 +217,24 @@ export async function confirmCashBooking(segment: string): Promise<{ message: st
 
 const SKIPCASH_PROVIDER = "pp_skipcash_skipcash"
 
+/** Bump when the wording of /terms, /cancellation or /privacy changes materially. */
+const TERMS_VERSION = "2026-09-21"
+
+/**
+ * Records the customer's acceptance of the terms on the cart, so it is carried
+ * onto the order as evidence of when (and which version) they agreed to.
+ * Qatar's E-Commerce Law (No. 16 of 2010) makes the contract conditional on
+ * the customer having had the terms made available before confirming; the
+ * timestamp is what shows that happened. Returns false if they did not tick.
+ */
+async function recordConsent(cart: BookingCart, accepted: boolean): Promise<boolean> {
+  if (!accepted) return false
+  await sdk.store.cart.update(cart.id, {
+    metadata: { ...(cart.metadata ?? {}), terms_accepted_at: new Date().toISOString(), terms_version: TERMS_VERSION },
+  })
+  return true
+}
+
 /** Whether card payment is available: the provider is enabled on the region. */
 export async function cardPaymentAvailable(segment: string): Promise<boolean> {
   const region = await getRegion(segment)
@@ -236,11 +257,14 @@ export async function cardPaymentAvailable(segment: string): Promise<boolean> {
  * Nothing about the amount is sent from here — Medusa gives the provider the
  * cart total. What goes across is who is paying and where to come back to.
  */
-export async function startCardPayment(segment: string): Promise<{ message: string } | never> {
+export async function startCardPayment(segment: string, accepted: boolean): Promise<{ message: string } | never> {
   const t = createTranslator(localeOf(segment))
   const cart = await retrieveBookingCart()
   if (!cart) {
     redirect(`/${segment}`)
+  }
+  if (!(await recordConsent(cart, accepted).catch(() => false))) {
+    return { message: t("payment.consent.required") }
   }
 
   const m = (cart.metadata ?? {}) as Record<string, unknown>
@@ -302,7 +326,11 @@ export async function completeCardBooking(): Promise<CardReturnResult> {
     console.warn("completeCardBooking: cart not completed", result.error)
     return { status: "unpaid" }
   } catch (e) {
-    console.error("completeCardBooking failed", e)
+    // "not authorized with the provider" is the ordinary abandoned/declined
+    // outcome, not a fault: the customer came back without paying.
+    const msg = e instanceof Error ? e.message : String(e)
+    if (/not authorized/i.test(msg)) console.warn("completeCardBooking: payment not authorized", msg)
+    else console.error("completeCardBooking failed", e)
     return { status: "unpaid" }
   }
 }

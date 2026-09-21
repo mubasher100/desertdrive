@@ -93,7 +93,9 @@ export default function RootLayout(props: { children: React.ReactNode }) {
         />
       </head>
       <body>
-        <main className="relative">{props.children}</main>
+        {/* Not a <main>: each page renders its own main landmark, and a
+            landmark nested in another fails WCAG landmark rules. */}
+        <div className="relative">{props.children}</div>
       </body>
     </html>
   )
