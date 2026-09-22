@@ -73,10 +73,15 @@ export default async function ResultsPage({ params, searchParams }: Props) {
         return_at: returnAtIso(trip),
       })
 
-  const bandName = quote
+  /**
+   * The area wins over the band where one is drawn: "The Pearl" tells the
+   * customer we know where they are going, "Doha & central" tells them how our
+   * pricing table is organised.
+   */
+  const areaName = quote
     ? language === "ar"
-      ? quote.band.name_ar
-      : quote.band.name_en
+      ? (quote.zone?.name_ar ?? quote.band.name_ar)
+      : (quote.zone?.name_en ?? quote.band.name_en)
     : null
 
   return (
@@ -100,7 +105,7 @@ export default async function ResultsPage({ params, searchParams }: Props) {
       ) : quote?.quotable && quote.available !== false ? (
         <>
           <p className="mt-2 text-dd-muted">
-            {bandName && <span className="text-dd-ink-soft">{bandName} · </span>}
+            {areaName && <span className="text-dd-ink-soft">{areaName} · </span>}
             {t("results.fixedPrice")}
           </p>
 

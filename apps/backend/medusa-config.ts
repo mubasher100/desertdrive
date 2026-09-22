@@ -193,6 +193,7 @@ module.exports = defineConfig({
     // Desert Drive's own modules.
     { resolve: "./src/modules/fare-band" },
     { resolve: "./src/modules/booking-slot" },
+    { resolve: "./src/modules/fare-zone" },
 
     /**
      * Payment. The manual provider (pp_system_default) is always present and is

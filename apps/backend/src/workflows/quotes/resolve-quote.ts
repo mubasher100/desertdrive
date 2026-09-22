@@ -6,6 +6,7 @@ import {
 import { listBandVehiclesStep } from "./steps/list-band-vehicles"
 import { markAvailabilityStep, type AvailableVehicle } from "./steps/mark-availability"
 import { resolveFareBandStep } from "./steps/resolve-fare-band"
+import { resolveFareZoneStep, type ResolvedZone } from "./steps/resolve-fare-zone"
 
 export type ResolveQuoteInput = {
   lat: number
@@ -21,6 +22,8 @@ export type ResolveQuoteInput = {
 export type ResolveQuoteResult = {
   distance_km: number
   band: { code: string; name_en: string; name_ar: string }
+  /** The drawn area the destination fell in, or null if it fell in none. */
+  zone: ResolvedZone
   vehicles: AvailableVehicle[]
 }
 
@@ -43,9 +46,16 @@ export const resolveQuoteWorkflow = createWorkflow(
       lng: input.lng,
     })
 
-    const vehicleQuery = transform({ resolved, input }, function (data) {
+    const zone = resolveFareZoneStep({
+      lat: input.lat,
+      lng: input.lng,
+    })
+
+    const vehicleQuery = transform({ resolved, zone, input }, function (data) {
       return {
-        band_code: data.resolved.band.code,
+        // Zone first, band behind it. The vehicle step takes the first of
+        // these it can actually price.
+        codes: [data.zone?.code, data.resolved.band.code].filter(Boolean) as string[],
         passengers: data.input.passengers,
         luggage: data.input.luggage,
       }
@@ -62,7 +72,7 @@ export const resolveQuoteWorkflow = createWorkflow(
 
     const vehicles = markAvailabilityStep(availabilityQuery)
 
-    const result = transform({ resolved, vehicles }, function (data) {
+    const result = transform({ resolved, zone, vehicles }, function (data) {
       return {
         distance_km: data.resolved.distance_km,
         band: {
@@ -70,6 +80,7 @@ export const resolveQuoteWorkflow = createWorkflow(
           name_en: data.resolved.band.name_en,
           name_ar: data.resolved.band.name_ar,
         },
+        zone: data.zone,
         vehicles: data.vehicles,
       }
     })

@@ -213,6 +213,18 @@ Because `code` maps 1:1 onto the option value, resolving km → band → variant
 >
 > The band boundaries above are expressed in **straight-line** km precisely because of this — a 25 km road trip is about 20 km as the crow flies. Before launch, calibrate every boundary against real routes: Lusail, Al Wakrah, Education City, Al Khor, Mesaieed, Dukhan, Al Zubarah. Get this wrong in the optimistic direction and every long fare is undercharged, permanently and silently.
 
+### Priced areas beat distance bands
+
+Bands price a ring around the airport, which answers "how far is it" and not "where is it". The Pearl is one place with one fare, but Porto Arabia and Viva Bahriya sit at different radii — so a customer picking their own villa can land in a different band from their neighbour on the next island. That is the problem zones solve (owner's ask, Sept 2026).
+
+A `fareZone` row is a labelled polygon plus a `code`. The code is a pricing key exactly like a band code: it matches a `Distance band` product option value, so a zone is priced by ordinary variants the owner edits in the admin, with no new pricing machinery.
+
+Resolution order in `resolve-quote`: **zone first, band behind it, per vehicle.** `listBandVehiclesStep` takes `codes: [zoneCode, bandCode]` and takes the first each vehicle actually has a priced variant for. So a zone can be drawn today and priced next week without taking anywhere off sale, and a zone can be priced for the cars that need it while the rest fall back to their band.
+
+Overlaps are legal and useful — a compound inside a district prices differently from the district — so the **more specific zone must carry the lower `rank`**. Point-in-polygon is ray casting in `lib/geo.ts`, plate carrée: fine for a zone a few km across at Qatar's latitude, wrong for anything country-sized.
+
+Drawn in the admin at **Priced areas**, on OpenStreetMap tiles through Leaflet — no API key, no per-view billing, and it keeps working if a Google key is ever revoked. The attribution line is a condition of the tiles; leave it.
+
 ### Availability: one car, one moment
 
 A vehicle is not stock on a shelf — the same Rush is sellable at 06:00 and again at 14:00, but not twice at 06:00 — so Medusa's inventory module is the wrong shape. The `bookingSlot` module holds one row per vehicle per pickup, written **during checkout** (before the cart completes, and before the customer leaves for SkipCash), under a Redis lock keyed per vehicle so two simultaneous payments cannot both take the last car.
@@ -592,6 +604,8 @@ A wrong port does not fail at boot. It surfaces later as intermittent `prepared 
 **Redis must be wired into all four modules** — cache, event bus, workflow engine, and locking. Miss one and Medusa silently falls back to in-memory, which breaks scheduled jobs, subscribers, and long-running workflows across restarts.
 
 **An admin password cannot be reset by email until email is configured.** Medusa's reset route emails a signed token, which is useless on a system with no mail provider — and that is exactly when you are locked out. `npx medusa exec ./src/scripts/set-admin-password.ts <email> <password>` goes at the emailpass provider directly. Against production, run it with the production `DATABASE_URL` and `ALLOW_INMEMORY_INFRA=true`.
+
+**Adding a product option value takes three steps in Medusa 2.16+, not one.** Options can be shared between products, so a product is linked to the specific values it offers. Adding a value to the option persists a row that reads still do not return, and creating a variant then fails with the thoroughly misleading `Option value <x> does not exist for option <y>` while the row sits in `product_option_value` looking correct. The sequence is: `updateProductOptionsWorkflow` to create the value, look up its **id**, then `setProductProductOptionsWorkflow` with `update: [{ product_option_id, add: [valueId] }]` to link the product to it. `POST /admin/products/:id` no longer accepts `options` at all (removed in 2.16), and there is no `POST /admin/products/:id/options/:id` route. `src/scripts/price-zone.ts` does all of this.
 
 **The publishable API key is not optional.** Store API requests without `x-publishable-api-key` are rejected. The key must also be linked to a sales channel.
 
