@@ -89,7 +89,7 @@ export default async function ResultsPage({ params, searchParams }: Props) {
               : t("results.tooSoon.body", { lead: leadTimeLabel(language) })
           }
         />
-      ) : quote?.quotable && quote.available ? (
+      ) : quote?.quotable && quote.available !== false ? (
         <>
           <p className="mt-2 text-dd-muted">
             {bandName && <span className="text-dd-ink-soft">{bandName} · </span>}
