@@ -119,9 +119,12 @@ export default function VehiclePicker({
                   </p>
                 )}
 
+                {/* Conditional, not `hidden`: the attribute's display:none loses
+                    to the inline-flex utility class below and the row stays
+                    visible under the "booked" message. */}
+                {v.available && (
                 <span
                   aria-hidden="true"
-                  hidden={!v.available}
                   className={clx(
                     "mt-auto inline-flex items-center gap-x-1.5 pt-3 text-sm font-medium",
                     isSelected ? "text-dd-ink" : "text-dd-muted"
@@ -137,6 +140,7 @@ export default function VehiclePicker({
                   </span>
                   {isSelected ? t("results.selected") : t("results.select")}
                 </span>
+                )}
               </div>
             </button>
           )
