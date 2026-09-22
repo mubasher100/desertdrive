@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import TripSummary from "@modules/booking/components/trip-summary"
 import DetailsForm from "@modules/booking/components/details-form"
 import { getQuote } from "@lib/data/quotes"
-import { parseTrip, tripToQuery, type SearchParams } from "@lib/booking/trip"
+import { parseTrip, tripToQuery, type SearchParams, tripCoords } from "@lib/booking/trip"
 import { getTranslations } from "@lib/i18n/get-translations"
 import { localeOf } from "@lib/util/locale"
 
@@ -35,8 +35,7 @@ export default async function DetailsPage({ params, searchParams }: Props) {
   if (!variantId) redirect(`/${countryCode}/results?${tripToQuery(trip)}`)
 
   const quote = await getQuote({
-    lat: trip.area.lat,
-    lng: trip.area.lng,
+    ...tripCoords(trip),
     passengers: trip.passengers,
     luggage: trip.luggage,
   })

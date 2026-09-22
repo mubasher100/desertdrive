@@ -1,6 +1,6 @@
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { areaName } from "@lib/data/areas"
 import { formatPickup, formatReturn, type Trip } from "@lib/booking/trip"
+import { destinationName } from "@lib/booking/destination"
 import { getTranslations } from "@lib/i18n/get-translations"
 import { localeOf } from "@lib/util/locale"
 
@@ -20,7 +20,7 @@ export default function TripSummary({
 }) {
   const t = getTranslations(segment)
   const language = localeOf(segment)
-  const place = areaName(trip.area, language)
+  const place = destinationName(trip.destination, language)
 
   const route =
     trip.direction === "arrival"

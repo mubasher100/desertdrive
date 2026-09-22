@@ -3,6 +3,7 @@
 import { useParams, useRouter } from "next/navigation"
 import { useId, useMemo, useState, type FormEvent } from "react"
 import LocationPicker from "@modules/booking/components/location-picker"
+import { destinationToQuery, type Destination } from "@lib/booking/destination"
 import { checkLeadTime, earliestPickupFields, leadTimeLabel, qatarToday } from "@lib/booking/lead-time"
 import { useLanguage, useTranslations } from "@lib/i18n/use-translations"
 import { clx } from "@medusajs/ui"
@@ -52,7 +53,7 @@ export default function SearchWidget({
   const ids = useId()
 
   const [direction, setDirection] = useState<Direction>(defaultDirection)
-  const [area, setArea] = useState("")
+  const [destination, setDestination] = useState<Destination | null>(null)
   const [date, setDate] = useState("")
   const [time, setTime] = useState("")
   const [passengers, setPassengers] = useState(2)
@@ -73,7 +74,7 @@ export default function SearchWidget({
   function onSubmit(e: FormEvent) {
     e.preventDefault()
 
-    if (!area) {
+    if (!destination) {
       setError(t("search.error.destination"))
       return
     }
@@ -111,7 +112,7 @@ export default function SearchWidget({
 
     const query = new URLSearchParams({
       direction,
-      area,
+      ...destinationToQuery(destination),
       date,
       time,
       passengers: String(passengers),
@@ -185,9 +186,9 @@ export default function SearchWidget({
         <LocationPicker
           id={`${ids}-area`}
           label={destinationLabel}
-          value={area}
-          onChange={setArea}
-          invalid={!!error && !area}
+          value={destination}
+          onChange={setDestination}
+          invalid={!!error && !destination}
         />
       </Field>
 
