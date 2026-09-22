@@ -211,6 +211,17 @@ Because `code` maps 1:1 onto the option value, resolving km → band → variant
 >
 > The band boundaries above are expressed in **straight-line** km precisely because of this — a 25 km road trip is about 20 km as the crow flies. Before launch, calibrate every boundary against real routes: Lusail, Al Wakrah, Education City, Al Khor, Mesaieed, Dukhan, Al Zubarah. Get this wrong in the optimistic direction and every long fare is undercharged, permanently and silently.
 
+### Availability: one car, one moment
+
+A vehicle is not stock on a shelf — the same Rush is sellable at 06:00 and again at 14:00, but not twice at 06:00 — so Medusa's inventory module is the wrong shape. The `bookingSlot` module holds one row per vehicle per pickup, written **during checkout** (before the cart completes, and before the customer leaves for SkipCash), under a Redis lock keyed per vehicle so two simultaneous payments cannot both take the last car.
+
+- `units` on a vehicle's product metadata says how many of that car exist. Seeded at **1**; the owner edits it in the admin.
+- `BOOKING_SLOT_MINUTES` (default **120**) is how long one transfer ties a car up, either side of the pickup. `BOOKING_HOLD_MINUTES` (default **30**) is how long an unpaid hold survives.
+- A hold carries `expires_at` and stops counting the moment it lapses, so an abandoned checkout frees the car immediately; `order.placed` stamps `order_id` and clears the expiry (the slot id rides on `cart.metadata.booking_slot_id`, which Medusa copies onto the order — an order has no `cart_id` column). `order.canceled` deletes the row, which is what puts the car back on sale.
+- `POST /store/quotes` takes an optional `pickup_at` and returns `available` per vehicle. Unavailable cars are shown greyed out rather than hidden — a card that vanishes reads as a bug, "booked at this time" reads as a fact.
+
+> **Both numbers above are assumptions, not the owner's stated rules.** Confirm the slot length and the real unit count per vehicle before launch.
+
 ### Add-ons
 
 Separate single-variant products, added to the same cart: child seat, extra waiting hour, meet & greet sign, extra luggage.
@@ -286,8 +297,8 @@ Five steps. Build them in this order.
 
 **1 · Home** — the search widget is *in* the hero, not below it:
 - Direction toggle: **From the airport** / **To the airport**
-- The non-airport end, via Google Places autocomplete
-- Date, time, passengers
+- The non-airport end: a **type-to-search combobox** over the curated areas (type the name in either language, or open it and browse). Google Places layers on top of this later; it never replaces it. Free text that matches nothing offers WhatsApp with what they typed rather than an error.
+- Date, time, passengers — bounded by the **lead time**: a pickup must be at least `NEXT_PUBLIC_MIN_LEAD_MINUTES` (default **180**) away. Checked in the widget, again on the results page (a page can sit open for an hour), and finally server-side before a cart is created. A time in the past and a time inside the window get different words: one is a mistake, the other is a booking we would still like by phone.
 - Trust strip (licensed drivers, flight tracking, free waiting, fixed price)
 - Service cards, how-it-works, fleet, FAQ
 
@@ -453,6 +464,9 @@ Traps worth not walking into:
 | `RESEND_API_KEY` | Confirmation email |
 | `RESEND_FROM_EMAIL` | Verified sender |
 | `BOOKING_TOKEN_SECRET` | HMAC secret for the signed booking-lookup link. **Set the same value on the storefront** — the backend signs the email link, the storefront verifies it |
+| `BOOKING_SLOT_MINUTES` | How long one transfer occupies a vehicle, either side of the pickup. Default 120 |
+| `BOOKING_HOLD_MINUTES` | How long an unpaid checkout holds a car. Default 30 |
+| `BUSINESS_ADDRESS` / `BUSINESS_CR` | Trader identity printed in the confirmation email |
 | `AIRPORT_LAT` / `AIRPORT_LNG` | Hamad International origin point for the distance calculation |
 | `SKIPCASH_CLIENT_ID` · `SKIPCASH_KEY_ID` · `SKIPCASH_KEY_SECRET` · `SKIPCASH_WEBHOOK_KEY` · `SKIPCASH_BASE_URL` | Payment gateway |
 
@@ -465,6 +479,7 @@ Traps worth not walking into:
 | `NEXT_PUBLIC_BASE_URL` | Storefront's own public URL |
 | `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Places Autocomplete. Referrer-restricted, Places API only |
 | `BOOKING_TOKEN_SECRET` | Same value as the backend's. Server-side only, never `NEXT_PUBLIC_` |
+| `NEXT_PUBLIC_MIN_LEAD_MINUTES` | Minimum notice for a pickup. Default 180 |
 
 ### GitHub Actions secrets
 
@@ -562,6 +577,8 @@ A wrong port does not fail at boot. It surfaces later as intermittent `prepared 
 **Railway does not shell-expand `$VAR` in a start command.** `redis-server --requirepass $REDIS_PASSWORD` sets the password to that literal string and the backend fails with `WRONGPASS invalid username-password pair`. Write the password out literally. `${{service.VAR}}` references *between* services do resolve — that syntax is Railway's own, evaluated before the container starts.
 
 **Redis must be wired into all four modules** — cache, event bus, workflow engine, and locking. Miss one and Medusa silently falls back to in-memory, which breaks scheduled jobs, subscribers, and long-running workflows across restarts.
+
+**An admin password cannot be reset by email until email is configured.** Medusa's reset route emails a signed token, which is useless on a system with no mail provider — and that is exactly when you are locked out. `npx medusa exec ./src/scripts/set-admin-password.ts <email> <password>` goes at the emailpass provider directly. Against production, run it with the production `DATABASE_URL` and `ALLOW_INMEMORY_INFRA=true`.
 
 **The publishable API key is not optional.** Store API requests without `x-publishable-api-key` are rejected. The key must also be linked to a sales channel.
 

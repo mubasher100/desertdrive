@@ -19,6 +19,12 @@ export const CreateQuoteSchema = z.object({
   // The largest vehicle carries 7.
   passengers: z.number().int().min(1).max(16),
   luggage: z.number().int().min(0).max(20),
+
+  /**
+   * The pickup instant, ISO 8601 with an offset. Optional: it changes which
+   * vehicles are still free, never what they cost.
+   */
+  pickup_at: z.string().datetime({ offset: true }).nullish(),
 })
 
 export type CreateQuoteSchema = z.infer<typeof CreateQuoteSchema>

@@ -19,10 +19,10 @@ export async function POST(
   req: MedusaRequest<CreateQuoteSchema>,
   res: MedusaResponse
 ) {
-  const { lat, lng, passengers, luggage } = req.validatedBody
+  const { lat, lng, passengers, luggage, pickup_at } = req.validatedBody
 
   const { result } = await resolveQuoteWorkflow(req.scope).run({
-    input: { lat, lng, passengers, luggage },
+    input: { lat, lng, passengers, luggage, pickup_at: pickup_at ?? null },
   })
 
   res.setHeader("Cache-Control", "no-store")
@@ -38,5 +38,6 @@ export async function POST(
     band: result.band,
     vehicles: result.vehicles,
     quotable: result.vehicles.length > 0,
+    available: result.vehicles.some((v) => v.available),
   })
 }
