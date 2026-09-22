@@ -19,6 +19,8 @@ The customer flow is: pick a destination → see a fixed fare per vehicle class 
 >
 > Design and build at the small breakpoint first, then scale up — never desktop-down.
 >
+> **A grid child defaults to `min-width: auto`,** so a control with a wide intrinsic size pushes its column past its track and out of the card. iOS does exactly this to `input[type="time"]`, which is how the time field came to hang off the edge of the search widget on a phone (22 Sept 2026). `min-w-0` on the wrapper plus `appearance-none` on the input fixes it, and the OS picker still opens. Chromium does not reproduce it — this one needs a real device.
+>
 > Non-negotiables: no horizontal body scroll at any width, touch targets ≥44px, the entire booking form completable one-thumbed, a sticky primary action on the results and details steps, images sized for mobile bandwidth. **Check every change at 375px before calling it done.**
 
 > ## 🎨 Branding
@@ -236,6 +238,8 @@ Fix these key names now, because the storefront, the confirmation email and the 
 cart.metadata = {
   direction,             // "arrival" | "departure"
   pickup_at,             // ISO 8601, with an explicit +03:00 offset — Qatar does not observe DST
+  return_at,             // ISO 8601 on a return booking, null on a one-way
+  legs,                  // 1 or 2. Also the line-item quantity, which is what doubles the fare
   flight_number,         // required on arrivals, optional on departures
   passengers,
   luggage,
@@ -298,6 +302,7 @@ Five steps. Build them in this order.
 **1 · Home** — the search widget is *in* the hero, not below it:
 - Direction toggle: **From the airport** / **To the airport**
 - The non-airport end: a **type-to-search combobox** over the curated areas (type the name in either language, or open it and browse). Google Places layers on top of this later; it never replaces it. Free text that matches nothing offers WhatsApp with what they typed rather than an error.
+- An optional **return leg**: same vehicle, same address, opposite direction, as one booking with two legs. The fare is the one-way fare twice — there is no return discount unless the owner sets one. Both legs are held together by the availability guard, and a vehicle busy on *either* leg cannot take the booking.
 - Date, time, passengers — bounded by the **lead time**: a pickup must be at least `NEXT_PUBLIC_MIN_LEAD_MINUTES` (default **180**) away. Checked in the widget, again on the results page (a page can sit open for an hour), and finally server-side before a cart is created. A time in the past and a time inside the window get different words: one is a mistake, the other is a booking we would still like by phone.
 - Trust strip (licensed drivers, flight tracking, free waiting, fixed price)
 - Service cards, how-it-works, fleet, FAQ
@@ -685,7 +690,7 @@ Do not build these without asking. Each was considered and cut:
 - **Day tour booking** — marketing page only in v1
 - **WhatsApp or SMS dispatch** — WhatsApp Business API needs Meta approval; admin dashboard only for now
 - **Live fare calculation, Distance Matrix, surge, or traffic-aware pricing** — fares are fixed per band, full stop
-- **Multi-stop trips, return legs as a single booking, recurring transfers**
+- **Multi-stop trips and recurring transfers** — a return leg *is* now supported (owner's call, 22 Sept 2026): one booking, two legs
 - **Loyalty or a promotions engine** beyond what Medusa provides for free
 
 ---
