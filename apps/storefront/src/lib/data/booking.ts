@@ -123,7 +123,7 @@ export async function createBookingCart(
   const vehicle = quote?.vehicles.find((v) => v.variant_id === variantId)
   // An unavailable vehicle is treated exactly like a tampered variant: back to
   // results, where the card is greyed out and the reason is on the page.
-  if (!quote || !vehicle || !vehicle.available) {
+  if (!quote || !vehicle || vehicle.available === false) {
     redirect(`/${segment}/results?${tripToQuery(trip)}`)
   }
 
@@ -278,6 +278,17 @@ async function reserveVehicle(cartId: string): Promise<"ok" | "taken" | "error">
     const status = (e as { status?: number })?.status
     if (status === 409) {
       return "taken"
+    }
+    /**
+     * 404 means the backend has not deployed the reservations route yet. The
+     * alternative to letting the booking through is blocking every checkout
+     * for the length of a backend deploy, which is worse than the risk this
+     * guards against — a double booking is rare and recoverable, a dead
+     * checkout is neither. Loud on purpose.
+     */
+    if (status === 404) {
+      console.error("reserveVehicle: /store/reservations is missing — backend predates the availability guard")
+      return "ok"
     }
     console.error("reserveVehicle failed", e)
     return "error"

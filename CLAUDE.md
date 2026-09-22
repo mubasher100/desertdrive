@@ -518,6 +518,12 @@ CI never touches Supabase. **CI deliberately does not build the storefront** —
 - Backend → Railway, watching `apps/backend/**` on `main`. **Railway has deprecated `railway.json` config-as-code** (Sept 2026, in favour of `.railway/railway.ts`); the API refuses to set `railwayConfigFile`. The settings are therefore stored **on the service itself** (Settings → Build/Deploy), set via the API on 2026-09-19: root directory `/`, build `npm run build --workspace=@dd/backend`, start `cd apps/backend/.medusa/server && npm run start`, pre-deploy `cd apps/backend/.medusa/server && npx medusa db:migrate`, health `/health`, region `sin`, `PORT=9000`. The `railway.json` in the repo documents the intended shape but is not read.
 - Storefront → `.github/workflows/deploy-storefront.yml`, watching `apps/storefront/**` on `main`. It also pushes `BOOKING_TOKEN_SECRET` to the Worker, so the GitHub secret is the source of truth for the storefront side.
 
+**The storefront and the backend deploy separately, and the storefront usually wins.** Cloudflare publishes in about two minutes; a Railway build of Medusa takes ten to twenty. So for the length of every backend deploy, the *new* storefront is talking to the *old* API — and Medusa validates request bodies strictly, so a field the new storefront sends is rejected outright rather than ignored. Adding `pickup_at` to `/store/quotes` took every fare on the live site down for a quarter of an hour this way (22 Sept 2026).
+
+Two rules follow:
+- **A new request field must be optional on the backend and survivable on the storefront.** `getQuote` drops `pickup_at` and re-asks when the backend rejects it; `reserveVehicle` treats a 404 on `/store/reservations` as "not deployed yet" and lets the booking through rather than blocking every checkout.
+- **A new response field must be optional in the storefront's types** and read as `x === false`, never `!x` — an older backend omits it entirely, and `!undefined` is `true`, which would grey out every vehicle on the page.
+
 **Deploying the storefront from Windows.** wrangler ≥4.12 auto-delegates `wrangler deploy` to `opennextjs-cloudflare deploy`, whose "populate remote R2 cache" step starts a local proxy Worker that fails on Windows (`Failed to send request to R2 worker: fetch failed`, retried forever). Set `OPEN_NEXT_DEPLOY=true` to skip the delegation and do a plain upload; the R2 cache then fills on first request. CI runs on Linux where the populate step works, so prefer CI for real deploys.
 
 `railway.json` shape:

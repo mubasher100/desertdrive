@@ -15,7 +15,7 @@ export type QuoteVehicle = {
   amount: number
   currency_code: string
   /** False when every one of this vehicle is already out around the pickup time. */
-  available: boolean
+  available?: boolean
 }
 
 export type Quote = {
@@ -24,7 +24,7 @@ export type Quote = {
   vehicles: QuoteVehicle[]
   quotable: boolean
   /** False when the band is priced but nothing is free at this time. */
-  available: boolean
+  available?: boolean
 }
 
 /**
@@ -57,8 +57,25 @@ export async function getQuote(input: {
       body: input,
       cache: "no-store",
     })
-  } catch {
-    // A failed quote is shown as "we can't price this online" rather than an
+  } catch (e) {
+    /**
+     * The storefront and the backend deploy separately, and the storefront
+     * usually wins the race. A backend still running the previous release
+     * rejects `pickup_at` outright (Medusa validates request bodies strictly),
+     * which would take every fare on the site down for the length of a deploy.
+     *
+     * So: drop the field and ask again. The answer loses availability — every
+     * vehicle comes back marked free — which is exactly the behaviour of the
+     * release before this one, and it is restored within one deploy.
+     */
+    const message = e instanceof Error ? e.message : String(e)
+    if (input.pickup_at && /pickup_at/.test(message)) {
+      console.warn("getQuote: backend predates availability; re-quoting without pickup_at")
+      const { pickup_at, ...legacy } = input
+      return await getQuote(legacy)
+    }
+
+    // Any other failure is shown as "we can't price this online" rather than an
     // error page — the customer still gets the phone number.
     return null
   }
