@@ -6,7 +6,7 @@ import type { HttpTypes } from "@medusajs/types"
 import { sdk } from "@lib/config"
 import { getRegion } from "@lib/data/regions"
 import { getQuote } from "@lib/data/quotes"
-import { pickupAtIso, tripToQuery, type Trip } from "@lib/booking/trip"
+import { legsOf, pickupAtIso, returnAtIso, tripToQuery, type Trip } from "@lib/booking/trip"
 import { normalisePhone, validateContact, type ContactInput } from "@lib/booking/contact"
 import { signBookingToken, verifyBookingToken } from "@lib/booking/token"
 import { createTranslator } from "@lib/i18n/dictionary"
@@ -119,6 +119,7 @@ export async function createBookingCart(
     passengers: trip.passengers,
     luggage: trip.luggage,
     pickup_at: pickupAtIso(trip),
+    return_at: returnAtIso(trip),
   })
   const vehicle = quote?.vehicles.find((v) => v.variant_id === variantId)
   // An unavailable vehicle is treated exactly like a tampered variant: back to
@@ -148,6 +149,10 @@ export async function createBookingCart(
       metadata: {
         direction: trip.direction,
         pickup_at: pickupAtIso(trip),
+        // Null on a one-way. Present, the booking is two legs: the same
+        // vehicle, the same address, the opposite direction.
+        return_at: returnAtIso(trip),
+        legs: legsOf(trip),
         flight_number: contact.flight_number.trim().toUpperCase() || null,
         passengers: trip.passengers,
         luggage: trip.luggage,
@@ -168,7 +173,10 @@ export async function createBookingCart(
     })
 
     // 2. The vehicle, at the price the server just resolved.
-    await sdk.store.cart.createLineItem(cart.id, { variant_id: vehicle.variant_id, quantity: 1 })
+    // Quantity is the number of legs, so the fare doubles for a return with
+     // no second price to keep in step. There is no return discount unless the
+     // owner sets one.
+    await sdk.store.cart.createLineItem(cart.id, { variant_id: vehicle.variant_id, quantity: legsOf(trip) })
 
     // 3. Minimal addresses. Nothing is shipped, but Medusa's shipping-option
     //    lookup and tax calculation both key off the country.

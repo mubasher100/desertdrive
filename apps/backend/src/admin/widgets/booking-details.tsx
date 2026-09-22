@@ -4,7 +4,7 @@ import type { DetailWidgetProps, HttpTypes } from "@medusajs/framework/types"
 import { Badge, Button, Container, Text, toast } from "@medusajs/ui"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { sdk } from "../lib/client"
-import { formatPickup, readBooking, readPayment, routeLabel, whatsappUrl } from "../lib/booking"
+import { formatPickup, readBooking, readPayment, returnRouteLabel, routeLabel, whatsappUrl } from "../lib/booking"
 
 /**
  * The booking behind an order, on the order page. Everything the driver and
@@ -60,6 +60,11 @@ const BookingDetailsWidget = ({ data: initial }: DetailWidgetProps<HttpTypes.Adm
           <Badge size="2xsmall" color={booking.direction === "arrival" ? "blue" : "orange"}>
             {booking.direction === "arrival" ? "From airport" : "To airport"}
           </Badge>
+          {booking.return_at && (
+            <Badge size="2xsmall" color="purple">
+              Return
+            </Badge>
+          )}
           {booking.band_code && (
             <Badge size="2xsmall" color="grey">
               Band {booking.band_code}
@@ -87,6 +92,15 @@ const BookingDetailsWidget = ({ data: initial }: DetailWidgetProps<HttpTypes.Adm
       <dl className="grid grid-cols-1 gap-x-6 gap-y-3 px-6 py-4 md:grid-cols-2">
         <Row label="Route" value={routeLabel(booking)} />
         <Row label="Pickup (Qatar time)" value={`${pickup.date}, ${pickup.time}`} />
+        {booking.return_at && (
+          <>
+            <Row label="Return route" value={returnRouteLabel(booking)} />
+            <Row
+              label="Return pickup (Qatar time)"
+              value={`${formatPickup(booking.return_at).date}, ${formatPickup(booking.return_at).time}`}
+            />
+          </>
+        )}
         <Row label="Flight" value={booking.flight_number ?? "—"} />
         <Row label="Passengers · bags" value={`${booking.passengers} · ${booking.luggage}`} />
         <Row

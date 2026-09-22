@@ -29,8 +29,6 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ countryCode
   if (Number.isNaN(start.getTime())) {
     return new Response("Not found", { status: 404 })
   }
-  // A transfer has no fixed end; an hour keeps the calendar entry readable.
-  const end = new Date(start.getTime() + 60 * 60 * 1000)
   const reference = `DD-${order.display_id}`
   const address = String(m.address ?? "")
   const airport = t("common.airport")
@@ -48,26 +46,48 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ countryCode
     .filter(Boolean)
     .join("\\n")
 
+  // Captured before the closure: inside it, TypeScript loses the null check.
+  const orderId = order.id
+
+  /**
+   * One VEVENT per leg — a return belongs in the calendar twice, with its own
+   * reminder. A transfer has no fixed end, so an hour keeps each entry
+   * readable without blocking out the customer's afternoon.
+   */
+  function leg(at: Date, suffix: string, legSummary: string, legLocation: string) {
+    return [
+      "BEGIN:VEVENT",
+      `UID:${orderId}${suffix}@desertdriverental.com`,
+      `DTSTAMP:${stamp(new Date())}`,
+      `DTSTART:${stamp(at)}`,
+      `DTEND:${stamp(new Date(at.getTime() + 60 * 60 * 1000))}`,
+      `SUMMARY:${escapeIcs(legSummary)}`,
+      `LOCATION:${escapeIcs(legLocation)}`,
+      `DESCRIPTION:${escapeIcs(description)}`,
+      "BEGIN:VALARM",
+      "TRIGGER:-PT2H",
+      "ACTION:DISPLAY",
+      `DESCRIPTION:${escapeIcs(reference)}`,
+      "END:VALARM",
+      "END:VEVENT",
+    ]
+  }
+
+  const returnAt = typeof m.return_at === "string" ? new Date(m.return_at) : null
+  const hasReturn = returnAt !== null && !Number.isNaN(returnAt.getTime())
+  // The return runs the other way: same car, same address, opposite direction.
+  const returnRoute = arrival ? t("trip.placeToAirport", { place: address }) : t("trip.airportTo", { place: address })
+
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//Desert Drive//Booking//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
-    "BEGIN:VEVENT",
-    `UID:${order.id}@desertdriverental.com`,
-    `DTSTAMP:${stamp(new Date())}`,
-    `DTSTART:${stamp(start)}`,
-    `DTEND:${stamp(end)}`,
-    `SUMMARY:${escapeIcs(summary)}`,
-    `LOCATION:${escapeIcs(location)}`,
-    `DESCRIPTION:${escapeIcs(description)}`,
-    "BEGIN:VALARM",
-    "TRIGGER:-PT2H",
-    "ACTION:DISPLAY",
-    `DESCRIPTION:${escapeIcs(reference)}`,
-    "END:VALARM",
-    "END:VEVENT",
+    ...leg(start, "", summary, location),
+    ...(hasReturn
+      ? leg(returnAt, "-return", `${t("common.brand")}: ${returnRoute}`, arrival ? address : airport)
+      : []),
     "END:VCALENDAR",
   ].join("\r\n")
 

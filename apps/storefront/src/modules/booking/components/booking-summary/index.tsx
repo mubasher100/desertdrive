@@ -29,6 +29,9 @@ export default function BookingSummary({
   const place = area ? areaName(area, language) : (m.address ?? "")
   const route =
     m.direction === "departure" ? t("trip.placeToAirport", { place }) : t("trip.airportTo", { place })
+  // The return runs the other way: same car, same address, opposite direction.
+  const returnRoute =
+    m.direction === "departure" ? t("trip.airportTo", { place }) : t("trip.placeToAirport", { place })
 
   // The line item only carries the English title; the Arabic one rides on
   // metadata so the summary reads in the visitor's language.
@@ -37,6 +40,7 @@ export default function BookingSummary({
   const rows: Array<[string, string | undefined]> = [
     [t("trip.route"), route],
     [t("confirmed.pickup"), m.pickup_at ? formatPickupIso(m.pickup_at, language) : undefined],
+    [t("confirmed.return"), m.return_at ? `${returnRoute} · ${formatPickupIso(m.return_at, language)}` : undefined],
     [t("confirmed.flight"), m.flight_number ?? undefined],
     [t("confirmed.vehicle"), vehicle],
     [
@@ -84,6 +88,7 @@ export default function BookingSummary({
 export type BookingMetadata = {
   direction: "arrival" | "departure"
   pickup_at: string
+  return_at: string | null
   flight_number: string | null
   passengers: number
   luggage: number

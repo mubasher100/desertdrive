@@ -31,7 +31,11 @@ export default async function bookingSlotLifecycle({
   }
 
   const order = await orderService.retrieveOrder(orderId, { select: ["id", "metadata"] })
-  const slotId = (order.metadata ?? {})["booking_slot_id"]
+  const meta = order.metadata ?? {}
+  // booking_slot_ids is comma-separated: one id on a one-way, two on a return.
+  // booking_slot_id is the first, kept for holds written before returns existed.
+  const raw = meta["booking_slot_ids"] ?? meta["booking_slot_id"]
+  const slotId = typeof raw === "string" ? raw : undefined
 
   if (typeof slotId !== "string") {
     // A booking with no hold means the reservation step was skipped — worth
@@ -40,16 +44,19 @@ export default async function bookingSlotLifecycle({
     return
   }
 
-  const [held] = await slots.listBookingSlots({ id: slotId })
+  const ids = slotId.split(",").filter(Boolean)
+  const held = await slots.listBookingSlots({ id: ids })
 
-  if (!held) {
-    logger.warn(`booking-slot: hold ${slotId} for order ${orderId} no longer exists`)
+  if (!held.length) {
+    logger.warn(`booking-slot: hold(s) ${slotId} for order ${orderId} no longer exist`)
     return
   }
 
-  // Committed: it stops being a hold and the purge job leaves it alone.
-  await slots.updateBookingSlots({ id: held.id, order_id: orderId, expires_at: null })
-  logger.info(`booking-slot: committed ${held.vehicle_handle} at ${held.pickup_at.toISOString()} to order ${orderId}`)
+  // Committed: they stop being holds and the purge job leaves them alone.
+  await slots.updateBookingSlots(held.map((s) => ({ id: s.id, order_id: orderId, expires_at: null })))
+  logger.info(
+    `booking-slot: committed ${held.length} leg(s) of ${held[0].vehicle_handle} to order ${orderId}`
+  )
 }
 
 export const config: SubscriberConfig = {

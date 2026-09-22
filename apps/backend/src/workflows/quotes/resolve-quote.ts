@@ -14,6 +14,8 @@ export type ResolveQuoteInput = {
   luggage: number
   /** ISO 8601 pickup instant, when the caller has chosen one. Drives availability. */
   pickup_at?: string | null
+  /** The return leg's instant, on a return booking. */
+  return_at?: string | null
 }
 
 export type ResolveQuoteResult = {
@@ -52,7 +54,10 @@ export const resolveQuoteWorkflow = createWorkflow(
     const priced = listBandVehiclesStep(vehicleQuery)
 
     const availabilityQuery = transform({ priced, input }, function (data) {
-      return { vehicles: data.priced, pickup_at: data.input.pickup_at ?? null }
+      return {
+        vehicles: data.priced,
+        pickup_ats: [data.input.pickup_at, data.input.return_at].filter(Boolean) as string[],
+      }
     })
 
     const vehicles = markAvailabilityStep(availabilityQuery)
