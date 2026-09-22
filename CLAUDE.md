@@ -223,6 +223,8 @@ Resolution order in `resolve-quote`: **zone first, band behind it, per vehicle.*
 
 Overlaps are legal and useful — a compound inside a district prices differently from the district — so the **more specific zone must carry the lower `rank`**. Point-in-polygon is ray casting in `lib/geo.ts`, plate carrée: fine for a zone a few km across at Qatar's latitude, wrong for anything country-sized.
 
+Drawn areas are also **searchable destinations**: `GET /store/zones` returns each one with a point guaranteed to sit inside its own outline (`representativePoint` — the area centroid, tested, because a centroid falls outside a concave outline and would then price by the surrounding band). So drawing "Viva Bahriya" makes it findable in the search box within the cache window, with no external place database and no per-search cost.
+
 Drawn in the admin at **Priced areas**, on OpenStreetMap tiles through Leaflet — no API key, no per-view billing, and it keeps working if a Google key is ever revoked. The attribution line is a condition of the tiles; leave it.
 
 ### Availability: one car, one moment

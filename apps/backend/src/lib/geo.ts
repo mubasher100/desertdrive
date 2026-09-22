@@ -177,3 +177,48 @@ export function resolveZone<T extends ZoneShape>(point: LatLng, zones: readonly 
 
   return null
 }
+
+/**
+ * A point guaranteed to sit inside a zone, for searching by its name.
+ *
+ * The area centroid is the natural choice and is right for the convex
+ * outlines a person draws around a district. It can fall outside a concave
+ * one — a crescent, or Doha's coastline — so it is tested and only used if it
+ * is genuinely inside; otherwise the vertex average, and failing that the
+ * first vertex, which is on the boundary but never wrong by much.
+ *
+ * It matters because this point is what gets priced: pick one outside the
+ * polygon and searching for "The Pearl" quotes whatever band surrounds it.
+ */
+export function representativePoint(ring: Ring): LatLng | null {
+  if (!ring || ring.length < 3) {
+    return ring?.[0] ?? null
+  }
+
+  let twiceArea = 0
+  let lat = 0
+  let lng = 0
+
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const a = ring[i]
+    const b = ring[j]
+    const cross = b.lng * a.lat - a.lng * b.lat
+    twiceArea += cross
+    lat += (a.lat + b.lat) * cross
+    lng += (a.lng + b.lng) * cross
+  }
+
+  if (twiceArea !== 0) {
+    const centroid = { lat: lat / (3 * twiceArea), lng: lng / (3 * twiceArea) }
+    if (pointInRing(centroid, ring)) {
+      return centroid
+    }
+  }
+
+  const mean = {
+    lat: ring.reduce((t, p) => t + p.lat, 0) / ring.length,
+    lng: ring.reduce((t, p) => t + p.lng, 0) / ring.length,
+  }
+
+  return pointInRing(mean, ring) ? mean : ring[0]
+}

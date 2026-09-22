@@ -7,6 +7,7 @@ import { useLanguage, useTranslations } from "@lib/i18n/use-translations"
 import { whatsappLink } from "@lib/data/contact"
 import { inQatar, type Destination } from "@lib/booking/destination"
 import { loadPlaces, newSession, placesEnabled, resolvePlace, suggest, type PlaceSuggestion } from "@lib/booking/places"
+import type { SearchZone } from "@lib/data/zones"
 
 /**
  * Destination entry: type to search, or open the list and pick.
@@ -47,6 +48,7 @@ export default function LocationPicker({
   label,
   id,
   invalid,
+  zones = [],
 }: {
   /** The current destination, or null when nothing is chosen yet. */
   value: Destination | null
@@ -54,6 +56,11 @@ export default function LocationPicker({
   label: string
   id: string
   invalid?: boolean
+  /**
+   * Areas drawn in the admin. They search like curated areas and price like
+   * themselves — the point inside each one resolves to its own fare.
+   */
+  zones?: SearchZone[]
 }) {
   const t = useTranslations()
   const language = useLanguage()
@@ -85,6 +92,12 @@ export default function LocationPicker({
     return sorted.filter((area) => searchText(area).includes(q))
   }, [query, sorted])
 
+  const zoneMatches = useMemo(() => {
+    const q = normalise(query)
+    if (!q) return zones
+    return zones.filter((z) => normalise(`${z.name_en} ${z.name_ar} ${z.code.replace(/-/g, " ")}`).includes(q))
+  }, [query, zones])
+
   /**
    * One flat list so the keyboard cursor, aria-activedescendant and the option
    * ids stay simple: Google's suggestions first (they are what the customer
@@ -92,10 +105,14 @@ export default function LocationPicker({
    */
   const options = useMemo(
     () => [
+      // The owner's own areas lead: they are the places this business has
+      // decided it serves and priced, so they beat both Google's guesses and
+      // the generic district list.
+      ...zoneMatches.map((z) => ({ kind: "zone" as const, zone: z })),
       ...places.map((p) => ({ kind: "place" as const, place: p })),
       ...areaMatches.map((a) => ({ kind: "area" as const, area: a })),
     ],
-    [places, areaMatches]
+    [zoneMatches, places, areaMatches]
   )
 
   useEffect(() => {
@@ -187,10 +204,30 @@ export default function LocationPicker({
     inputRef.current?.focus()
   }
 
+  /**
+   * A drawn area behaves like a searched place: it carries a point inside its
+   * own outline, and the server prices from that point — which lands back in
+   * the same zone. The id records which one it was.
+   */
+  function chooseZone(z: SearchZone) {
+    onChange({
+      kind: "place",
+      place_id: `zone:${z.code}`,
+      address: z.name_en,
+      lat: z.lat,
+      lng: z.lng,
+    })
+    setQuery("")
+    setPlaces([])
+    setOpen(false)
+    inputRef.current?.focus()
+  }
+
   function chooseAt(index: number) {
     const opt = options[index]
     if (!opt) return
     if (opt.kind === "area") chooseArea(opt.area)
+    else if (opt.kind === "zone") chooseZone(opt.zone)
     else void choosePlace(opt.place)
   }
 
@@ -295,11 +332,19 @@ export default function LocationPicker({
         className="absolute z-50 mt-1 max-h-72 w-full overflow-y-auto rounded-dd border border-dd-line-strong bg-dd-surface py-1 shadow-float"
       >
         {options.map((opt, i) => {
-          const primary = opt.kind === "area" ? areaName(opt.area, language) : opt.place.main
-          const secondary = opt.kind === "area" ? areaHint(opt.area, language) : opt.place.secondary
+          const primary =
+            opt.kind === "area"
+              ? areaName(opt.area, language)
+              : opt.kind === "zone"
+                ? language === "ar"
+                  ? opt.zone.name_ar
+                  : opt.zone.name_en
+                : opt.place.main
+          const secondary =
+            opt.kind === "area" ? areaHint(opt.area, language) : opt.kind === "zone" ? undefined : opt.place.secondary
           return (
             <li
-              key={opt.kind === "area" ? opt.area.id : `p:${opt.place.id}`}
+              key={opt.kind === "area" ? opt.area.id : opt.kind === "zone" ? `z:${opt.zone.code}` : `p:${opt.place.id}`}
               id={optionId(uid, i)}
               role="option"
               aria-selected={i === cursor}
