@@ -1,6 +1,7 @@
 import Image from "next/image"
 import SearchWidget from "@modules/booking/components/search-widget"
 import { getTranslations } from "@lib/i18n/get-translations"
+import { listSearchZones } from "@lib/data/zones"
 
 /**
  * The hero. The search widget is IN it, not below it: on a phone, the first
@@ -15,7 +16,11 @@ import { getTranslations } from "@lib/i18n/get-translations"
  * `.on-ink` flips the focus ring so keyboard focus stays visible on the dark
  * surface; the widget resets it again inside its white card.
  */
-export default function Hero({ segment }: { segment: string }) {
+export default async function Hero({ segment }: { segment: string }) {
+  // Fetched here rather than in the widget: the widget is a client component,
+  // and the areas are public, cacheable data that belongs on the server.
+  const zones = await listSearchZones()
+
   const t = getTranslations(segment)
 
   return (
@@ -51,7 +56,7 @@ export default function Hero({ segment }: { segment: string }) {
           </p>
         </div>
 
-        <SearchWidget className="text-dd-ink" />
+        <SearchWidget className="text-dd-ink" zones={zones} />
       </div>
     </section>
   )

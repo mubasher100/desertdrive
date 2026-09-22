@@ -3,6 +3,7 @@ import {
   resolveBand,
   isValidLatLng,
   pointInRing,
+  representativePoint,
   resolveZone,
   type BandBounds,
   type ZoneShape,
@@ -225,5 +226,32 @@ describe("resolveZone", () => {
   it("ignores a malformed polygon rather than throwing", () => {
     expect(resolveZone(PORTO_ARABIA, [{ code: "bad", rank: 1, polygon: "nonsense" }])).toBeNull()
     expect(resolveZone(PORTO_ARABIA, [{ code: "bad", rank: 1, polygon: [{ lat: "x", lng: 2 }] }])).toBeNull()
+  })
+})
+
+describe("representativePoint", () => {
+  it("lands inside a simple outline", () => {
+    const p = representativePoint(PEARL)!
+    expect(pointInRing(p, PEARL)).toBe(true)
+  })
+
+  it("stays inside a concave outline, where the centroid would not", () => {
+    // A C-shape: its area centroid falls in the gap, outside the polygon.
+    const crescent = [
+      { lat: 25.30, lng: 51.50 },
+      { lat: 25.30, lng: 51.60 },
+      { lat: 25.32, lng: 51.60 },
+      { lat: 25.32, lng: 51.52 },
+      { lat: 25.38, lng: 51.52 },
+      { lat: 25.38, lng: 51.60 },
+      { lat: 25.40, lng: 51.60 },
+      { lat: 25.40, lng: 51.50 },
+    ]
+    const p = representativePoint(crescent)!
+    expect(pointInRing(p, crescent)).toBe(true)
+  })
+
+  it("has nothing to say about a degenerate outline", () => {
+    expect(representativePoint([])).toBeNull()
   })
 })

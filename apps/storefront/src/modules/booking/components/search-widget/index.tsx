@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useId, useMemo, useState, type FormEvent } from "react"
 import LocationPicker from "@modules/booking/components/location-picker"
 import { destinationToQuery, type Destination } from "@lib/booking/destination"
+import type { SearchZone } from "@lib/data/zones"
 import { checkLeadTime, earliestPickupFields, leadTimeLabel, qatarToday } from "@lib/booking/lead-time"
 import { useLanguage, useTranslations } from "@lib/i18n/use-translations"
 import { clx } from "@medusajs/ui"
@@ -41,9 +42,12 @@ export type Direction = "arrival" | "departure"
 export default function SearchWidget({
   defaultDirection = "arrival",
   className,
+  zones = [],
 }: {
   defaultDirection?: Direction
   className?: string
+  /** Areas the owner has drawn, searchable alongside the curated list. */
+  zones?: SearchZone[]
 }) {
   const t = useTranslations()
   const language = useLanguage()
@@ -188,6 +192,7 @@ export default function SearchWidget({
           label={destinationLabel}
           value={destination}
           onChange={setDestination}
+          zones={zones}
           invalid={!!error && !destination}
         />
       </Field>
