@@ -7,7 +7,7 @@ import { sdk } from "@lib/config"
 import { getRegion } from "@lib/data/regions"
 import { getQuote } from "@lib/data/quotes"
 import { legsOf, pickupAtIso, returnAtIso, tripToQuery, type Trip } from "@lib/booking/trip"
-import { normalisePhone, validateContact, type ContactInput } from "@lib/booking/contact"
+import { dialFor, normalisePhone, validateContact, type ContactInput } from "@lib/booking/contact"
 import { signBookingToken, verifyBookingToken } from "@lib/booking/token"
 import { createTranslator } from "@lib/i18n/dictionary"
 import { localeOf } from "@lib/util/locale"
@@ -133,7 +133,9 @@ export async function createBookingCart(
     return { ok: false, errors: {}, message: t("details.error.generic") }
   }
 
-  const phone = normalisePhone(contact.contact_phone)
+  // Stored in E.164 with the selected country applied, so the driver, the
+  // email and the admin all get a number that dials.
+  const phone = normalisePhone(contact.contact_phone, dialFor(contact))
   const email = contact.contact_email.trim().toLowerCase()
   const name = contact.contact_name.trim()
   const [first_name, ...rest] = name.split(/\s+/)
