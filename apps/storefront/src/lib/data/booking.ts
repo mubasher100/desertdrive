@@ -6,7 +6,8 @@ import type { HttpTypes } from "@medusajs/types"
 import { sdk } from "@lib/config"
 import { getRegion } from "@lib/data/regions"
 import { getQuote } from "@lib/data/quotes"
-import { legsOf, pickupAtIso, returnAtIso, tripToQuery, type Trip } from "@lib/booking/trip"
+import { legsOf, pickupAtIso, returnAtIso, tripCoords, tripToQuery, type Trip } from "@lib/booking/trip"
+import { areaIdOf, destinationForDriver, placeIdOf } from "@lib/booking/destination"
 import { dialFor, normalisePhone, validateContact, type ContactInput } from "@lib/booking/contact"
 import { signBookingToken, verifyBookingToken } from "@lib/booking/token"
 import { createTranslator } from "@lib/i18n/dictionary"
@@ -114,8 +115,7 @@ export async function createBookingCart(
   }
 
   const quote = await getQuote({
-    lat: trip.area.lat,
-    lng: trip.area.lng,
+    ...tripCoords(trip),
     passengers: trip.passengers,
     luggage: trip.luggage,
     pickup_at: pickupAtIso(trip),
@@ -136,6 +136,7 @@ export async function createBookingCart(
   // Stored in E.164 with the selected country applied, so the driver, the
   // email and the admin all get a number that dials.
   const phone = normalisePhone(contact.contact_phone, dialFor(contact))
+  const driverAddress = destinationForDriver(trip.destination)
   const email = contact.contact_email.trim().toLowerCase()
   const name = contact.contact_name.trim()
   const [first_name, ...rest] = name.split(/\s+/)
@@ -158,10 +159,11 @@ export async function createBookingCart(
         flight_number: contact.flight_number.trim().toUpperCase() || null,
         passengers: trip.passengers,
         luggage: trip.luggage,
-        area_id: trip.area.id,
-        address: trip.area.name_en, // English on purpose: the driver reads it
-        lat: trip.area.lat,
-        lng: trip.area.lng,
+        area_id: areaIdOf(trip.destination),
+        place_id: placeIdOf(trip.destination),
+        // English on purpose: the driver reads it off the job sheet.
+        address: destinationForDriver(trip.destination),
+        ...tripCoords(trip),
         band_code: quote.band.code,
         distance_km: quote.distance_km,
         contact_name: name,
@@ -183,8 +185,8 @@ export async function createBookingCart(
     // 3. Minimal addresses. Nothing is shipped, but Medusa's shipping-option
     //    lookup and tax calculation both key off the country.
     await sdk.store.cart.update(cart.id, {
-      shipping_address: { first_name, last_name, address_1: trip.area.name_en, city: "Doha", country_code: "qa", phone },
-      billing_address: { first_name, last_name, address_1: trip.area.name_en, city: "Doha", country_code: "qa" },
+      shipping_address: { first_name, last_name, address_1: driverAddress, city: "Doha", country_code: "qa", phone },
+      billing_address: { first_name, last_name, address_1: driverAddress, city: "Doha", country_code: "qa" },
     })
 
     // 4. The zero-cost "No delivery" method. Load-bearing: completeCart

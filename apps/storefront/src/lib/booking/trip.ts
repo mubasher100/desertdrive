@@ -1,4 +1,9 @@
-import { findArea, type Area } from "@lib/data/areas"
+import {
+  coordsOf,
+  destinationFromQuery,
+  destinationToQuery,
+  type Destination,
+} from "@lib/booking/destination"
 import type { Language } from "@lib/util/locale"
 
 /**
@@ -17,7 +22,8 @@ export type Direction = "arrival" | "departure"
 
 export type Trip = {
   direction: Direction
-  area: Area
+  /** A curated area, or an address the customer searched for. */
+  destination: Destination
   /** YYYY-MM-DD, as picked. */
   date: string
   /** HH:MM, 24h, as picked. */
@@ -54,7 +60,6 @@ const first = (v: string | string[] | undefined) =>
  */
 export function parseTrip(params: SearchParams): Trip | null {
   const direction = first(params.direction)
-  const areaId = first(params.area)
   const date = first(params.date) ?? ""
   const time = first(params.time) ?? ""
   const passengers = Number(first(params.passengers))
@@ -64,8 +69,8 @@ export function parseTrip(params: SearchParams): Trip | null {
 
   if (direction !== "arrival" && direction !== "departure") return null
 
-  const area = findArea(areaId)
-  if (!area) return null
+  const destination = destinationFromQuery((key) => first(params[key]))
+  if (!destination) return null
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return null
   if (!/^\d{2}:\d{2}$/.test(time)) return null
@@ -73,7 +78,7 @@ export function parseTrip(params: SearchParams): Trip | null {
   if (!Number.isInteger(passengers) || passengers < 1 || passengers > 16) return null
   if (!Number.isInteger(luggage) || luggage < 0 || luggage > 20) return null
 
-  const trip: Trip = { direction, area, date, time, passengers, luggage }
+  const trip: Trip = { direction, destination, date, time, passengers, luggage }
 
   // A return needs both halves and has to come after the outbound. Anything
   // else is dropped rather than rejected: a one-way is still a valid trip, and
@@ -90,11 +95,16 @@ export function parseTrip(params: SearchParams): Trip | null {
   return trip
 }
 
+/** Where to price from. The server decides the band; this is only the point. */
+export function tripCoords(trip: Trip): { lat: number; lng: number } {
+  return coordsOf(trip.destination)
+}
+
 /** The inverse of parseTrip, for building the next step's URL. */
 export function tripToQuery(trip: Trip, extra?: Record<string, string>): string {
   const q = new URLSearchParams({
     direction: trip.direction,
-    area: trip.area.id,
+    ...destinationToQuery(trip.destination),
     date: trip.date,
     time: trip.time,
     passengers: String(trip.passengers),

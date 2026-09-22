@@ -257,6 +257,8 @@ cart.metadata = {
 
 ### Two rules in bold
 
+**A searched address carries coordinates from the browser; a curated area does not.** `Destination` is two shapes for that reason — `{kind:"area"}` coordinates were reviewed by this project, `{kind:"place"}` coordinates arrived through the customer's browser. Both are priced the same way, server-side from lat/lng, but a browser-supplied point is first checked against a box around Qatar (`inQatar`) so a tampered URL cannot price a trip to Paris against a Doha band.
+
 **The fare is resolved server-side, always.** A `POST /store/quotes` route takes `{ lat, lng, passengers, luggage }` and returns the resolved band plus the priced variants. The client never tells the backend which band applies, which variant to use, or what it costs — that is a price field in devtools. The client sends coordinates; the server decides everything else and re-validates on add-to-cart.
 
 ```ts
@@ -301,7 +303,7 @@ Five steps. Build them in this order.
 
 **1 · Home** — the search widget is *in* the hero, not below it:
 - Direction toggle: **From the airport** / **To the airport**
-- The non-airport end: a **type-to-search combobox** over the curated areas (type the name in either language, or open it and browse). Google Places layers on top of this later; it never replaces it. Free text that matches nothing offers WhatsApp with what they typed rather than an error.
+- The non-airport end: a **type-to-search combobox**. With `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` set, Google Places suggestions (Qatar only, addresses in English for the driver) are merged **above** the curated areas, so a guest can type their hotel or street rather than finding the nearest district. With no key — or a blocked, slow or failing Maps script — the curated list is exactly what it was. Free text neither source knows offers WhatsApp with what they typed rather than an error.
 - An optional **return leg**: same vehicle, same address, opposite direction, as one booking with two legs. The fare is the one-way fare twice — there is no return discount unless the owner sets one. Both legs are held together by the availability guard, and a vehicle busy on *either* leg cannot take the booking.
 - Date, time, passengers — bounded by the **lead time**: a pickup must be at least `NEXT_PUBLIC_MIN_LEAD_MINUTES` (default **180**) away. Checked in the widget, again on the results page (a page can sit open for an hour), and finally server-side before a cart is created. A time in the past and a time inside the window get different words: one is a mistake, the other is a booking we would still like by phone.
 - Trust strip (licensed drivers, flight tracking, free waiting, fixed price)
@@ -633,7 +635,7 @@ Run `npm run build` in `apps/storefront`, not just `tsc`, before pushing anythin
 | 3 | Branding — palette from the logo, fonts, vehicle photography | 🟡 Palette, fonts, brand.css done; photography pending |
 | 4 | Fare bands + fleet products + seed scripts | 🟡 Built; blocked on band B/C/D prices |
 | 5 | Booking funnel — search widget, results, details | ✅ Done — all five steps, both languages |
-| 6 | Google Places + server-side band resolution | 🟡 Band resolution done (`POST /store/quotes`); Places pending |
+| 6 | Google Places + server-side band resolution | ✅ Built — Places merged into the destination field behind `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`, curated list as the fallback. **Needs a key from the owner to go live**; verified against a stubbed Maps API, not against Google |
 | 7 | Checkout — SkipCash card + cash-to-driver | ✅ Done — both paths verified against the SkipCash sandbox incl. 3DS |
 | 8 | Confirmation email + signed-token lookup | ✅ Done — SMTP provider (works with the Outlook mailbox), EN + AR templates, verified with a local mail catcher |
 | 9 | Admin Bookings screen | ✅ Done — `Bookings` page (job sheet by pickup time) + Booking card on every order with *Mark cash collected* |
