@@ -14,6 +14,8 @@ export type QuoteVehicle = {
   luggage: number
   amount: number
   currency_code: string
+  /** False when every one of this vehicle is already out around the pickup time. */
+  available: boolean
 }
 
 export type Quote = {
@@ -21,6 +23,8 @@ export type Quote = {
   band: { code: string; name_en: string; name_ar: string }
   vehicles: QuoteVehicle[]
   quotable: boolean
+  /** False when the band is priced but nothing is free at this time. */
+  available: boolean
 }
 
 /**
@@ -40,6 +44,12 @@ export async function getQuote(input: {
   lng: number
   passengers: number
   luggage: number
+  /**
+   * ISO 8601 pickup instant. Optional, and it never changes a price — it only
+   * decides which vehicles are still free. Omitting it prices as if everything
+   * were available.
+   */
+  pickup_at?: string | null
 }): Promise<Quote | null> {
   try {
     return await sdk.client.fetch<Quote>("/store/quotes", {

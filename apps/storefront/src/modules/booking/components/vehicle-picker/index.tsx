@@ -34,11 +34,14 @@ export default function VehiclePicker({
   const segment = String(params?.countryCode ?? "en-qa")
   const groupId = useId()
 
-  const [selected, setSelected] = useState<string>(vehicles[0]?.variant_id ?? "")
+  // Default to the cheapest car that is actually free, not simply the first.
+  const [selected, setSelected] = useState<string>(
+    vehicles.find((v) => v.available)?.variant_id ?? ""
+  )
   const chosen = vehicles.find((v) => v.variant_id === selected)
 
   function onContinue() {
-    if (!chosen) return
+    if (!chosen || !chosen.available) return
     router.push(`/${segment}${nextHref}&variant=${encodeURIComponent(chosen.variant_id)}`)
   }
 
@@ -64,12 +67,19 @@ export default function VehiclePicker({
               type="button"
               role="radio"
               aria-checked={isSelected}
-              onClick={() => setSelected(v.variant_id)}
+              // Shown, not hidden: a customer who sees a car vanish between
+              // visits wonders what happened to it. aria-disabled rather than
+              // disabled keeps it focusable, so a screen-reader user can still
+              // reach it and hear why it cannot be chosen.
+              aria-disabled={!v.available}
+              onClick={() => v.available && setSelected(v.variant_id)}
               className={clx(
                 "group flex w-full overflow-hidden rounded-dd-lg border-2 bg-dd-surface text-start shadow-card transition-colors small:flex-col",
-                isSelected
-                  ? "border-dd-accent bg-dd-accent-soft/40"
-                  : "border-dd-line hover:border-dd-line-strong"
+                !v.available
+                  ? "cursor-not-allowed border-dd-line bg-dd-paper"
+                  : isSelected
+                    ? "border-dd-accent bg-dd-accent-soft/40"
+                    : "border-dd-line hover:border-dd-line-strong"
               )}
             >
               <div className="relative aspect-square w-28 shrink-0 bg-dd-paper small:aspect-[3/2] small:w-full">
@@ -79,7 +89,7 @@ export default function VehiclePicker({
                     alt={title}
                     fill
                     sizes="(min-width: 1024px) 380px, 112px"
-                    className="object-cover"
+                    className={clx("object-cover", !v.available && "opacity-40 grayscale")}
                   />
                 ) : (
                   <div aria-hidden="true" className="flex h-full items-center justify-center text-dd-grey">
@@ -102,8 +112,16 @@ export default function VehiclePicker({
                   {t("results.luggage", { count: v.luggage })}
                 </p>
 
+                {!v.available && (
+                  <p className="mt-2 text-sm font-medium text-dd-ink-soft">
+                    {t("results.unavailable")}
+                    <span className="block font-normal text-dd-muted">{t("results.unavailableHelp")}</span>
+                  </p>
+                )}
+
                 <span
                   aria-hidden="true"
+                  hidden={!v.available}
                   className={clx(
                     "mt-auto inline-flex items-center gap-x-1.5 pt-3 text-sm font-medium",
                     isSelected ? "text-dd-ink" : "text-dd-muted"
@@ -139,7 +157,7 @@ export default function VehiclePicker({
           <button
             type="button"
             onClick={onContinue}
-            disabled={!chosen}
+            disabled={!chosen || !chosen.available}
             className="min-h-[52px] shrink-0 rounded-dd bg-dd-accent px-6 text-base font-semibold text-dd-on-accent transition-colors hover:bg-dd-accent-strong disabled:opacity-50"
           >
             {t("common.continue")}

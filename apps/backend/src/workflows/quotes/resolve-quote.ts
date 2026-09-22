@@ -3,10 +3,8 @@ import {
   transform,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  listBandVehiclesStep,
-  type QuotedVehicle,
-} from "./steps/list-band-vehicles"
+import { listBandVehiclesStep } from "./steps/list-band-vehicles"
+import { markAvailabilityStep, type AvailableVehicle } from "./steps/mark-availability"
 import { resolveFareBandStep } from "./steps/resolve-fare-band"
 
 export type ResolveQuoteInput = {
@@ -14,12 +12,14 @@ export type ResolveQuoteInput = {
   lng: number
   passengers: number
   luggage: number
+  /** ISO 8601 pickup instant, when the caller has chosen one. Drives availability. */
+  pickup_at?: string | null
 }
 
 export type ResolveQuoteResult = {
   distance_km: number
   band: { code: string; name_en: string; name_ar: string }
-  vehicles: QuotedVehicle[]
+  vehicles: AvailableVehicle[]
 }
 
 /**
@@ -49,7 +49,13 @@ export const resolveQuoteWorkflow = createWorkflow(
       }
     })
 
-    const vehicles = listBandVehiclesStep(vehicleQuery)
+    const priced = listBandVehiclesStep(vehicleQuery)
+
+    const availabilityQuery = transform({ priced, input }, function (data) {
+      return { vehicles: data.priced, pickup_at: data.input.pickup_at ?? null }
+    })
+
+    const vehicles = markAvailabilityStep(availabilityQuery)
 
     const result = transform({ resolved, vehicles }, function (data) {
       return {

@@ -11,6 +11,7 @@ import { normalisePhone, validateContact, type ContactInput } from "@lib/booking
 import { signBookingToken, verifyBookingToken } from "@lib/booking/token"
 import { createTranslator } from "@lib/i18n/dictionary"
 import { localeOf } from "@lib/util/locale"
+import { checkLeadTime, checkLeadTimeIso, leadTimeLabel } from "@lib/booking/lead-time"
 
 /**
  * The booking's own data layer. Separate from the starter's cart.ts on
@@ -95,14 +96,34 @@ export async function createBookingCart(
     return { ok: false, errors }
   }
 
+  /**
+   * The server's own lead-time check. The widget and the results page both
+   * check it too, but this is the one that counts: everything before it is in
+   * the browser's hands, and the details form can sit open for an hour.
+   */
+  const lead = checkLeadTime(trip.date, trip.time)
+  if (lead) {
+    return {
+      ok: false,
+      errors: {},
+      message:
+        lead === "past"
+          ? t("search.error.past")
+          : t("search.error.tooSoon", { lead: leadTimeLabel(localeOf(segment)) }),
+    }
+  }
+
   const quote = await getQuote({
     lat: trip.area.lat,
     lng: trip.area.lng,
     passengers: trip.passengers,
     luggage: trip.luggage,
+    pickup_at: pickupAtIso(trip),
   })
   const vehicle = quote?.vehicles.find((v) => v.variant_id === variantId)
-  if (!quote || !vehicle) {
+  // An unavailable vehicle is treated exactly like a tampered variant: back to
+  // results, where the card is greyed out and the reason is on the page.
+  if (!quote || !vehicle || !vehicle.available) {
     redirect(`/${segment}/results?${tripToQuery(trip)}`)
   }
 
@@ -189,10 +210,29 @@ export async function confirmCashBooking(segment: string, accepted: boolean): Pr
     redirect(`/${segment}`)
   }
 
+  const pickupAt = String((cart.metadata ?? {}).pickup_at ?? "")
+  const lead = checkLeadTimeIso(pickupAt)
+  if (lead) {
+    return {
+      message:
+        lead === "past"
+          ? t("search.error.past")
+          : t("search.error.tooSoon", { lead: leadTimeLabel(localeOf(segment)) }),
+    }
+  }
+
   let orderId: string
   try {
     if (!(await recordConsent(cart, accepted))) {
       return { message: t("payment.consent.required") }
+    }
+
+    // Hold the car before the order exists. Two people confirming the same
+    // slot at the same second: one of them gets this message instead of a
+    // booking the owner cannot drive.
+    const held = await reserveVehicle(cart.id)
+    if (held !== "ok") {
+      return { message: held === "taken" ? t("payment.error.taken") : t("payment.error.generic") }
     }
     const { payment_collection } = await sdk.store.payment.initiatePaymentSession(cart, {
       provider_id: "pp_system_default",
@@ -213,6 +253,35 @@ export async function confirmCashBooking(segment: string, accepted: boolean): Pr
 
   await clearCartId()
   redirect(`/${segment}/confirmed/${orderId}?t=${signBookingToken(orderId)}`)
+}
+
+/**
+ * Holds the vehicle for this cart's pickup time.
+ *
+ * Called immediately before money or an order is created — completing a cart
+ * or sending the customer to SkipCash — because a hold taken any earlier would
+ * strand cars behind browsing, and any later would be a hold on something
+ * already sold.
+ *
+ * Returns the reason on refusal rather than throwing: "someone took the last
+ * car" is an ordinary outcome of two people booking at once, not a fault.
+ */
+async function reserveVehicle(cartId: string): Promise<"ok" | "taken" | "error"> {
+  try {
+    await sdk.client.fetch("/store/reservations", {
+      method: "POST",
+      body: { cart_id: cartId },
+      cache: "no-store",
+    })
+    return "ok"
+  } catch (e) {
+    const status = (e as { status?: number })?.status
+    if (status === 409) {
+      return "taken"
+    }
+    console.error("reserveVehicle failed", e)
+    return "error"
+  }
 }
 
 const SKIPCASH_PROVIDER = "pp_skipcash_skipcash"
@@ -265,6 +334,25 @@ export async function startCardPayment(segment: string, accepted: boolean): Prom
   }
   if (!(await recordConsent(cart, accepted).catch(() => false))) {
     return { message: t("payment.consent.required") }
+  }
+
+  const pickupAt = String((cart.metadata ?? {}).pickup_at ?? "")
+  const lead = checkLeadTimeIso(pickupAt)
+  if (lead) {
+    return {
+      message:
+        lead === "past"
+          ? t("search.error.past")
+          : t("search.error.tooSoon", { lead: leadTimeLabel(localeOf(segment)) }),
+    }
+  }
+
+  // Held before the customer leaves for SkipCash, so the car is still theirs
+  // when they come back from a 3-D Secure challenge three minutes later. The
+  // hold lapses on its own if they abandon the payment.
+  const held = await reserveVehicle(cart.id)
+  if (held !== "ok") {
+    return { message: held === "taken" ? t("payment.error.taken") : t("payment.error.generic") }
   }
 
   const m = (cart.metadata ?? {}) as Record<string, unknown>

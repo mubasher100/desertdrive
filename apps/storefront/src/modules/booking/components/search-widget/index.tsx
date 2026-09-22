@@ -2,7 +2,8 @@
 
 import { useParams, useRouter } from "next/navigation"
 import { useId, useMemo, useState, type FormEvent } from "react"
-import { AREAS, areaHint, areaName } from "@lib/data/areas"
+import LocationPicker from "@modules/booking/components/location-picker"
+import { checkLeadTime, earliestPickupFields, leadTimeLabel, qatarToday } from "@lib/booking/lead-time"
 import { useLanguage, useTranslations } from "@lib/i18n/use-translations"
 import { clx } from "@medusajs/ui"
 
@@ -18,10 +19,15 @@ export type Direction = "arrival" | "departure"
  *  - Native <input type="date"> and <input type="time">. On a phone these open
  *    the OS picker, which is faster and more accessible than anything we could
  *    build, and they need no JavaScript to work.
- *  - The destination is a curated <select> of Qatar areas. This is the
- *    fallback path for Google Places and it is a first-class one — the funnel
- *    must work when Maps fails to load. Places layers on top of this later; it
- *    never replaces it.
+ *  - The destination is a type-to-search combobox over a curated list of Qatar
+ *    areas: type the name, or open it and browse. This is the fallback path
+ *    for Google Places and it is a first-class one — the funnel must work when
+ *    Maps fails to load. Places layers on top of this later; it never replaces
+ *    it.
+ *  - A pickup must be at least the lead time away. The native pickers are
+ *    bounded by `min` so the customer is guided before they are rejected, and
+ *    the rule is re-checked on submit because `min` on a time input only
+ *    applies within a single day.
  *
  * Nothing here touches price. The widget forwards the customer's choices to
  * the results page as URL parameters; the server resolves the fare from them.
@@ -51,14 +57,12 @@ export default function SearchWidget({
   const [error, setError] = useState<string | null>(null)
 
   // Qatar has no DST, so "today" in the customer's booking sense is Qatar's
-  // today. Computed on the client so a late-night booking abroad does not
-  // get yesterday's date from a UTC server.
+  // today. Computed on the client so a late-night booking abroad does not get
+  // yesterday's date from a UTC server. `earliest` is the same idea pushed
+  // forward by the lead time, and bounds the pickers.
   const today = useMemo(() => qatarToday(), [])
-
-  const sortedAreas = useMemo(
-    () => [...AREAS].sort((a, b) => a.order - b.order),
-    []
-  )
+  const earliest = useMemo(() => earliestPickupFields(), [])
+  const minTime = date === earliest.date ? earliest.time : undefined
 
   function onSubmit(e: FormEvent) {
     e.preventDefault()
@@ -71,6 +75,19 @@ export default function SearchWidget({
       setError(t("search.error.datetime"))
       return
     }
+
+    // Checked here rather than left to the input's `min`: a time input's min
+    // is per-day, so 23:00 "today" would pass it while still being in the past.
+    const lead = checkLeadTime(date, time)
+    if (lead === "past") {
+      setError(t("search.error.past"))
+      return
+    }
+    if (lead === "tooSoon") {
+      setError(t("search.error.tooSoon", { lead: leadTimeLabel(language) }))
+      return
+    }
+
     setError(null)
 
     const query = new URLSearchParams({
@@ -145,28 +162,13 @@ export default function SearchWidget({
 
       {/* Destination ------------------------------------------------------- */}
       <Field label={destinationLabel} htmlFor={`${ids}-area`}>
-        <select
+        <LocationPicker
           id={`${ids}-area`}
-          name="area"
+          label={destinationLabel}
           value={area}
-          onChange={(e) => setArea(e.target.value)}
-          required
-          aria-invalid={!!error && !area}
-          className={selectClass}
-        >
-          <option value="" disabled>
-            {t("search.destination.placeholder")}
-          </option>
-          {sortedAreas.map((a) => {
-            const hint = areaHint(a, language)
-            return (
-              <option key={a.id} value={a.id}>
-                {areaName(a, language)}
-                {hint ? ` — ${hint}` : ""}
-              </option>
-            )
-          })}
-        </select>
+          onChange={setArea}
+          invalid={!!error && !area}
+        />
       </Field>
 
       {/* Date + time ------------------------------------------------------- */}
@@ -177,6 +179,7 @@ export default function SearchWidget({
             name="date"
             type="date"
             min={today}
+            // Bounded again below on submit: `min` here only constrains the day.
             value={date}
             onChange={(e) => setDate(e.target.value)}
             required
@@ -189,6 +192,7 @@ export default function SearchWidget({
             name="time"
             type="time"
             step={900}
+            min={minTime}
             value={time}
             onChange={(e) => setTime(e.target.value)}
             required
@@ -288,8 +292,4 @@ function range(from: number, to: number): number[] {
 }
 
 /** Today's date in Qatar (UTC+3, no DST) as YYYY-MM-DD. */
-function qatarToday(): string {
-  const now = new Date()
-  const qatar = new Date(now.getTime() + (3 * 60 + now.getTimezoneOffset()) * 60_000)
-  return qatar.toISOString().slice(0, 10)
-}
+

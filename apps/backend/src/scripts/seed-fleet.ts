@@ -163,6 +163,8 @@ const VEHICLES: Array<{
   description_ar: string
   passengers: number
   luggage: number
+  /** How many of this vehicle exist. Owner-confirmable; defaults to one. */
+  units?: number
 }> = [
   {
     key: "toyota-rush",
@@ -357,6 +359,14 @@ export default async function seedFleet({ container }: ExecArgs) {
               vehicle_key: vehicle.key,
               passengers: vehicle.passengers,
               luggage: vehicle.luggage,
+              /**
+               * How many of this car the owner actually runs. It is what the
+               * availability check counts against, so a wrong number here
+               * either turns customers away or double-books a driver.
+               * Seeded at 1 — the honest default for a small fleet — and
+               * editable in the admin without a deploy.
+               */
+              units: vehicle.units ?? 1,
               // Interface copy is translated in the storefront dictionary; the
               // catalogue is translated here.
               title_ar: vehicle.title_ar,
