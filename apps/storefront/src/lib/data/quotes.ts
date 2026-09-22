@@ -14,6 +14,8 @@ export type QuoteVehicle = {
   luggage: number
   amount: number
   currency_code: string
+  /** Which pricing key this fare came from: an area code, or a band code. */
+  priced_by?: string
   /** False when every one of this vehicle is already out around the pickup time. */
   available?: boolean
 }
@@ -21,6 +23,12 @@ export type QuoteVehicle = {
 export type Quote = {
   distance_km: number
   band: { code: string; name_en: string; name_ar: string }
+  /**
+   * The drawn area the destination fell inside, when it fell in one. Named so
+   * the page can say "The Pearl" rather than "Doha & central" — the customer
+   * recognises the place, not the band.
+   */
+  zone?: { code: string; name_en: string; name_ar: string } | null
   vehicles: QuoteVehicle[]
   quotable: boolean
   /** False when the band is priced but nothing is free at this time. */

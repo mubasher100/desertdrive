@@ -27,12 +27,20 @@ const DISTANCE_BAND_OPTION = "Distance band"
 const CURRENCY = "qar"
 
 export type ListBandVehiclesInput = {
-  band_code: string
+  /**
+   * Pricing keys in order of preference: the drawn zone first, the distance
+   * band behind it. The first one a vehicle actually has a priced variant for
+   * wins, per vehicle — so a zone can be priced for the cars that need it and
+   * fall back to the band for the rest.
+   */
+  codes: string[]
   passengers: number
   luggage: number
 }
 
 export type QuotedVehicle = {
+  /** Which pricing key this fare came from: a zone code, or a band code. */
+  priced_by: string
   product_id: string
   variant_id: string
   handle: string
@@ -147,30 +155,38 @@ export const listBandVehiclesStep = createStep(
        */
       const variants = (product.variants ?? []) as PricedVariant[]
 
-      const variant = variants.find((v) =>
-        (v.options ?? []).some(
-          (o) =>
-            o?.option?.title === DISTANCE_BAND_OPTION &&
-            o?.value === input.band_code
-        )
-      )
+      /**
+       * Walk the candidate codes in order and take the first that is both
+       * present and priced. A variant with no price for this region is not
+       * quotable — the expected state for a zone or band nobody has priced
+       * yet, and why an unpriced key falls through rather than inventing a
+       * number.
+       */
+      let variant: PricedVariant | undefined
+      let amount: number | undefined
+      let pricedBy = ""
 
-      if (!variant) {
-        continue
+      for (const code of input.codes) {
+        const candidate = variants.find((v) =>
+          (v.options ?? []).some(
+            (o) => o?.option?.title === DISTANCE_BAND_OPTION && o?.value === code
+          )
+        )
+        const candidateAmount = candidate?.calculated_price?.calculated_amount
+        if (candidate && typeof candidateAmount === "number") {
+          variant = candidate
+          amount = candidateAmount
+          pricedBy = code
+          break
+        }
       }
 
-      const amount = variant.calculated_price?.calculated_amount
-
-      /**
-       * A variant with no price for this region is not quotable. This is the
-       * expected state for bands the owner has not priced yet, and it is why an
-       * unpriced band returns an empty list rather than a made-up number.
-       */
-      if (typeof amount !== "number") {
+      if (!variant || typeof amount !== "number") {
         continue
       }
 
       vehicles.push({
+        priced_by: pricedBy,
         product_id: product.id,
         variant_id: variant.id,
         handle: product.handle,

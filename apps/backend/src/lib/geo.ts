@@ -99,3 +99,81 @@ export function isValidLatLng(value: unknown): value is LatLng {
     lng <= 180
   )
 }
+
+/** A drawn area: an ordered ring of points, treated as closed. */
+export type Ring = readonly LatLng[]
+
+/**
+ * Whether a point lies inside a polygon, by ray casting.
+ *
+ * A horizontal ray runs east from the point; crossing the outline an odd
+ * number of times means inside. Edges are tested half-open on latitude
+ * (`>` on one end, `<=` on the other) so a point level with a vertex is
+ * counted once rather than twice — the classic double-count that puts points
+ * on a horizontal edge outside their own zone.
+ *
+ * Plate carrée: latitude and longitude are treated as plane coordinates. Over
+ * a zone a few kilometres across, at Qatar's latitude, the error is far below
+ * the precision of a drawn outline. Do not reuse this for country-sized
+ * polygons or anything spanning the antimeridian.
+ */
+export function pointInRing(point: LatLng, ring: Ring): boolean {
+  if (!ring || ring.length < 3) {
+    return false
+  }
+
+  let inside = false
+
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const a = ring[i]
+    const b = ring[j]
+    if (!a || !b) continue
+
+    const straddles = a.lat > point.lat !== b.lat > point.lat
+    if (!straddles) continue
+
+    // Longitude where edge a-b crosses the point's latitude.
+    const crossLng = ((b.lng - a.lng) * (point.lat - a.lat)) / (b.lat - a.lat) + a.lng
+    if (point.lng < crossLng) {
+      inside = !inside
+    }
+  }
+
+  return inside
+}
+
+/** The shape zone resolution needs. Matches the FareZone data model. */
+export type ZoneShape = {
+  code: string
+  polygon: unknown
+  rank: number
+  active?: boolean
+}
+
+/** Reads a stored polygon back into points, dropping anything malformed. */
+export function toRing(polygon: unknown): LatLng[] {
+  if (!Array.isArray(polygon)) return []
+  return polygon.filter((p): p is LatLng => isValidLatLng(p))
+}
+
+/**
+ * The first active zone containing this point, by ascending rank.
+ *
+ * Rank decides overlaps, and overlaps are the point: a compound inside a
+ * district needs to win over the district, so the more specific zone carries
+ * the lower rank. Returns null when the point is in no zone at all — the
+ * ordinary case, which falls through to distance bands.
+ */
+export function resolveZone<T extends ZoneShape>(point: LatLng, zones: readonly T[]): T | null {
+  const ordered = [...zones]
+    .filter((z) => z.active !== false)
+    .sort((a, b) => a.rank - b.rank)
+
+  for (const zone of ordered) {
+    if (pointInRing(point, toRing(zone.polygon))) {
+      return zone
+    }
+  }
+
+  return null
+}

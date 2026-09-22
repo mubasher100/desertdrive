@@ -1,4 +1,12 @@
-import { haversineKm, resolveBand, isValidLatLng, type BandBounds } from "../geo"
+import {
+  haversineKm,
+  resolveBand,
+  isValidLatLng,
+  pointInRing,
+  resolveZone,
+  type BandBounds,
+  type ZoneShape,
+} from "../geo"
 
 /** Hamad International airport reference point (25°16′23″N 51°36′29″E). */
 const DOH = { lat: 25.273056, lng: 51.608056 }
@@ -145,5 +153,77 @@ describe("isValidLatLng", () => {
     expect(isValidLatLng({ lat: NaN, lng: 51.6 })).toBe(false)
     expect(isValidLatLng({ lat: 91, lng: 51.6 })).toBe(false)
     expect(isValidLatLng({ lat: 25, lng: 181 })).toBe(false)
+  })
+})
+
+/**
+ * The Pearl, roughly: a box around Porto Arabia and Viva Bahriya. Real enough
+ * to pin the behaviour the zones exist for — the two precincts sit at
+ * different distances from the airport and must still price the same.
+ */
+const PEARL: { lat: number; lng: number }[] = [
+  { lat: 25.3585, lng: 51.5330 },
+  { lat: 25.3585, lng: 51.5660 },
+  { lat: 25.3860, lng: 51.5660 },
+  { lat: 25.3860, lng: 51.5330 },
+]
+
+const PORTO_ARABIA = { lat: 25.3690, lng: 51.5490 }
+const VIVA_BAHRIYA = { lat: 25.3760, lng: 51.5430 }
+const WEST_BAY = { lat: 25.3208, lng: 51.5312 }
+
+describe("pointInRing", () => {
+  it("puts both Pearl precincts inside the same outline", () => {
+    expect(pointInRing(PORTO_ARABIA, PEARL)).toBe(true)
+    expect(pointInRing(VIVA_BAHRIYA, PEARL)).toBe(true)
+  })
+
+  it("keeps a neighbouring district out", () => {
+    expect(pointInRing(WEST_BAY, PEARL)).toBe(false)
+  })
+
+  it("does not double-count a point level with a vertex", () => {
+    // Level with the northern edge, but well to the west of the zone.
+    expect(pointInRing({ lat: 25.386, lng: 51.4 }, PEARL)).toBe(false)
+  })
+
+  it("treats anything under three points as no area at all", () => {
+    expect(pointInRing(PORTO_ARABIA, [])).toBe(false)
+    expect(pointInRing(PORTO_ARABIA, [PEARL[0], PEARL[1]])).toBe(false)
+  })
+})
+
+describe("resolveZone", () => {
+  const ZONES: (ZoneShape & { code: string })[] = [
+    // A compound inside the district, ranked ahead of it on purpose.
+    { code: "viva-bahriya", rank: 1, polygon: [
+      { lat: 25.3730, lng: 51.5390 },
+      { lat: 25.3730, lng: 51.5480 },
+      { lat: 25.3800, lng: 51.5480 },
+      { lat: 25.3800, lng: 51.5390 },
+    ] },
+    { code: "the-pearl", rank: 10, polygon: PEARL },
+  ]
+
+  it("prefers the more specific zone on an overlap", () => {
+    expect(resolveZone(VIVA_BAHRIYA, ZONES)?.code).toBe("viva-bahriya")
+  })
+
+  it("falls to the surrounding zone elsewhere inside it", () => {
+    expect(resolveZone(PORTO_ARABIA, ZONES)?.code).toBe("the-pearl")
+  })
+
+  it("returns null outside every zone, so bands still apply", () => {
+    expect(resolveZone(WEST_BAY, ZONES)).toBeNull()
+  })
+
+  it("ignores a deactivated zone", () => {
+    const off = ZONES.map((z) => ({ ...z, active: false }))
+    expect(resolveZone(PORTO_ARABIA, off)).toBeNull()
+  })
+
+  it("ignores a malformed polygon rather than throwing", () => {
+    expect(resolveZone(PORTO_ARABIA, [{ code: "bad", rank: 1, polygon: "nonsense" }])).toBeNull()
+    expect(resolveZone(PORTO_ARABIA, [{ code: "bad", rank: 1, polygon: [{ lat: "x", lng: 2 }] }])).toBeNull()
   })
 })

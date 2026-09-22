@@ -36,6 +36,9 @@ export async function POST(
   res.json({
     distance_km: result.distance_km,
     band: result.band,
+    // Named so the results page can say "The Pearl" rather than "Doha &
+    // central" when the destination fell inside a drawn area.
+    zone: result.zone,
     vehicles: result.vehicles,
     quotable: result.vehicles.length > 0,
     available: result.vehicles.some((v) => v.available),
