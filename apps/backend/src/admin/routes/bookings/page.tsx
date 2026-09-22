@@ -109,6 +109,11 @@ const BookingsPage = () => {
                       {booking.direction === "arrival" ? "From" : "To"}
                     </Badge>
                     {routeLabel(booking)}
+                    {booking.return_at && (
+                      <Badge size="2xsmall" color="purple" className="ms-2">
+                        + return
+                      </Badge>
+                    )}
                   </Table.Cell>
                   <Table.Cell>{booking.flight_number ?? "—"}</Table.Cell>
                   <Table.Cell>

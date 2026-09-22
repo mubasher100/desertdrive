@@ -54,6 +54,7 @@ export default async function orderPlacedHandler({ event: { data }, container }:
       direction: m.direction ?? "arrival",
       address: m.address ?? "",
       pickup_at: m.pickup_at ?? "",
+      return_at: m.return_at ?? null,
       flight_number: m.flight_number ?? null,
       vehicle_title: vehicle,
       passengers: Number(m.passengers ?? 0),

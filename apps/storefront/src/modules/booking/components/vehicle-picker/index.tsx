@@ -22,10 +22,18 @@ import { fleetImage } from "@lib/data/fleet-images"
 export default function VehiclePicker({
   vehicles,
   nextHref,
+  legs = 1,
 }: {
   vehicles: QuoteVehicle[]
   /** Details page URL, without the variant. `&variant=` is appended. */
   nextHref: string
+  /**
+   * 2 on a return. The card shows the total the customer pays, with the
+   * per-leg fare underneath — quoting one leg and charging two is the kind of
+   * surprise the whole "price you see is the price you pay" line exists to
+   * rule out.
+   */
+  legs?: 1 | 2
 }) {
   const t = useTranslations()
   const language = useLanguage()
@@ -102,7 +110,7 @@ export default function VehiclePicker({
                 <div className="flex items-start justify-between gap-3">
                   <h2 className="text-base font-semibold text-dd-ink small:text-lg">{title}</h2>
                   <p className="shrink-0 text-lg font-semibold tabular-nums text-dd-ink">
-                    {v.amount}{" "}
+                    {v.amount * legs}{" "}
                     <span className="text-sm font-medium text-dd-muted">{v.currency_code.toUpperCase() === "QAR" ? t("common.currency") : v.currency_code}</span>
                   </p>
                 </div>
@@ -111,6 +119,10 @@ export default function VehiclePicker({
                   {t("results.passengers", { count: v.passengers })} ·{" "}
                   {t("results.luggage", { count: v.luggage })}
                 </p>
+
+                {legs === 2 && (
+                  <p className="mt-0.5 text-sm text-dd-muted">{t("results.legs", { amount: v.amount })}</p>
+                )}
 
                 {v.available === false && (
                   <p className="mt-2 text-sm font-medium text-dd-ink-soft">

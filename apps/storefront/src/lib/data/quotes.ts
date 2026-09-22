@@ -50,6 +50,8 @@ export async function getQuote(input: {
    * were available.
    */
   pickup_at?: string | null
+  /** The return leg's instant. A vehicle busy on either leg cannot take the booking. */
+  return_at?: string | null
 }): Promise<Quote | null> {
   try {
     return await sdk.client.fetch<Quote>("/store/quotes", {
@@ -69,9 +71,9 @@ export async function getQuote(input: {
      * release before this one, and it is restored within one deploy.
      */
     const message = e instanceof Error ? e.message : String(e)
-    if (input.pickup_at && /pickup_at/.test(message)) {
-      console.warn("getQuote: backend predates availability; re-quoting without pickup_at")
-      const { pickup_at, ...legacy } = input
+    if ((input.pickup_at || input.return_at) && /pickup_at|return_at/.test(message)) {
+      console.warn("getQuote: backend predates availability; re-quoting without the pickup times")
+      const { pickup_at, return_at, ...legacy } = input
       return await getQuote(legacy)
     }
 

@@ -10,8 +10,11 @@ type IQueryModule = Omit<RemoteQueryFunction, symbol>
 
 export type MarkAvailabilityInput = {
   vehicles: QuotedVehicle[]
-  /** ISO 8601 with an offset, or null when the caller has not chosen a time yet. */
-  pickup_at: string | null
+  /**
+   * Every instant the booking needs the vehicle for: one on a one-way, two on
+   * a return. Empty when the caller has not chosen a time yet.
+   */
+  pickup_ats: string[]
 }
 
 export type AvailableVehicle = QuotedVehicle & { available: boolean }
@@ -32,22 +35,28 @@ export const markAvailabilityStep = createStep(
   async (input: MarkAvailabilityInput, { container }) => {
     const vehicles = input.vehicles ?? []
 
-    if (!input.pickup_at || !vehicles.length) {
-      return new StepResponse<AvailableVehicle[]>(vehicles.map((v) => ({ ...v, available: true })))
-    }
+    const instants = (input.pickup_ats ?? [])
+      .map((iso) => new Date(iso))
+      .filter((d) => !Number.isNaN(d.getTime()))
 
-    const pickupAt = new Date(input.pickup_at)
-    if (Number.isNaN(pickupAt.getTime())) {
+    if (!instants.length || !vehicles.length) {
       return new StepResponse<AvailableVehicle[]>(vehicles.map((v) => ({ ...v, available: true })))
     }
 
     const slots = container.resolve(BOOKING_SLOT_MODULE) as BookingSlotModuleService
     const query = container.resolve(ContainerRegistrationKeys.QUERY) as IQueryModule
     const productIds = vehicles.map((v) => v.product_id)
-    const { from, to } = overlapRange(pickupAt)
 
-    const [held, { data: products }] = await Promise.all([
-      slots.listBookingSlots({ product_id: productIds, pickup_at: { $gte: from, $lte: to } }),
+    // One query per leg. A return is two legs, so this is two round trips at
+    // most — cheaper than widening the range and filtering, which would count
+    // a vehicle busy in the gap between the legs as busy for both.
+    const [heldPerLeg, { data: products }] = await Promise.all([
+      Promise.all(
+        instants.map((at) => {
+          const { from, to } = overlapRange(at)
+          return slots.listBookingSlots({ product_id: productIds, pickup_at: { $gte: from, $lte: to } })
+        })
+      ),
       query.graph({ entity: "product", fields: ["id", "metadata"], filters: { id: productIds } }),
     ])
 
@@ -55,19 +64,29 @@ export const markAvailabilityStep = createStep(
       (products ?? []).map((p) => [p.id as string, readUnits(p.metadata as Record<string, unknown> | null)])
     )
 
-    const takenById = new Map<string, number>()
-    for (const slot of held) {
-      if (!countsAgainstCapacity({ order_id: slot.order_id, expires_at: slot.expires_at })) {
-        continue
+    /**
+     * Busy on ANY leg means unavailable: the booking needs the same car for
+     * both, so a vehicle free on the way out and taken on the way back cannot
+     * serve it.
+     */
+    const fullFor = new Set<string>()
+    for (const held of heldPerLeg) {
+      const takenById = new Map<string, number>()
+      for (const slot of held) {
+        if (!countsAgainstCapacity({ order_id: slot.order_id, expires_at: slot.expires_at })) {
+          continue
+        }
+        takenById.set(slot.product_id, (takenById.get(slot.product_id) ?? 0) + 1)
       }
-      takenById.set(slot.product_id, (takenById.get(slot.product_id) ?? 0) + 1)
+      for (const [productId, taken] of takenById) {
+        if (taken >= (unitsById.get(productId) ?? 1)) {
+          fullFor.add(productId)
+        }
+      }
     }
 
     return new StepResponse<AvailableVehicle[]>(
-      vehicles.map((v) => ({
-        ...v,
-        available: (takenById.get(v.product_id) ?? 0) < (unitsById.get(v.product_id) ?? 1),
-      }))
+      vehicles.map((v) => ({ ...v, available: !fullFor.has(v.product_id) }))
     )
   }
 )

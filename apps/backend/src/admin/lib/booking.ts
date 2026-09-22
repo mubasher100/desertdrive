@@ -8,6 +8,8 @@ import type { HttpTypes } from "@medusajs/framework/types"
 export type BookingMeta = {
   direction: "arrival" | "departure"
   pickup_at: string
+  /** ISO 8601 on a return booking, null on a one-way. */
+  return_at: string | null
   flight_number: string | null
   passengers: number
   luggage: number
@@ -30,6 +32,7 @@ export function readBooking(order: Pick<HttpTypes.AdminOrder, "metadata">): Book
   return {
     direction: m.direction === "departure" ? "departure" : "arrival",
     pickup_at: str(m.pickup_at),
+    return_at: m.return_at ? str(m.return_at) : null,
     flight_number: m.flight_number ? str(m.flight_number) : null,
     passengers: num(m.passengers) ?? 0,
     luggage: num(m.luggage) ?? 0,
@@ -57,6 +60,11 @@ export function formatPickup(iso: string): { date: string; time: string } {
 
 export function routeLabel(b: BookingMeta): string {
   return b.direction === "departure" ? `${b.address} → Hamad International` : `Hamad International → ${b.address}`
+}
+
+/** The return leg reads as the mirror of the outbound. */
+export function returnRouteLabel(b: BookingMeta): string {
+  return b.direction === "departure" ? `Hamad International → ${b.address}` : `${b.address} → Hamad International`
 }
 
 export function whatsappUrl(phone: string): string {

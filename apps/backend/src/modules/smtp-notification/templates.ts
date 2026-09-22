@@ -19,6 +19,8 @@ export type BookingEmailData = {
   direction: "arrival" | "departure"
   address: string
   pickup_at: string
+  /** ISO 8601, on a return booking. The same vehicle, the opposite direction. */
+  return_at?: string | null
   flight_number: string | null
   vehicle_title: string
   passengers: number
@@ -54,6 +56,8 @@ const COPY = {
     airportTo: (p: string) => `Hamad International Airport → ${p}`,
     toAirport: (p: string) => `${p} → Hamad International Airport`,
     pickup: "Pickup",
+    returnPickup: "Return pickup",
+    returnRoute: "Return",
     flight: "Flight",
     vehicle: "Vehicle",
     party: "Passengers",
@@ -79,6 +83,8 @@ const COPY = {
     airportTo: (p: string) => `مطار حمد الدولي ← ${p}`,
     toAirport: (p: string) => `${p} ← مطار حمد الدولي`,
     pickup: "الاستقبال",
+    returnPickup: "استقبال العودة",
+    returnRoute: "العودة",
     flight: "الرحلة",
     vehicle: "السيارة",
     party: "الركاب",
@@ -103,9 +109,14 @@ export function renderBookingConfirmation(d: BookingEmailData): { subject: strin
   const amount = `${d.total} ${d.currency}`
   const route = d.direction === "departure" ? t.toAirport(d.address) : t.airportTo(d.address)
 
+  // The return is the mirror of the outbound, so it reads with the opposite phrase.
+  const returnRoute = d.direction === "departure" ? t.airportTo(d.address) : t.toAirport(d.address)
+
   const rows: Array<[string, string | null]> = [
     [t.route, route],
     [t.pickup, formatPickup(d.pickup_at, d.locale)],
+    [t.returnRoute, d.return_at ? returnRoute : null],
+    [t.returnPickup, d.return_at ? formatPickup(d.return_at, d.locale) : null],
     [t.flight, d.flight_number],
     [t.vehicle, d.vehicle_title],
     [t.party, t.partyValue(d.passengers, d.luggage)],

@@ -24,6 +24,9 @@ export type Direction = "arrival" | "departure"
  *    for Google Places and it is a first-class one — the funnel must work when
  *    Maps fails to load. Places layers on top of this later; it never replaces
  *    it.
+ *  - A return is one booking with two legs, not two bookings: same vehicle,
+ *    same area, opposite direction. The fare is the one-way fare twice over —
+ *    there is no return discount unless the owner sets one.
  *  - A pickup must be at least the lead time away. The native pickers are
  *    bounded by `min` so the customer is guided before they are rejected, and
  *    the rule is re-checked on submit because `min` on a time input only
@@ -54,6 +57,9 @@ export default function SearchWidget({
   const [time, setTime] = useState("")
   const [passengers, setPassengers] = useState(2)
   const [luggage, setLuggage] = useState(2)
+  const [wantsReturn, setWantsReturn] = useState(false)
+  const [returnDate, setReturnDate] = useState("")
+  const [returnTime, setReturnTime] = useState("")
   const [error, setError] = useState<string | null>(null)
 
   // Qatar has no DST, so "today" in the customer's booking sense is Qatar's
@@ -88,6 +94,19 @@ export default function SearchWidget({
       return
     }
 
+    if (wantsReturn) {
+      if (!returnDate || !returnTime) {
+        setError(t("search.error.returnMissing"))
+        return
+      }
+      const out = new Date(`${date}T${time}:00+03:00`).getTime()
+      const back = new Date(`${returnDate}T${returnTime}:00+03:00`).getTime()
+      if (!(back > out)) {
+        setError(t("search.error.returnBeforeOutbound"))
+        return
+      }
+    }
+
     setError(null)
 
     const query = new URLSearchParams({
@@ -97,6 +116,7 @@ export default function SearchWidget({
       time,
       passengers: String(passengers),
       luggage: String(luggage),
+      ...(wantsReturn ? { return_date: returnDate, return_time: returnTime } : {}),
     })
 
     router.push(`/${segment}/results?${query.toString()}`)
@@ -183,7 +203,7 @@ export default function SearchWidget({
             value={date}
             onChange={(e) => setDate(e.target.value)}
             required
-            className={inputClass}
+            className={dateTimeClass}
           />
         </Field>
         <Field label={t("search.time.label")} htmlFor={`${ids}-time`}>
@@ -196,9 +216,61 @@ export default function SearchWidget({
             value={time}
             onChange={(e) => setTime(e.target.value)}
             required
-            className={inputClass}
+            className={dateTimeClass}
           />
         </Field>
+      </div>
+
+      {/* Return ------------------------------------------------------------ */}
+      <div className="mb-3">
+        <label className="flex min-h-touch cursor-pointer items-center gap-x-3 text-sm text-dd-ink-soft">
+          <input
+            type="checkbox"
+            name="wants_return"
+            checked={wantsReturn}
+            onChange={(e) => {
+              setWantsReturn(e.target.checked)
+              // Pre-fill the return date with the outbound's: most returns are
+              // the same trip a few days later, and an empty date on a phone is
+              // three taps to fill.
+              if (e.target.checked && !returnDate && date) setReturnDate(date)
+            }}
+            className="h-5 w-5 shrink-0 rounded border-dd-line-strong text-dd-accent focus:ring-dd-accent"
+          />
+          <span className="font-medium">
+            {direction === "arrival" ? t("search.return.addFromAirport") : t("search.return.addToAirport")}
+          </span>
+        </label>
+
+        {wantsReturn && (
+          <div className="mt-3 grid grid-cols-2 gap-3 rounded-dd bg-dd-paper p-3">
+            <Field label={t("search.return.date")} htmlFor={`${ids}-rdate`}>
+              <input
+                id={`${ids}-rdate`}
+                name="return_date"
+                type="date"
+                min={date || today}
+                value={returnDate}
+                onChange={(e) => setReturnDate(e.target.value)}
+                className={dateTimeClass}
+              />
+            </Field>
+            <Field label={t("search.return.time")} htmlFor={`${ids}-rtime`}>
+              <input
+                id={`${ids}-rtime`}
+                name="return_time"
+                type="time"
+                step={900}
+                value={returnTime}
+                onChange={(e) => setReturnTime(e.target.value)}
+                className={dateTimeClass}
+              />
+            </Field>
+            <p className="col-span-2 -mt-1 text-xs text-dd-muted">
+              {direction === "arrival" ? t("search.return.helpFromAirport") : t("search.return.helpToAirport")}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Party size -------------------------------------------------------- */}
@@ -268,7 +340,9 @@ function Field({
   children: React.ReactNode
 }) {
   return (
-    <div className="mb-3">
+    // min-w-0: without it a grid child sizes to its content's intrinsic width
+    // and overflows its column — see dateTimeClass.
+    <div className="mb-3 min-w-0">
       <label
         htmlFor={htmlFor}
         className="mb-1 block text-xs font-semibold uppercase tracking-wide text-dd-muted"
@@ -281,7 +355,18 @@ function Field({
 }
 
 const inputClass =
-  "block min-h-touch w-full rounded-dd border border-dd-line bg-dd-surface px-3 text-base text-dd-ink placeholder:text-dd-muted focus:border-dd-ink"
+  "block min-h-touch w-full max-w-full rounded-dd border border-dd-line bg-dd-surface px-3 text-base text-dd-ink placeholder:text-dd-muted focus:border-dd-ink"
+
+/**
+ * Date and time inputs, which need two things the others do not.
+ *
+ * iOS gives `input[type="time"]` a wide intrinsic size, and a grid item's
+ * default `min-width: auto` lets that intrinsic size push the column wider
+ * than its track — so the field renders past the edge of the white card on a
+ * phone. `min-w-0` on the wrapper plus `appearance-none` here is what keeps it
+ * inside. Tapping still opens the OS picker; only the intrinsic sizing goes.
+ */
+const dateTimeClass = inputClass + " appearance-none"
 
 // Native select, with the OS chevron. `appearance-none` is avoided on purpose:
 // the platform control is the most familiar and the most accessible one.

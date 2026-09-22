@@ -25,6 +25,9 @@ export const CreateQuoteSchema = z.object({
    * vehicles are still free, never what they cost.
    */
   pickup_at: z.string().datetime({ offset: true }).nullish(),
+
+  /** The return leg's instant. A vehicle busy on either leg cannot take the booking. */
+  return_at: z.string().datetime({ offset: true }).nullish(),
 })
 
 export type CreateQuoteSchema = z.infer<typeof CreateQuoteSchema>

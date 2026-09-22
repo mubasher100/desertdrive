@@ -15,7 +15,7 @@ type IQueryModule = Omit<RemoteQueryFunction, symbol>
 const HOLD_MINUTES = Number(process.env.BOOKING_HOLD_MINUTES ?? 30)
 
 export type ReserveSlotInput = { cart_id: string }
-export type ReserveSlotResult = { slot_id: string; product_id: string; pickup_at: string }
+export type ReserveSlotResult = { slot_ids: string[]; product_id: string; pickup_ats: string[] }
 
 /**
  * Takes the last free car off the shelf for this cart, or refuses.
@@ -41,7 +41,9 @@ export const reserveSlotStep = createStep(
       relations: ["items"],
     })
 
-    const pickupRaw = (cart.metadata ?? {})["pickup_at"]
+    const meta = cart.metadata ?? {}
+    const pickupRaw = meta["pickup_at"]
+    const returnRaw = meta["return_at"]
     const pickupAt = typeof pickupRaw === "string" ? new Date(pickupRaw) : null
 
     if (!pickupAt || Number.isNaN(pickupAt.getTime())) {
@@ -50,6 +52,12 @@ export const reserveSlotStep = createStep(
         "This cart has no pickup time, so no vehicle can be held for it."
       )
     }
+
+    // A return needs the same car twice. Both legs are held together or
+    // neither is — holding only the outbound would sell a return we cannot
+    // drive back.
+    const returnAt = typeof returnRaw === "string" ? new Date(returnRaw) : null
+    const instants = [pickupAt, ...(returnAt && !Number.isNaN(returnAt.getTime()) ? [returnAt] : [])]
 
     const variantId = cart.items?.[0]?.variant_id
     if (!variantId) {
@@ -68,51 +76,59 @@ export const reserveSlotStep = createStep(
     }
 
     const units = readUnits(product.metadata as Record<string, unknown> | null)
-    const { from, to } = overlapRange(pickupAt)
 
-    // One lock per vehicle. Different cars are independent, so two people
-    // booking different vehicles for the same minute never wait on each other.
+    // One lock per vehicle, covering both legs. Different cars are
+    // independent, so two people booking different vehicles for the same
+    // minute never wait on each other — and because a return locks the same
+    // key once, two returns can never deadlock against each other.
     const created = await locking.execute(
       `booking-slot:${product.id}`,
       async () => {
-        const existing = await slots.listBookingSlots({
-          product_id: product.id,
-          pickup_at: { $gte: from, $lte: to },
-        })
+        const mine = await slots.listBookingSlots({ product_id: product.id, cart_id: input.cart_id })
+        const held = mine.filter((s) => !s.order_id)
 
-        const taken = existing.filter((s) =>
-          countsAgainstCapacity({ order_id: s.order_id, expires_at: s.expires_at, cart_id: s.cart_id }, input.cart_id)
-        )
-
-        if (taken.length >= units) {
-          throw new MedusaError(
-            MedusaError.Types.NOT_ALLOWED,
-            `Every ${product.title} is already booked around this time.`
+        // This cart already holds its legs (the customer went back and paid
+        // again). Extend rather than double-book against itself.
+        if (held.length === instants.length) {
+          await slots.updateBookingSlots(
+            held.map((s) => ({ id: s.id, expires_at: new Date(Date.now() + HOLD_MINUTES * 60_000) }))
           )
+          return { slots: held, reused: true }
         }
 
-        // This cart already holds one (the customer went back and paid again).
-        const mine = existing.find((s) => s.cart_id === input.cart_id && !s.order_id)
-        if (mine) {
-          await slots.updateBookingSlots({
-            id: mine.id,
-            expires_at: new Date(Date.now() + HOLD_MINUTES * 60_000),
+        for (const at of instants) {
+          const { from, to } = overlapRange(at)
+          const existing = await slots.listBookingSlots({
+            product_id: product.id,
+            pickup_at: { $gte: from, $lte: to },
           })
-          return { slot: mine, reused: true }
+          const taken = existing.filter((s) =>
+            countsAgainstCapacity(
+              { order_id: s.order_id, expires_at: s.expires_at, cart_id: s.cart_id },
+              input.cart_id
+            )
+          )
+          if (taken.length >= units) {
+            throw new MedusaError(
+              MedusaError.Types.NOT_ALLOWED,
+              `Every ${product.title} is already booked around this time.`
+            )
+          }
         }
 
-        const [slot] = await slots.createBookingSlots([
-          {
+        const expires = new Date(Date.now() + HOLD_MINUTES * 60_000)
+        const rows = await slots.createBookingSlots(
+          instants.map((at) => ({
             product_id: product.id,
             vehicle_handle: product.handle ?? "",
-            pickup_at: pickupAt,
+            pickup_at: at,
             cart_id: input.cart_id,
             order_id: null,
-            expires_at: new Date(Date.now() + HOLD_MINUTES * 60_000),
-          },
-        ])
+            expires_at: expires,
+          }))
+        )
 
-        return { slot, reused: false }
+        return { slots: Array.isArray(rows) ? rows : [rows], reused: false }
       },
       // Wait rather than fail if another checkout holds the lock for an instant.
       { timeout: 5 }
@@ -124,17 +140,19 @@ export const reserveSlotStep = createStep(
      * to commit — an order has no cart_id column, and the cart↔order link is
      * not worth traversing for one string.
      */
+    const slotIds = created.slots.map((s) => s.id)
+
     await cartService.updateCarts(input.cart_id, {
-      metadata: { ...(cart.metadata ?? {}), booking_slot_id: created.slot.id },
+      metadata: { ...meta, booking_slot_id: slotIds[0], booking_slot_ids: slotIds.join(",") },
     })
 
-    return new StepResponse<ReserveSlotResult, { slot_id: string; reused: boolean }>(
+    return new StepResponse<ReserveSlotResult, { slot_ids: string[]; reused: boolean }>(
       {
-        slot_id: created.slot.id,
+        slot_ids: slotIds,
         product_id: product.id,
-        pickup_at: pickupAt.toISOString(),
+        pickup_ats: instants.map((d) => d.toISOString()),
       },
-      { slot_id: created.slot.id, reused: created.reused }
+      { slot_ids: slotIds, reused: created.reused }
     )
   },
   async (compensate, { container }) => {
@@ -143,7 +161,7 @@ export const reserveSlotStep = createStep(
       return
     }
     const slots = container.resolve(BOOKING_SLOT_MODULE) as BookingSlotModuleService
-    await slots.deleteBookingSlots([compensate.slot_id])
+    await slots.deleteBookingSlots(compensate.slot_ids)
   }
 )
 

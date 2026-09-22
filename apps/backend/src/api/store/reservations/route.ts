@@ -26,7 +26,7 @@ export async function POST(
     const { result } = await reserveBookingSlotWorkflow(req.scope).run({
       input: { cart_id },
     })
-    res.json({ reserved: true, slot_id: result.slot_id })
+    res.json({ reserved: true, slot_ids: result.slot_ids })
   } catch (e) {
     const err = e as { type?: string; message?: string }
     if (err?.type === MedusaError.Types.NOT_ALLOWED) {

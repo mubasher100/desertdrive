@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import TripSummary from "@modules/booking/components/trip-summary"
 import VehiclePicker from "@modules/booking/components/vehicle-picker"
 import { getQuote } from "@lib/data/quotes"
-import { parseTrip, pickupAtIso, tripToQuery, type SearchParams } from "@lib/booking/trip"
+import { legsOf, parseTrip, pickupAtIso, returnAtIso, tripToQuery, type SearchParams } from "@lib/booking/trip"
 import { checkLeadTime, leadTimeLabel } from "@lib/booking/lead-time"
 import { getTranslations } from "@lib/i18n/get-translations"
 import { localeOf } from "@lib/util/locale"
@@ -63,6 +63,7 @@ export default async function ResultsPage({ params, searchParams }: Props) {
         passengers: trip.passengers,
         luggage: trip.luggage,
         pickup_at: pickupAtIso(trip),
+        return_at: returnAtIso(trip),
       })
 
   const bandName = quote
@@ -99,6 +100,7 @@ export default async function ResultsPage({ params, searchParams }: Props) {
           <div className="mt-6">
             <VehiclePicker
               vehicles={quote.vehicles}
+              legs={legsOf(trip)}
               nextHref={`/details?${tripToQuery(trip)}`}
             />
           </div>
