@@ -4,6 +4,7 @@ import { useId, useState, useTransition, type FormEvent } from "react"
 import { clx } from "@medusajs/ui"
 import type { Trip } from "@lib/booking/trip"
 import { validateContact, type ContactErrors, type ContactInput } from "@lib/booking/contact"
+import { DEFAULT_DIAL_ISO, DIAL_CODES, findDial } from "@lib/data/dial-codes"
 import { createBookingCart } from "@lib/data/booking"
 import { useTranslations } from "@lib/i18n/use-translations"
 
@@ -34,6 +35,7 @@ export default function DetailsForm({
   const [values, setValues] = useState<ContactInput>({
     contact_name: "",
     contact_phone: "",
+    contact_dial: DEFAULT_DIAL_ISO,
     contact_email: "",
     flight_number: "",
     notes: "",
@@ -42,7 +44,7 @@ export default function DetailsForm({
   const flightRequired = trip.direction === "arrival"
 
   function set<K extends keyof ContactInput>(key: K) {
-    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
       setValues((v) => ({ ...v, [key]: e.target.value }))
   }
 
@@ -114,20 +116,44 @@ export default function DetailsForm({
         hint={t("details.phone.help")}
         error={errors.contact_phone}
       >
-        <input
-          id={`${ids}-contact_phone`}
-          name="contact_phone"
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel"
-          placeholder={t("details.phone.placeholder")}
-          value={values.contact_phone}
-          onChange={set("contact_phone")}
-          required
-          aria-invalid={!!errors.contact_phone}
-          aria-describedby={`${ids}-contact_phone-hint`}
-          className={clx(inputClass, errors.contact_phone && errorClass)}
-        />
+        {/*
+          The country is picked, not guessed. Most customers book from abroad,
+          and a field that quietly assumes +974 hands the driver a number that
+          does not ring. Typing a full "+44…" into the field still wins over
+          the selector — see normalisePhone.
+        */}
+        <div className="flex gap-x-2">
+          <select
+            name="contact_dial"
+            aria-label={t("details.phone.country")}
+            value={values.contact_dial ?? DEFAULT_DIAL_ISO}
+            onChange={set("contact_dial")}
+            className={clx(inputClass, "w-[7.5rem] shrink-0 pe-6", errors.contact_phone && errorClass)}
+          >
+            {DIAL_CODES.map((c) => (
+              <option key={c.iso} value={c.iso}>
+                {c.iso} +{c.dial}
+              </option>
+            ))}
+          </select>
+          <input
+            id={`${ids}-contact_phone`}
+            name="contact_phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel-national"
+            placeholder={t("details.phone.placeholder")}
+            value={values.contact_phone}
+            onChange={set("contact_phone")}
+            required
+            aria-invalid={!!errors.contact_phone}
+            aria-describedby={`${ids}-contact_phone-hint`}
+            className={clx(inputClass, "min-w-0 flex-1", errors.contact_phone && errorClass)}
+          />
+        </div>
+        <p className="sr-only" aria-live="polite">
+          {findDial(values.contact_dial ?? DEFAULT_DIAL_ISO)?.name_en}
+        </p>
       </Field>
 
       <Field
