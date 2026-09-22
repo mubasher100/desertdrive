@@ -688,11 +688,14 @@ Do not build these without asking. Each was considered and cut:
 
 Ask the owner. Several of these block real work:
 
-1. **Band prices for B, C and D** — or confirmation that the catalogue price is flat. Band A is the catalogue (Rush 100 · MPV 120 · Hiace 180 · H1 200 · Tesla 300).
+1. **Band prices for B, C and D** — or confirmation that the catalogue price is flat. Band A is the catalogue (Rush 100 · MPV 120 · Hiace 180 · H1 200 · Tesla 300). Until these land, **15 of the 38 listed destinations cannot be booked online** — all of Lusail, Al Rayyan, Al Khor and Dukhan among them. They fall back to a WhatsApp quote, which is honest but is not a booking.
 2. **Hamad International coordinates** — approximately `25.273 N, 51.608 E`. **Verify precisely before committing.** Every fare in the system keys off this one point.
-3. **Fleet detail** — the 120 QAR vehicle's make/model, real passenger and luggage capacities for all five, and photography (`public/fleet/<handle>.jpg`).
+3. **Fleet detail** — the 120 QAR vehicle's make/model, real passenger and luggage capacities for all five, and photography (`public/fleet/<handle>.jpg`). Also **how many of each vehicle exist** (`units` on product metadata, seeded at 1): it is what the availability guard counts, so too low turns customers away and too high double-books a driver.
 4. ~~Logo and brand colours~~ — supplied and sampled. Still wanted: an SVG or transparent original, and a mark-only version.
 5. **Contact details** — phone/WhatsApp `+974 5151 4161` ✅ (2026-09-21). Still needed: the commercial registration number and the registered address (`CONTACT.cr`, `CONTACT.address` in `src/lib/data/contact.ts`; `BUSINESS_CR`, `BUSINESS_ADDRESS` on Railway).
 6. **Domain** — the live domain is `desertdriverental.com` (Namecheap, DNS on Cloudflare in the `officialyuvraj24@gmail.com` account). `desertdrive.qa` is unregistered and still an option: a plain `.qa` needs **no** Qatari commercial registration (only `.com.qa` does), but must be bought through a Qatar-accredited registrar or reseller.
 7. ~~SkipCash credentials~~ — sandbox supplied and working. Production keys go straight into Railway variables when the owner is ready.
-8. **Cancellation and refund policy** — the actual terms, from the owner. Required for SkipCash onboarding, and it cannot be invented.
+8. **Cancellation and refund policy** — the actual terms, from the owner. Required for SkipCash onboarding, and it cannot be invented. The terms and cancellation pages currently show six bracketed `[Owner: …]` gaps each, live, while customers are asked to tick "I have read and agree".
+9. **Minimum notice for a booking** — currently defaulted to **3 hours** (`NEXT_PUBLIC_MIN_LEAD_MINUTES`). Anything sooner is sent to WhatsApp.
+10. **How long one transfer occupies a vehicle** — defaulted to **120 minutes** either side of the pickup (`BOOKING_SLOT_MINUTES`). It decides when the same car can be sold again.
+11. **Production SkipCash keys and an SMTP sender.** Until both land the site cannot take real money and sends no confirmation email — see the launch-readiness audit.
