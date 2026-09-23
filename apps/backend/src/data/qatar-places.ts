@@ -225,6 +225,150 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.449358
   },
   {
+    "osm_type": "node",
+    "osm_id": "1733928061",
+    "name_en": "Al Dhakira",
+    "name_ar": "الذخيرة",
+    "kind": "city",
+    "lat": 25.734741,
+    "lng": 51.543336
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "228263444",
+    "name_en": "Al Jumaliyah",
+    "name_ar": "الجميلية",
+    "kind": "city",
+    "lat": 25.625912,
+    "lng": 51.084426
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1227115978",
+    "name_en": "Al Khor",
+    "name_ar": "الخور",
+    "kind": "city",
+    "lat": 25.683733,
+    "lng": 51.503121
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "2189253861",
+    "name_en": "Al Rayyan",
+    "name_ar": "الريان",
+    "kind": "city",
+    "lat": 25.296619,
+    "lng": 51.434626
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1474146066",
+    "name_en": "Al Ruwais",
+    "name_ar": "الرويس",
+    "kind": "city",
+    "lat": 26.129504,
+    "lng": 51.204652
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1363470272",
+    "name_en": "Al Wakrah",
+    "name_ar": "الوكرة",
+    "kind": "city",
+    "lat": 25.156662,
+    "lng": 51.601321
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "12795802220",
+    "name_en": "Al Wukair",
+    "name_ar": "الوكير",
+    "kind": "city",
+    "lat": 25.155986,
+    "lng": 51.547689
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1474049663",
+    "name_en": "Al-Shahaniya",
+    "name_ar": "الشحانية",
+    "kind": "city",
+    "lat": 25.371742,
+    "lng": 51.227109
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1676664890",
+    "name_en": "Doha",
+    "name_ar": "الدوحة",
+    "kind": "city",
+    "lat": 25.285633,
+    "lng": 51.526416
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "3930895157",
+    "name_en": "Dukhan",
+    "name_ar": "دخان",
+    "kind": "city",
+    "lat": 25.41886,
+    "lng": 50.78762
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1736113516",
+    "name_en": "Lusail",
+    "name_ar": "لوسيل",
+    "kind": "city",
+    "lat": 25.422889,
+    "lng": 51.519716
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1363444750",
+    "name_en": "Mesaieed",
+    "name_ar": "مسيعيد",
+    "kind": "city",
+    "lat": 24.995394,
+    "lng": 51.549358
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1664865661",
+    "name_en": "Ras Laffan",
+    "name_ar": "رأس لفان",
+    "kind": "city",
+    "lat": 25.897657,
+    "lng": 51.533153
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1736130075",
+    "name_en": "Simaisma",
+    "name_ar": "سميسمة",
+    "kind": "city",
+    "lat": 25.577203,
+    "lng": 51.483831
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "12409403565",
+    "name_en": "Umm Salal Ali",
+    "name_ar": null,
+    "kind": "city",
+    "lat": 25.469814,
+    "lng": 51.397635
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "2189240942",
+    "name_en": "Umm Salal Muhammad",
+    "name_ar": "أم صلال محمد",
+    "kind": "city",
+    "lat": 25.413617,
+    "lng": 51.406846
+  },
+  {
     "osm_type": "way",
     "osm_id": "239725946",
     "name_en": "18 Villas",
@@ -3241,15 +3385,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "1733928061",
-    "name_en": "Al Dhakira",
-    "name_ar": "الذخيرة",
-    "kind": "district",
-    "lat": 25.734741,
-    "lng": 51.543336
-  },
-  {
-    "osm_type": "node",
     "osm_id": "1233931919",
     "name_en": "Al Doha Al Jadeeda",
     "name_ar": "الدوحة الجديدة",
@@ -3330,15 +3465,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.3534
   },
   {
-    "osm_type": "node",
-    "osm_id": "1227115978",
-    "name_en": "Al Khor",
-    "name_ar": "الخور",
-    "kind": "district",
-    "lat": 25.683733,
-    "lng": 51.503121
-  },
-  {
     "osm_type": "way",
     "osm_id": "189083830",
     "name_en": "Al Khor Camp",
@@ -3373,15 +3499,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "kind": "district",
     "lat": 25.301739,
     "lng": 51.482434
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "1474146066",
-    "name_en": "Al Ruwais",
-    "name_ar": "الرويس",
-    "kind": "district",
-    "lat": 26.129504,
-    "lng": 51.204652
   },
   {
     "osm_type": "node",
@@ -3445,15 +3562,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "kind": "district",
     "lat": 25.291726,
     "lng": 51.386739
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "12795802220",
-    "name_en": "Al Wukair",
-    "name_ar": "الوكير",
-    "kind": "district",
-    "lat": 25.155986,
-    "lng": 51.547689
   },
   {
     "osm_type": "way",
@@ -3790,15 +3898,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "1363444750",
-    "name_en": "Mesaieed",
-    "name_ar": "مسيعيد",
-    "kind": "district",
-    "lat": 24.995394,
-    "lng": 51.549358
-  },
-  {
-    "osm_type": "node",
     "osm_id": "11746650753",
     "name_en": "Mina District",
     "name_ar": "حي الميناء",
@@ -3979,15 +4078,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "1664865661",
-    "name_en": "Ras Laffan",
-    "name_ar": "رأس لفان",
-    "kind": "district",
-    "lat": 25.897657,
-    "lng": 51.533153
-  },
-  {
-    "osm_type": "node",
     "osm_id": "1237145000",
     "name_en": "Rawdat Al Khail",
     "name_ar": "روضة الخيل",
@@ -4003,15 +4093,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "kind": "district",
     "lat": 24.740833,
     "lng": 50.758333
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "1736130075",
-    "name_en": "Simaisma",
-    "name_ar": "سميسمة",
-    "kind": "district",
-    "lat": 25.577203,
-    "lng": 51.483831
   },
   {
     "osm_type": "node",
@@ -4066,24 +4147,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "kind": "district",
     "lat": 25.552237,
     "lng": 51.432117
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "12409403565",
-    "name_en": "Umm Salal Ali",
-    "name_ar": null,
-    "kind": "district",
-    "lat": 25.469814,
-    "lng": 51.397635
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "2189240942",
-    "name_en": "Umm Salal Muhammad",
-    "name_ar": "أم صلال محمد",
-    "kind": "district",
-    "lat": 25.413617,
-    "lng": 51.406846
   },
   {
     "osm_type": "node",
@@ -6298,6 +6361,96 @@ export const QATAR_PLACES: OsmPlace[] = [
     "kind": "hotel",
     "lat": 25.245286,
     "lng": 51.533681
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "13211655",
+    "name_en": "Al Aaliya Island",
+    "name_ar": "الجزيرة العالية",
+    "kind": "island",
+    "lat": 25.402535,
+    "lng": 51.566565
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "1093365407",
+    "name_en": "Fisht Al Dibal",
+    "name_ar": "فشت الديبل",
+    "kind": "island",
+    "lat": 26.254678,
+    "lng": 50.956671
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "13649355",
+    "name_en": "Halul",
+    "name_ar": "حالول",
+    "kind": "island",
+    "lat": 25.674013,
+    "lng": 52.410245
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "11871652554",
+    "name_en": "Jazirat `Unaybir",
+    "name_ar": "جزيرة عُنيبر",
+    "kind": "island",
+    "lat": 24.933469,
+    "lng": 50.737593
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "12982082",
+    "name_en": "Jazīrat Rakan",
+    "name_ar": null,
+    "kind": "island",
+    "lat": 26.175634,
+    "lng": 51.22992
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "11746581924",
+    "name_en": "Palm Island",
+    "name_ar": null,
+    "kind": "island",
+    "lat": 25.339454,
+    "lng": 51.534078
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "5275660423",
+    "name_en": "Palm Tree island",
+    "name_ar": null,
+    "kind": "island",
+    "lat": 25.30509,
+    "lng": 51.527581
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "860434674",
+    "name_en": "Qetaifan Island North",
+    "name_ar": "جزيرة قطيفان الشمالية",
+    "kind": "island",
+    "lat": 25.431492,
+    "lng": 51.529139
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "860434673",
+    "name_en": "Qetaifan Island South 3",
+    "name_ar": "جزيرة قطيفان الجنوبية 3",
+    "kind": "island",
+    "lat": 25.416278,
+    "lng": 51.524675
+  },
+  {
+    "osm_type": "relation",
+    "osm_id": "13009820",
+    "name_en": "The Pearl-Qatar",
+    "name_ar": "اللؤلؤة قطر",
+    "kind": "island",
+    "lat": 25.369518,
+    "lng": 51.551648
   },
   {
     "osm_type": "node",

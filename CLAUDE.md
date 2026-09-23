@@ -219,7 +219,10 @@ The destination field suggests real places as you type — districts, hotels, ca
 
 - `placeIndex` module, `GET /store/places?q=`, ranked so a name that *starts* with the query beats one that contains it, a district beats a hotel of the same name, and a short name beats a long one.
 - **A committed snapshot (`src/data/qatar-places.ts`) is the floor**, written to the database *before* any network call. Without it a fresh deploy has an empty search box until the weekly job happens to succeed. It is a **TypeScript module, not JSON, because `medusa build` compiles TypeScript and does not copy data files** — checked, not assumed.
-- `refresh-place-index` re-imports weekly and layers live results on top. A failed run changes nothing.
+- `refresh-place-index` re-imports weekly and layers live results on top. A failed run changes nothing. `PLACES_SNAPSHOT_ONLY=1` loads the snapshot and skips Overpass — what a fresh database wants, and what pushing a corrected snapshot wants.
+- Results are **de-duplicated after ranking**. OSM maps Nuaija three times and Al Bidda twice, as a point and as areas; the index is right to hold all of them, the dropdown should offer the name once.
+
+> **`place=city` is not in `place~town|village|suburb`, and almost every large Qatari destination is a city.** Doha, Al Rayyan, Al Wakrah, Lusail, Dukhan, Mesaieed and Al-Shahaniya were absent from the index entirely until the selector admitted `city` — typing "Al Wakrah" found nothing and "Lusail" found three hotels. `city` and `island` are now kinds of their own, ranked above a district. If a place a customer would obviously type is missing, check its `place=*` value in OSM before assuming it is unmapped.
 
 > **Overpass is a free, shared, frequently overloaded service.** It answers `count` queries and refuses `geometry` ones; it returns **200 with an HTML error page**, so check the content type and not just the status; it 429s if you ask more than a few times a minute; and `overpass.private.coffee` answers `curl` while timing out from Node's fetch. Hence: one union query per box (8 for the whole country, not 64), a pause between them, retries across mirrors, and a 60-second back-off on 429.
 
