@@ -14,6 +14,8 @@ export type BookingMeta = {
   passengers: number
   luggage: number
   address: string
+  lat: number | null
+  lng: number | null
   band_code: string
   distance_km: number | null
   contact_name: string
@@ -37,6 +39,8 @@ export function readBooking(order: Pick<HttpTypes.AdminOrder, "metadata">): Book
     passengers: num(m.passengers) ?? 0,
     luggage: num(m.luggage) ?? 0,
     address: str(m.address),
+    lat: num(m.lat),
+    lng: num(m.lng),
     band_code: str(m.band_code),
     distance_km: num(m.distance_km),
     contact_name: str(m.contact_name),
@@ -65,6 +69,16 @@ export function routeLabel(b: BookingMeta): string {
 /** The return leg reads as the mirror of the outbound. */
 export function returnRouteLabel(b: BookingMeta): string {
   return b.direction === "departure" ? `Hamad International → ${b.address}` : `${b.address} → Hamad International`
+}
+
+/**
+ * Where to drive, as a link.
+ *
+ * A pinned villa has coordinates and no useful street name, so the address
+ * line alone does not get a driver there. This does.
+ */
+export function mapsUrl(b: BookingMeta): string | null {
+  return b.lat != null && b.lng != null ? `https://www.google.com/maps?q=${b.lat},${b.lng}` : null
 }
 
 export function whatsappUrl(phone: string): string {
