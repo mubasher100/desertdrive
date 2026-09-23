@@ -240,6 +240,12 @@ Drawn areas are also **searchable destinations**: `GET /store/zones` returns eac
 
 Drawn in the admin at **Priced areas**, on OpenStreetMap tiles through Leaflet — no API key, no per-view billing, and it keeps working if a Google key is ever revoked. The attribution line is a condition of the tiles; leave it.
 
+> **⚠️ A free tile provider can start watermarking, and it will not look like an error.** The English map used CARTO for Latin labels, because OSM labels Qatar in Arabic. On 23 Sept 2026 CARTO began stamping **"API KEY REQUIRED"** across every tile of every style — still HTTP 200, so nothing threw, nothing logged, and no monitor would have caught it. It was reported by a person looking at a phone. Their free key does not fix it either: **CARTO's free tier is non-commercial only** and this is a booking site.
+>
+> Both maps are now on plain OSM, which is free, permits commercial use, and labels Qatar in Arabic — a localisation wart, where a watermark is a site that looks misconfigured. `NEXT_PUBLIC_MAP_TILE_URL` / `_ATTRIBUTION` / `_SUBDOMAINS` repoint the English map at a Latin-label provider with no code change; the attribution is required alongside the URL. Getting English labels back for free and key-less means **OpenFreeMap**, which is vector-only and so means MapLibre GL in place of Leaflet — roughly 3× the map JavaScript on a phone. Owner's call, still open.
+>
+> The lesson generalises: **a third-party tile URL is a dependency with terms that change under you.** Check what a tile actually looks like, not just that it returned 200.
+
 ### Availability: one car, one moment
 
 A vehicle is not stock on a shelf — the same Rush is sellable at 06:00 and again at 14:00, but not twice at 06:00 — so Medusa's inventory module is the wrong shape. The `bookingSlot` module holds one row per vehicle per pickup, written **during checkout** (before the cart completes, and before the customer leaves for SkipCash), under a Redis lock keyed per vehicle so two simultaneous payments cannot both take the last car.
