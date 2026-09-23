@@ -131,6 +131,29 @@ export default function LocationPicker({
     setCursor(0)
   }, [query])
 
+  /**
+   * Adopt anything typed before React was listening.
+   *
+   * The field is server-rendered, so a customer on a slow connection can type
+   * into it seconds before the bundle hydrates. Those keystrokes reach the DOM
+   * — the text is visibly in the box — but no `onChange` ever fired, so the
+   * search never ran and the list sat on the default areas. Which looks
+   * exactly like "it doesn't find my place", because from the customer's side
+   * it is indistinguishable from that.
+   *
+   * Runs once on mount, and only when nothing has been chosen yet, so it can
+   * never overwrite a real selection.
+   */
+  useEffect(() => {
+    const typed = inputRef.current?.value.trim()
+    if (typed && !value) {
+      setQuery(typed)
+      setOpen(true)
+    }
+    // Mount only: a later render must not re-adopt the input's own display value.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Load Maps on first focus, not on page load: most visits never reach this
   // field, and the script is not free.
   useEffect(() => {
