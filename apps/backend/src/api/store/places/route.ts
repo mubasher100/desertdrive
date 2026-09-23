@@ -1,6 +1,6 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { PLACE_INDEX_MODULE } from "../../../modules/place-index"
-import { normaliseSearch, rankPlaces } from "../../../lib/osm-places"
+import { dedupePlaces, normaliseSearch, rankPlaces } from "../../../lib/osm-places"
 
 type PlaceRow = {
   id: string
@@ -50,7 +50,8 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     )
     .catch(() => [])
 
-  const places = rankPlaces(matches, raw)
+  // Rank first, then drop repeats, so the copy that survives is the best one.
+  const places = dedupePlaces(rankPlaces(matches, raw))
     .slice(0, 8)
     .map((p) => ({
       id: p.id,

@@ -48,6 +48,14 @@ export default async function importPlaces({ container }: ExecArgs) {
   const written = await upsert(service, QATAR_PLACES, logger)
   logger.info(`places: snapshot committed — ${written.added} added, ${written.updated} updated`)
 
+  // PLACES_SNAPSHOT_ONLY=1 stops here. Overpass takes ten minutes on a good
+  // day and can spend an hour timing out on a bad one, and loading a fresh
+  // database — or pushing a corrected snapshot to one — needs neither.
+  if (process.env.PLACES_SNAPSHOT_ONLY === "1") {
+    logger.info("places: PLACES_SNAPSHOT_ONLY set — skipping the Overpass refresh")
+    return
+  }
+
   const found = new Map<string, OsmPlace>()
   let failures = 0
 
@@ -124,11 +132,21 @@ async function upsert(
       continue
     }
 
+    // `kind` is compared too: reclassifying Lusail from a district to a city
+    // changes nothing else about the row, so leaving it out would mean the
+    // change never reached a database that already had it.
+    //
+    // Coordinates get a tolerance rather than an equality test. The snapshot
+    // is stored rounded and Overpass answers at full precision, so an exact
+    // comparison rewrites every row every week over a difference of
+    // centimetres. 1e-5 degrees is about a metre — well under the accuracy a
+    // pickup pin needs, and far above the rounding.
     if (
       current.name_en !== row.name_en ||
       current.name_ar !== row.name_ar ||
-      current.lat !== row.lat ||
-      current.lng !== row.lng
+      current.kind !== row.kind ||
+      Math.abs(current.lat - row.lat) > 1e-5 ||
+      Math.abs(current.lng - row.lng) > 1e-5
     ) {
       await service.updatePlaces({ id: current.id, ...row }).catch((e) => logger.warn(`places: ${(e as Error).message.slice(0, 60)}`))
       updated++

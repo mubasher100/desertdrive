@@ -1,4 +1,5 @@
-import { normaliseSearch, rankPlaces, searchText, toPlace } from "../osm-places"
+import { dedupePlaces, kindOf, normaliseSearch, rankPlaces, searchText, toPlace } from "../osm-places"
+import { QATAR_PLACES } from "../../data/qatar-places"
 
 describe("toPlace", () => {
   it("prefers the English name and keeps the Arabic one", () => {
@@ -52,5 +53,60 @@ describe("rankPlaces", () => {
   it("still returns a mid-word match, just later", () => {
     const out = rankPlaces([make("Msheireb Downtown", "district"), make("Souq Msheireb", "mall")], "msheireb")
     expect(out.map((p) => p.name_en)).toEqual(["Msheireb Downtown", "Souq Msheireb"])
+  })
+})
+
+describe("kindOf", () => {
+  it("keeps a city apart from a district", () => {
+    // Doha, Lusail, Al Wakrah and Al Rayyan are all `place=city` in OSM. They
+    // were absent from the index entirely until the selector admitted them,
+    // so "lusail" answered with hotels and "al wakrah" with nothing at all.
+    expect(kindOf({ place: "city" })).toBe("city")
+    expect(kindOf({ place: "town" })).toBe("city")
+    expect(kindOf({ place: "suburb" })).toBe("district")
+  })
+
+  it("recognises the islands people are actually collected from", () => {
+    expect(kindOf({ place: "island" })).toBe("island")
+  })
+})
+
+describe("dedupePlaces", () => {
+  it("offers a name once even though OSM holds it several times", () => {
+    // Nuaija is mapped three times and Al Bidda twice — a point and areas.
+    const rows = [
+      { name_en: "Nuaija", kind: "district" },
+      { name_en: "nuaija", kind: "district" },
+      { name_en: "Nuaija", kind: "district" },
+      { name_en: "Nuaija Health Center", kind: "hospital" },
+    ]
+    expect(dedupePlaces(rows).map((p) => p.name_en)).toEqual(["Nuaija", "Nuaija Health Center"])
+  })
+
+  it("keeps the same name under a different kind", () => {
+    const rows = [
+      { name_en: "Katara", kind: "district" },
+      { name_en: "Katara", kind: "hotel" },
+    ]
+    expect(dedupePlaces(rows)).toHaveLength(2)
+  })
+})
+
+describe("the committed snapshot", () => {
+  it("holds the towns a customer types first", () => {
+    const cities = QATAR_PLACES.filter((p) => p.kind === "city").map((p) => p.name_en)
+
+    for (const town of ["Lusail", "Al Wakrah", "Al Rayyan", "Doha", "Al Khor", "Dukhan", "Mesaieed"]) {
+      expect(cities).toContain(town)
+    }
+  })
+
+  it("ranks the town above the hotels that share its name", () => {
+    const rows = [
+      { name_en: "Lusail Palace", kind: "hotel", search: "lusail palace" },
+      { name_en: "Lusail", kind: "city", search: "lusail" },
+      { name_en: "Lusail District", kind: "district", search: "lusail district" },
+    ]
+    expect(rankPlaces(rows, "lusail")[0].name_en).toBe("Lusail")
   })
 })

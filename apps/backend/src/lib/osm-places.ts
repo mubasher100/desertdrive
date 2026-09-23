@@ -45,7 +45,7 @@ export const OVERPASS_UA = "DesertDrive/1.0 (airport transfers; bookings@desertd
  * and deserves to — the kind is read back off the tags instead.
  */
 export const PLACE_SELECTORS = [
-  'nwr["place"~"^(suburb|neighbourhood|quarter|town|village)$"]["name"]',
+  'nwr["place"~"^(city|town|suburb|neighbourhood|quarter|village|island)$"]["name"]',
   'nwr["tourism"~"^(hotel|attraction|museum)$"]["name"]',
   'nwr["amenity"~"^(university|college|hospital)$"]["name"]',
   'nwr["shop"="mall"]["name"]',
@@ -66,8 +66,14 @@ export function boxQuery(box: [number, number, number, number]): string {
  * Read from the feature rather than from which query returned it, now that
  * one query returns them all. Order matters: a university with a hotel on
  * campus is a university.
+ *
+ * A city or a town is kept apart from a district because it is what people
+ * type first — "Lusail", "Al Wakrah" — and an area that large should not be
+ * ranked beneath a hotel that happens to share a word with it.
  */
 export function kindOf(tags: Record<string, string>): string | null {
+  if (tags.place === "city" || tags.place === "town") return "city"
+  if (tags.place === "island" || tags.place === "islet") return "island"
   if (tags.place) return "district"
   if (tags.aeroway === "aerodrome") return "airport"
   if (tags.amenity === "university" || tags.amenity === "college") return "campus"
@@ -98,14 +104,16 @@ export const QATAR_BOXES: Array<[number, number, number, number]> = [
 
 /** How this row is ranked against others with a similar name. */
 const KIND_RANK: Record<string, number> = {
-  district: 0,
-  airport: 1,
-  campus: 2,
-  mall: 3,
-  hotel: 4,
-  hospital: 5,
-  landmark: 6,
-  compound: 7,
+  city: 0,
+  district: 1,
+  airport: 2,
+  campus: 3,
+  mall: 4,
+  island: 5,
+  hotel: 6,
+  hospital: 7,
+  landmark: 8,
+  compound: 9,
 }
 
 export function kindRank(kind: string): number {
@@ -200,6 +208,27 @@ export function rankPlaces<T extends { name_en: string; kind: string; search: st
     if (rank !== 0) return rank
 
     return a.name_en.length - b.name_en.length
+  })
+}
+
+/**
+ * Drops repeats of a place that OpenStreetMap holds more than once.
+ *
+ * A district is commonly mapped both as a point and as an area, and larger
+ * ones as several areas — Nuaija appears three times, Al Bidda twice. They
+ * are different OSM objects, so the index is right to keep them all; a
+ * dropdown offering the same name three times is not.
+ *
+ * Call it AFTER ranking, so the copy that survives is the best-ranked one.
+ */
+export function dedupePlaces<T extends { name_en: string; kind: string }>(places: T[]): T[] {
+  const seen = new Set<string>()
+
+  return places.filter((p) => {
+    const key = `${normaliseSearch(p.name_en)}|${p.kind}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
   })
 }
 
