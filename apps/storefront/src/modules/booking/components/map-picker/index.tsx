@@ -4,10 +4,34 @@ import { useEffect, useRef, useState } from "react"
 import type { Map as LeafletMap, Marker } from "leaflet"
 import { AREAS } from "@lib/data/areas"
 import { coordsOf, inQatar, type Destination } from "@lib/booking/destination"
-import { useTranslations } from "@lib/i18n/use-translations"
+import { useLanguage, useTranslations } from "@lib/i18n/use-translations"
 
 /** Doha, roughly the Corniche. Where the map sits before anything is chosen. */
 const DOHA: [number, number] = [25.2854, 51.531]
+
+/**
+ * Tiles, chosen by the language the site is being read in.
+ *
+ * OpenStreetMap's standard tiles label places in the local language, which in
+ * Qatar means Arabic — correct for /ar-qa and wrong for a visitor reading the
+ * English site, who cannot match "الدحيل" to the Duhail they just searched.
+ * CARTO's basemaps render the same OSM data with Latin labels and need no key
+ * either. Both require their attribution; it is a condition of use, not
+ * decoration.
+ */
+const TILES = {
+  en: {
+    url: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: "abcd",
+  },
+  ar: {
+    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    subdomains: "abc",
+  },
+} as const
 
 /**
  * The map under the destination field, always visible.
@@ -32,6 +56,7 @@ export default function MapPicker({
   onChange: (destination: Destination) => void
 }) {
   const t = useTranslations()
+  const language = useLanguage()
   const hostRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<LeafletMap | null>(null)
   const markerRef = useRef<Marker | null>(null)
@@ -45,6 +70,10 @@ export default function MapPicker({
   const [ready, setReady] = useState(false)
   const [failed, setFailed] = useState(false)
   const [outside, setOutside] = useState(false)
+  const [locating, setLocating] = useState(false)
+  const [locateError, setLocateError] = useState<string | null>(null)
+  /** Set by the geolocation button; read inside the map closure. */
+  const commitRef = useRef<((lat: number, lng: number) => void) | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -62,9 +91,11 @@ export default function MapPicker({
           // A map inside a form should not eat the page scroll on a phone.
           scrollWheelZoom: false,
         })
-        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        const tiles = language === "ar" ? TILES.ar : TILES.en
+        L.tileLayer(tiles.url, {
           maxZoom: 19,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          attribution: tiles.attribution,
+          subdomains: tiles.subdomains,
         }).addTo(map)
 
         /**
@@ -121,6 +152,7 @@ export default function MapPicker({
 
         map.on("click", (e) => commit(e.latlng.lat, e.latlng.lng))
 
+        commitRef.current = commit
         placeRef.current = place
         mapRef.current = map
         setReady(true)
@@ -157,7 +189,7 @@ export default function MapPicker({
     // widget passes a new function identity on every render, and re-creating
     // the map for that would throw away the customer's pin.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [language])
 
   /**
    * Follow the search box. Choosing an area, a drawn zone or an address moves
@@ -176,6 +208,44 @@ export default function MapPicker({
     placeRef.current(lat, lng, true)
   }, [value, ready])
 
+  /**
+   * "Use my current location".
+   *
+   * Most useful on a departure, where the customer is standing at the villa
+   * they want collecting from. The browser asks permission; a refusal is an
+   * ordinary answer, not an error, so it is said plainly and the map stays as
+   * it was. A position outside Qatar is rejected by the same rule as a tapped
+   * pin — someone booking from abroad should not have their hotel in London
+   * priced as a Doha transfer.
+   */
+  function locate() {
+    if (!navigator.geolocation) {
+      setLocateError(t("map.locateUnsupported"))
+      return
+    }
+    setLocateError(null)
+    setLocating(true)
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocating(false)
+        const { latitude, longitude } = pos.coords
+        if (!inQatar(latitude, longitude)) {
+          setLocateError(t("map.locateOutside"))
+          return
+        }
+        commitRef.current?.(latitude, longitude)
+        placeRef.current?.(latitude, longitude, true)
+      },
+      () => {
+        setLocating(false)
+        setLocateError(t("map.locateDenied"))
+      },
+      // A rough fix is useless for a pickup point, and a stale one is worse.
+      { enableHighAccuracy: true, timeout: 10_000, maximumAge: 0 }
+    )
+  }
+
   return (
     <div className="mt-2">
       <div className="relative overflow-hidden rounded-dd border border-dd-line-strong">
@@ -193,7 +263,28 @@ export default function MapPicker({
         )}
       </div>
 
-      <p className="mt-1.5 text-xs text-dd-muted">{value ? t("map.dragHelp") : t("map.tapHelp")}</p>
+      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+        <button
+          type="button"
+          onClick={locate}
+          disabled={locating || !ready}
+          className="inline-flex min-h-touch items-center gap-x-1.5 text-sm font-medium text-dd-accent-text underline underline-offset-4 disabled:opacity-60"
+        >
+          <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+            <circle cx="10" cy="10" r="3.2" />
+            <circle cx="10" cy="10" r="7" />
+            <path d="M10 1v2M10 17v2M1 10h2M17 10h2" strokeLinecap="round" />
+          </svg>
+          {locating ? t("map.locating") : t("map.useMyLocation")}
+        </button>
+        <p className="text-xs text-dd-muted">{value ? t("map.dragHelp") : t("map.tapHelp")}</p>
+      </div>
+
+      {locateError && (
+        <p role="alert" className="mt-1 text-sm text-dd-danger">
+          {locateError}
+        </p>
+      )}
 
       {outside && (
         <p role="alert" className="mt-1 text-sm text-dd-danger">
