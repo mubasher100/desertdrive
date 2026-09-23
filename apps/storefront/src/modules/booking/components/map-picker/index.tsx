@@ -13,24 +13,39 @@ const DOHA: [number, number] = [25.2854, 51.531]
  * Tiles, chosen by the language the site is being read in.
  *
  * OpenStreetMap's standard tiles label places in the local language, which in
- * Qatar means Arabic — correct for /ar-qa and wrong for a visitor reading the
- * English site, who cannot match "الدحيل" to the Duhail they just searched.
- * CARTO's basemaps render the same OSM data with Latin labels and need no key
- * either. Both require their attribution; it is a condition of use, not
- * decoration.
+ * Qatar means Arabic — correct for /ar-qa and not ideal for a visitor reading
+ * the English site, who cannot match "الدحيل" to the Duhail they just
+ * searched. Their attribution is a condition of use, not decoration.
+ *
+ * ⚠️ CARTO used to serve the same OSM data with Latin labels and no key, and
+ * this is what the English map used. **They now stamp "API KEY REQUIRED"
+ * across every tile** — every style, still HTTP 200, so nothing errors and
+ * nothing logs; the customer simply sees a broken-looking map (reported from a
+ * phone, 23 Sept 2026). CARTO's free key is for non-commercial use only, which
+ * this is not, so the English map falls back to plain OSM until the owner
+ * chooses a provider.
+ *
+ * `NEXT_PUBLIC_MAP_TILE_URL` overrides the English map without a deploy, for
+ * whichever provider that turns out to be. Set `NEXT_PUBLIC_MAP_TILE_ATTRIBUTION`
+ * with it — every provider requires one, and shipping the wrong attribution is
+ * worse than shipping none.
  */
+const OSM = {
+  url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  subdomains: "abc",
+} as const
+
 const TILES = {
-  en: {
-    url: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: "abcd",
-  },
-  ar: {
-    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    subdomains: "abc",
-  },
+  en:
+    process.env.NEXT_PUBLIC_MAP_TILE_URL && process.env.NEXT_PUBLIC_MAP_TILE_ATTRIBUTION
+      ? {
+          url: process.env.NEXT_PUBLIC_MAP_TILE_URL,
+          attribution: process.env.NEXT_PUBLIC_MAP_TILE_ATTRIBUTION,
+          subdomains: process.env.NEXT_PUBLIC_MAP_TILE_SUBDOMAINS || "abcd",
+        }
+      : OSM,
+  ar: OSM,
 } as const
 
 /**
