@@ -4,7 +4,7 @@ import type { DetailWidgetProps, HttpTypes } from "@medusajs/framework/types"
 import { Badge, Button, Container, Text, toast } from "@medusajs/ui"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { sdk } from "../lib/client"
-import { formatPickup, readBooking, readPayment, returnRouteLabel, routeLabel, whatsappUrl } from "../lib/booking"
+import { formatPickup, mapsUrl, readBooking, readPayment, returnRouteLabel, routeLabel, whatsappUrl } from "../lib/booking"
 
 /**
  * The booking behind an order, on the order page. Everything the driver and
@@ -90,7 +90,19 @@ const BookingDetailsWidget = ({ data: initial }: DetailWidgetProps<HttpTypes.Adm
       </div>
 
       <dl className="grid grid-cols-1 gap-x-6 gap-y-3 px-6 py-4 md:grid-cols-2">
-        <Row label="Route" value={routeLabel(booking)} />
+        <Row
+          label="Route"
+          value={
+            <span className="flex flex-wrap items-center gap-x-3">
+              <span>{routeLabel(booking)}</span>
+              {mapsUrl(booking) && (
+                <a className="text-ui-fg-interactive hover:underline" href={mapsUrl(booking)!} target="_blank" rel="noreferrer">
+                  Open in maps
+                </a>
+              )}
+            </span>
+          }
+        />
         <Row label="Pickup (Qatar time)" value={`${pickup.date}, ${pickup.time}`} />
         {booking.return_at && (
           <>

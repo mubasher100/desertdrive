@@ -3,6 +3,7 @@
 import { useParams, useRouter } from "next/navigation"
 import { useId, useMemo, useState, type FormEvent } from "react"
 import LocationPicker from "@modules/booking/components/location-picker"
+import MapPicker from "@modules/booking/components/map-picker"
 import { destinationToQuery, type Destination } from "@lib/booking/destination"
 import type { SearchZone } from "@lib/data/zones"
 import { checkLeadTime, earliestPickupFields, leadTimeLabel, qatarToday } from "@lib/booking/lead-time"
@@ -62,6 +63,7 @@ export default function SearchWidget({
   const [time, setTime] = useState("")
   const [passengers, setPassengers] = useState(2)
   const [luggage, setLuggage] = useState(2)
+  const [mapOpen, setMapOpen] = useState(false)
   const [wantsReturn, setWantsReturn] = useState(false)
   const [returnDate, setReturnDate] = useState("")
   const [returnTime, setReturnTime] = useState("")
@@ -194,6 +196,27 @@ export default function SearchWidget({
           onChange={setDestination}
           zones={zones}
           invalid={!!error && !destination}
+        />
+
+        {/* The fallback for a villa on an unnamed street: no list and no
+            autocomplete can name it, but the guest can point at it. */}
+        <button
+          type="button"
+          onClick={() => setMapOpen((o) => !o)}
+          aria-expanded={mapOpen}
+          className="mt-2 inline-flex min-h-touch items-center text-sm font-medium text-dd-accent-text underline underline-offset-4"
+        >
+          {t("search.destination.useMap")}
+        </button>
+
+        <MapPicker
+          open={mapOpen}
+          initial={destination}
+          onCancel={() => setMapOpen(false)}
+          onConfirm={(d) => {
+            setDestination(d)
+            setMapOpen(false)
+          }}
         />
       </Field>
 

@@ -18,6 +18,9 @@ export type BookingEmailData = {
   lookup_url: string
   direction: "arrival" | "departure"
   address: string
+  /** Exact pickup coordinates, when the customer pinned one. */
+  lat?: number | null
+  lng?: number | null
   pickup_at: string
   /** ISO 8601, on a return booking. The same vehicle, the opposite direction. */
   return_at?: string | null
@@ -71,6 +74,7 @@ const COPY = {
     viewHelp: "This link is personal to your booking. Keep this email.",
     help: "Need to change something? Reply to this email or message us on WhatsApp with your booking reference.",
     whatsapp: "WhatsApp",
+    openMap: "See your pickup point on a map",
     arrivalNote: "Your driver will meet you in the arrivals hall holding a sign with your name.",
     transactional: "This is a booking confirmation, not a marketing email. We only email you about bookings you make.",
   },
@@ -98,6 +102,7 @@ const COPY = {
     viewHelp: "هذا الرابط خاص بحجزك. احتفظ بهذه الرسالة.",
     help: "تريد تعديل شيء؟ رد على هذه الرسالة أو راسلنا على واتساب مع رقم الحجز.",
     whatsapp: "واتساب",
+    openMap: "اعرض موقع الاستقبال على الخريطة",
     arrivalNote: "سيستقبلك سائقك في صالة الوصول حاملًا لافتة باسمك.",
     transactional: "هذه رسالة تأكيد حجز وليست رسالة تسويقية. لا نراسلك إلا بشأن حجوزاتك.",
   },
@@ -111,6 +116,11 @@ export function renderBookingConfirmation(d: BookingEmailData): { subject: strin
 
   // The return is the mirror of the outbound, so it reads with the opposite phrase.
   const returnRoute = d.direction === "departure" ? t.airportTo(d.address) : t.toAirport(d.address)
+
+  const mapLink =
+    typeof d.lat === "number" && typeof d.lng === "number"
+      ? `https://www.google.com/maps?q=${d.lat},${d.lng}`
+      : null
 
   const rows: Array<[string, string | null]> = [
     [t.route, route],
@@ -156,6 +166,8 @@ export function renderBookingConfirmation(d: BookingEmailData): { subject: strin
           </table>
 
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-top:1px solid #d9dcdd">${rowsHtml}</table>
+
+          ${mapLink ? `<p style="margin:12px 0 0;font-size:14px"><a href="${esc(mapLink)}" style="color:#0a4fb3">${esc(t.openMap)}</a></p>` : ""}
 
           ${d.direction === "arrival" ? `<p style="margin:16px 0 0;color:#3a4247;font-size:14px">${esc(t.arrivalNote)}</p>` : ""}
 
