@@ -213,6 +213,16 @@ Because `code` maps 1:1 onto the option value, resolving km → band → variant
 >
 > The band boundaries above are expressed in **straight-line** km precisely because of this — a 25 km road trip is about 20 km as the crow flies. Before launch, calibrate every boundary against real routes: Lusail, Al Wakrah, Education City, Al Khor, Mesaieed, Dukhan, Al Zubarah. Get this wrong in the optimistic direction and every long fare is undercharged, permanently and silently.
 
+### Searching for a place
+
+The destination field suggests real places as you type — districts, hotels, campuses, malls, hospitals, named compounds — from **our own copy of OpenStreetMap's Qatar data**, not a paid autocomplete. Paid autocomplete bills per keystroke-session and may not be cached; a copy of the country is ~800 rows that cost nothing to search and keep working when a third party does not.
+
+- `placeIndex` module, `GET /store/places?q=`, ranked so a name that *starts* with the query beats one that contains it, a district beats a hotel of the same name, and a short name beats a long one.
+- **A committed snapshot (`src/data/qatar-places.ts`) is the floor**, written to the database *before* any network call. Without it a fresh deploy has an empty search box until the weekly job happens to succeed. It is a **TypeScript module, not JSON, because `medusa build` compiles TypeScript and does not copy data files** — checked, not assumed.
+- `refresh-place-index` re-imports weekly and layers live results on top. A failed run changes nothing.
+
+> **Overpass is a free, shared, frequently overloaded service.** It answers `count` queries and refuses `geometry` ones; it returns **200 with an HTML error page**, so check the content type and not just the status; it 429s if you ask more than a few times a minute; and `overpass.private.coffee` answers `curl` while timing out from Node's fetch. Hence: one union query per box (8 for the whole country, not 64), a pause between them, retries across mirrors, and a 60-second back-off on 429.
+
 ### Priced areas beat distance bands
 
 Bands price a ring around the airport, which answers "how far is it" and not "where is it". The Pearl is one place with one fare, but Porto Arabia and Viva Bahriya sit at different radii — so a customer picking their own villa can land in a different band from their neighbour on the next island. That is the problem zones solve (owner's ask, Sept 2026).

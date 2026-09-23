@@ -8,6 +8,7 @@ import { whatsappLink } from "@lib/data/contact"
 import { inQatar, type Destination } from "@lib/booking/destination"
 import { loadPlaces, newSession, placesEnabled, resolvePlace, suggest, type PlaceSuggestion } from "@lib/booking/places"
 import type { SearchZone } from "@lib/data/zones"
+import { searchPlaces, type IndexedPlace } from "@lib/data/places"
 
 /**
  * Destination entry: type to search, or open the list and pick.
@@ -22,17 +23,21 @@ import type { SearchZone } from "@lib/data/zones"
  * "qanat" all find The Pearl. Someone arriving in Doha who half-remembers
  * their hotel's district should not be defeated by spelling.
  *
- * Two sources feed the list. The curated areas always do. When a Google Maps
- * key is configured, Places suggestions are merged in above them, so a guest
- * can type their hotel or a street address rather than finding the nearest
- * district — that is the difference between "somewhere in Al Sadd" and the
- * building the driver pulls up outside.
+ * Four sources feed one list, in the order a person means them:
  *
- * Google is strictly additive. The script is loaded lazily, every call fails
- * to an empty list, and a blocked or slow Maps API leaves the curated list
- * working exactly as it does with no key at all. If a customer types
- * something neither source recognises, they are offered WhatsApp with what
- * they typed — a destination we cannot price is a conversation, not an error.
+ *  1. Areas the owner has drawn and priced — this business's own answer.
+ *  2. Our index of Qatar's places, refreshed weekly from OpenStreetMap:
+ *     districts, hotels, campuses, malls, compounds. This is what makes
+ *     typing "UDST" work, and it costs nothing per keystroke.
+ *  3. Google Places, when a key is configured — broader still, billed per
+ *     session, and entirely optional.
+ *  4. The curated district list, which is always there.
+ *
+ * Every layer above the fourth is additive and fails to an empty list, so a
+ * blocked script, a cold backend or a missing key leaves the field working
+ * exactly as it would with none of them. If nothing matches at all, the
+ * customer is offered WhatsApp with what they typed — a destination we cannot
+ * price is a conversation, not an error.
  *
  * Either way the fare comes from coordinates resolved server-side; this field
  * never computes a price.
@@ -73,6 +78,7 @@ export default function LocationPicker({
   const [open, setOpen] = useState(false)
   const [cursor, setCursor] = useState(0)
   const [places, setPlaces] = useState<PlaceSuggestion[]>([])
+  const [indexed, setIndexed] = useState<IndexedPlace[]>([])
   const [resolving, setResolving] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -103,17 +109,23 @@ export default function LocationPicker({
    * ids stay simple: Google's suggestions first (they are what the customer
    * typed towards), then the curated areas.
    */
-  const options = useMemo(
-    () => [
-      // The owner's own areas lead: they are the places this business has
-      // decided it serves and priced, so they beat both Google's guesses and
-      // the generic district list.
+  const options = useMemo(() => {
+    // The owner's own areas lead: they are the places this business has
+    // decided it serves and priced, so they beat any database's guess.
+    const zoneNames = new Set(zoneMatches.map((z) => z.name_en.toLowerCase()))
+    const areaNames = new Set(areaMatches.map((a) => a.name_en.toLowerCase()))
+
+    return [
       ...zoneMatches.map((z) => ({ kind: "zone" as const, zone: z })),
+      // Drop an indexed place that repeats a name already shown: the same
+      // district arriving from two sources reads as a broken list.
+      ...indexed
+        .filter((p) => !zoneNames.has(p.name_en.toLowerCase()) && !areaNames.has(p.name_en.toLowerCase()))
+        .map((p) => ({ kind: "indexed" as const, indexed: p })),
       ...places.map((p) => ({ kind: "place" as const, place: p })),
       ...areaMatches.map((a) => ({ kind: "area" as const, area: a })),
-    ],
-    [zoneMatches, places, areaMatches]
-  )
+    ]
+  }, [zoneMatches, indexed, places, areaMatches])
 
   useEffect(() => {
     setCursor(0)
@@ -124,6 +136,25 @@ export default function LocationPicker({
   useEffect(() => {
     if (open && placesEnabled()) void loadPlaces()
   }, [open])
+
+  // Our own index, debounced. This is the one that runs for everyone: no key,
+  // no per-search cost, and it answers in a few milliseconds from Postgres.
+  useEffect(() => {
+    const q = query.trim()
+    if (q.length < 2) {
+      setIndexed([])
+      return
+    }
+    let cancelled = false
+    const timer = window.setTimeout(async () => {
+      const found = await searchPlaces(q)
+      if (!cancelled) setIndexed(found)
+    }, 180)
+    return () => {
+      cancelled = true
+      window.clearTimeout(timer)
+    }
+  }, [query])
 
   // Ask Google as the customer types, debounced. Failures leave `places`
   // empty, which is simply the curated list.
@@ -223,11 +254,29 @@ export default function LocationPicker({
     inputRef.current?.focus()
   }
 
+  /** A place from our own index: it already carries its coordinates. */
+  function chooseIndexed(p: IndexedPlace) {
+    onChange({
+      kind: "place",
+      place_id: `osm:${p.id}`,
+      // English: the driver reads this off the job sheet.
+      address: p.name_en,
+      lat: p.lat,
+      lng: p.lng,
+    })
+    setQuery("")
+    setPlaces([])
+    setIndexed([])
+    setOpen(false)
+    inputRef.current?.focus()
+  }
+
   function chooseAt(index: number) {
     const opt = options[index]
     if (!opt) return
     if (opt.kind === "area") chooseArea(opt.area)
     else if (opt.kind === "zone") chooseZone(opt.zone)
+    else if (opt.kind === "indexed") chooseIndexed(opt.indexed)
     else void choosePlace(opt.place)
   }
 
@@ -339,12 +388,28 @@ export default function LocationPicker({
                 ? language === "ar"
                   ? opt.zone.name_ar
                   : opt.zone.name_en
-                : opt.place.main
+                : opt.kind === "indexed"
+                  ? (language === "ar" && opt.indexed.name_ar) || opt.indexed.name_en
+                  : opt.place.main
           const secondary =
-            opt.kind === "area" ? areaHint(opt.area, language) : opt.kind === "zone" ? undefined : opt.place.secondary
+            opt.kind === "area"
+              ? areaHint(opt.area, language)
+              : opt.kind === "zone"
+                ? undefined
+                : opt.kind === "indexed"
+                  ? opt.indexed.context ?? t(`place.kind.${opt.indexed.kind}` as never, {})
+                  : opt.place.secondary
           return (
             <li
-              key={opt.kind === "area" ? opt.area.id : opt.kind === "zone" ? `z:${opt.zone.code}` : `p:${opt.place.id}`}
+              key={
+                opt.kind === "area"
+                  ? opt.area.id
+                  : opt.kind === "zone"
+                    ? `z:${opt.zone.code}`
+                    : opt.kind === "indexed"
+                      ? `i:${opt.indexed.id}`
+                      : `p:${opt.place.id}`
+              }
               id={optionId(uid, i)}
               role="option"
               aria-selected={i === cursor}
