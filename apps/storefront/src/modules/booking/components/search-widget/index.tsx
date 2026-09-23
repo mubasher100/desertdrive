@@ -63,7 +63,6 @@ export default function SearchWidget({
   const [time, setTime] = useState("")
   const [passengers, setPassengers] = useState(2)
   const [luggage, setLuggage] = useState(2)
-  const [mapOpen, setMapOpen] = useState(false)
   const [wantsReturn, setWantsReturn] = useState(false)
   const [returnDate, setReturnDate] = useState("")
   const [returnTime, setReturnTime] = useState("")
@@ -198,26 +197,10 @@ export default function SearchWidget({
           invalid={!!error && !destination}
         />
 
-        {/* The fallback for a villa on an unnamed street: no list and no
-            autocomplete can name it, but the guest can point at it. */}
-        <button
-          type="button"
-          onClick={() => setMapOpen((o) => !o)}
-          aria-expanded={mapOpen}
-          className="mt-2 inline-flex min-h-touch items-center text-sm font-medium text-dd-accent-text underline underline-offset-4"
-        >
-          {t("search.destination.useMap")}
-        </button>
-
-        <MapPicker
-          open={mapOpen}
-          initial={destination}
-          onCancel={() => setMapOpen(false)}
-          onConfirm={(d) => {
-            setDestination(d)
-            setMapOpen(false)
-          }}
-        />
+        {/* Both ways: searching moves the pin, and moving the pin sets the
+            destination — the only way to express a villa on an unnamed
+            street, which no list or autocomplete can name. */}
+        <MapPicker value={destination} onChange={setDestination} />
       </Field>
 
       {/* Date + time ------------------------------------------------------- */}
