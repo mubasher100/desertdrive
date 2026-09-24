@@ -91,6 +91,26 @@ describe("dedupePlaces", () => {
     expect(dedupePlaces(rows)).toHaveLength(2)
   })
 
+  it("collapses one place OSM holds under two kinds, because the list shows neither", () => {
+    // Villaggio Mall is mapped as a mall AND as a retail area. Once a district
+    // is known the list shows that, not the kind — so both rows read exactly
+    // the same and one of them is noise. Ranking runs first, so the mall is
+    // the copy that survives.
+    const rows = [
+      { name_en: "Villaggio Mall", kind: "mall", context: "Baaya" },
+      { name_en: "Villaggio Mall", kind: "compound", context: "Baaya" },
+    ]
+    expect(dedupePlaces(rows)).toEqual([{ name_en: "Villaggio Mall", kind: "mall", context: "Baaya" }])
+  })
+
+  it("still separates two kinds when neither has a district to show", () => {
+    const rows = [
+      { name_en: "Katara", kind: "district", context: null },
+      { name_en: "Katara", kind: "hotel", context: null },
+    ]
+    expect(dedupePlaces(rows)).toHaveLength(2)
+  })
+
   it("keeps every branch of a chain, because the district makes them different places", () => {
     // Collapsing on name and kind alone returned ONE Starbucks out of thirty,
     // so a customer outside any of the other twenty-nine could not say so —
