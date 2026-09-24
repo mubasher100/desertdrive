@@ -253,6 +253,22 @@ Drawn in the admin at **Priced areas**, on OpenStreetMap tiles through Leaflet �
 > The replacement is **OpenFreeMap** — the same OSM data, free for commercial use, no key, no request limits, and its Liberty style labels in `name:latin`. It serves vector tiles, so the two languages now take two paths on purpose: **Arabic keeps raster OSM through Leaflet**, where local-language labels are correct and cost a phone nothing extra, and **English loads MapLibre** (a deferred ~220 KB gzipped chunk; first-load JS is unchanged at 103 kB) and overrides every symbol layer's `text-field` to `name:latin`, because Liberty's default prints both scripts and that is twice the labels on a 375px screen. A failure anywhere in the vector path falls through to raster OSM — the pin, the tap and the drag are what book a trip and they work over any background.
 >
 > `NEXT_PUBLIC_MAP_TILE_URL` / `_ATTRIBUTION` / `_SUBDOMAINS` still override English with a **raster** provider and skip MapLibre entirely, which is lighter on a phone and the path to take if a key for one is ever held.
+
+> ## 🛰️ Satellite view, and the free-tier trap
+>
+> A **Satellite view** toggle sits under the map, for the case no place database can solve: a villa on an unnamed street, or Al Wakrah, where OpenStreetMap has **two shops mapped in the whole area**. Imagery is added OVER the street map, never instead of it, so a provider failing leaves the customer with a map rather than nothing. It is **hidden** unless `NEXT_PUBLIC_MAP_SATELLITE_URL` and `_ATTRIBUTION` are set — a dead control is worse than no control — so it ships invisible.
+>
+> **"Free" is not the question. "Free for commercial use" is.** This project has now been caught twice by a free tier that excludes commercial use — CARTO, then MapTiler — so check the licence, not the price, and record the answer here:
+>
+> | provider | free allowance | commercial on the free tier | verified |
+> |---|---|---|---|
+> | Esri World Imagery | — | **no** — key required *and* commercial excluded | 24 Sept 2026 |
+> | MapTiler | 100k requests | **no** — personal/evaluation only | 24 Sept 2026 |
+> | CARTO basemaps | — | **no** — non-commercial only; unkeyed tiles are watermarked | 23 Sept 2026 |
+> | **Mapbox** | 50k map loads/month | **yes** — card required from day one | 24 Sept 2026 |
+> | Sentinel-2 / NASA GIBS | unlimited | yes — but 10 m/pixel, where a villa is 1–2 pixels | 24 Sept 2026 |
+>
+> So there is no commercially-usable satellite layer without an account and a card. Owner's call; the toggle stays hidden until one is configured.
 >
 > The lesson generalises: **a third-party tile URL is a dependency with terms that change under you.** Check what a tile actually looks like, not just that it returned 200.
 
