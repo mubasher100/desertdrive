@@ -1,5 +1,6 @@
 import type { MedusaContainer } from "@medusajs/framework/types"
 import importPlaces from "../scripts/import-places"
+import annotatePlaces from "../scripts/annotate-places"
 
 /**
  * Refreshes the place index from OpenStreetMap.
@@ -11,6 +12,9 @@ import importPlaces from "../scripts/import-places"
  */
 export default async function refreshPlaces(container: MedusaContainer) {
   await importPlaces({ container, args: [] } as Parameters<typeof importPlaces>[0])
+  // New places arrive with no district named under them, and a list of
+  // identically named coffee shops is not a choice anyone can make.
+  await annotatePlaces({ container, args: [] } as Parameters<typeof annotatePlaces>[0])
 }
 
 export const config = {

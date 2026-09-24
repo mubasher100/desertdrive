@@ -41,14 +41,27 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
   const service = req.scope.resolve(PLACE_INDEX_MODULE) as Service
 
-  const matches = await service
-    .listPlaces(
-      { search: { $like: `%${q}%` } },
-      // Over-fetch, then rank: the database can find the matches but it cannot
-      // know that a district beats a hotel of the same name.
-      { take: 80, select: ["id", "name_en", "name_ar", "kind", "context", "lat", "lng", "search"] }
-    )
-    .catch(() => [])
+  const select = ["id", "name_en", "name_ar", "kind", "context", "lat", "lng", "search"]
+
+  /**
+   * Two passes, not one.
+   *
+   * With a few hundred rows, "find anything containing the query, take 80,
+   * then rank" was fine. With thousands it is not: "al" matches most of
+   * Qatar, the database returns an arbitrary 80 of them, and ranking can only
+   * sort the arbitrary 80 — the place the customer wanted may never have been
+   * in the list. So ask twice: names that START with what was typed, which is
+   * what a person means nine times out of ten, and then names that merely
+   * contain it to fill the rest.
+   */
+  const empty: PlaceRow[] = []
+  const [prefix, contains] = await Promise.all([
+    service.listPlaces({ search: { $like: `${q}%` } }, { take: 60, select }).catch(() => empty),
+    service.listPlaces({ search: { $like: `%${q}%` } }, { take: 60, select }).catch(() => empty),
+  ])
+
+  const seen = new Set(prefix.map((p) => p.id))
+  const matches = [...prefix, ...contains.filter((p) => !seen.has(p.id))]
 
   // Rank first, then drop repeats, so the copy that survives is the best one.
   const places = dedupePlaces(rankPlaces(matches, raw))

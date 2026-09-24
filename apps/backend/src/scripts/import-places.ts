@@ -13,7 +13,10 @@ import {
 } from "../lib/osm-places"
 
 type Service = {
-  listPlaces: (filters: object, config?: object) => Promise<Array<OsmPlace & { id: string }>>
+  listPlaces: (
+    filters: object,
+    config?: object
+  ) => Promise<Array<OsmPlace & { id: string; context: string | null }>>
   createPlaces: (data: object[]) => Promise<unknown>
   updatePlaces: (data: object) => Promise<unknown>
   deletePlaces: (ids: string[]) => Promise<unknown>
@@ -59,7 +62,25 @@ export default async function importPlaces({ container }: ExecArgs) {
   const found = new Map<string, OsmPlace>()
   let failures = 0
 
-  for (const [index, box] of QATAR_BOXES.entries()) {
+  /**
+   * PLACES_BOXES=11,16,26 fetches only those boxes, 1-based.
+   *
+   * Overpass fails a box or two on a bad day — three of twenty-seven on the
+   * first full run — and re-running the whole country to fill two gaps is
+   * forty minutes of somebody else's free server for nothing.
+   */
+  const only = (process.env.PLACES_BOXES ?? "")
+    .split(",")
+    .map((n) => Number(n.trim()))
+    .filter((n) => Number.isInteger(n) && n >= 1 && n <= QATAR_BOXES.length)
+
+  const boxes = only.length
+    ? only.map((n) => [n - 1, QATAR_BOXES[n - 1]] as const)
+    : QATAR_BOXES.map((box, i) => [i, box] as const)
+
+  if (only.length) logger.info(`places: fetching only box(es) ${only.join(", ")}`)
+
+  for (const [index, box] of boxes) {
     const elements = await fetchWithRetry(boxQuery(box), logger)
 
     if (elements === null) {
@@ -78,7 +99,7 @@ export default async function importPlaces({ container }: ExecArgs) {
 
     // A courtesy pause between boxes. This is somebody else's free server and
     // the whole country is eight requests; there is no hurry.
-    if (index < QATAR_BOXES.length - 1) {
+    if (boxes[boxes.length - 1][0] !== index) {
       await new Promise((r) => setTimeout(r, 4000))
     }
   }
@@ -110,7 +131,7 @@ async function upsert(
 ): Promise<{ added: number; updated: number }> {
   if (!places.length) return { added: 0, updated: 0 }
 
-  type Existing = OsmPlace & { id: string }
+  type Existing = OsmPlace & { id: string; context: string | null }
   const existing: Existing[] = await service.listPlaces({}, { take: 100000 }).catch(() => [] as Existing[])
   const byKey = new Map<string, Existing>(existing.map((p) => [`${p.osm_type}:${p.osm_id}`, p]))
 
@@ -118,14 +139,17 @@ async function upsert(
   let updated = 0
 
   for (const place of places) {
+    const current = byKey.get(`${place.osm_type}:${place.osm_id}`)
+
     const row = {
       ...place,
-      // Context is left for a later pass: naming the district a hotel sits in
-      // needs the drawn areas, and those are the owner's.
-      context: null,
+      // Context is filled by annotate-places, which runs after this and needs
+      // the whole index to work out which district a place sits in. Carry the
+      // existing value through rather than writing null over it: a refresh
+      // that nudges a coordinate must not blank every subtitle in the list.
+      context: current?.context ?? place.context ?? null,
       search: searchText(place),
     }
-    const current = byKey.get(`${place.osm_type}:${place.osm_id}`)
 
     if (!current) {
       toCreate.push(row)
