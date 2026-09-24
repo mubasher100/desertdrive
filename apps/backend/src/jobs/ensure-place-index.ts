@@ -4,7 +4,13 @@ import { PLACE_INDEX_MODULE } from "../modules/place-index"
 import { QATAR_PLACES } from "../data/qatar-places"
 import { searchText } from "../lib/osm-places"
 
-type Existing = { id: string; osm_type: string; osm_id: string; context: string | null }
+type Existing = {
+  id: string
+  osm_type: string
+  osm_id: string
+  context: string | null
+  search: string
+}
 
 type Service = {
   listPlaces: (filters: object, config?: object) => Promise<Existing[]>
@@ -33,34 +39,48 @@ export default async function ensurePlaceIndex(container: MedusaContainer) {
   const service = container.resolve(PLACE_INDEX_MODULE) as Service
 
   const existing = await service
-    .listPlaces({}, { take: 200000, select: ["id", "osm_type", "osm_id", "context"] })
+    .listPlaces({}, { take: 200000, select: ["id", "osm_type", "osm_id", "context", "search"] })
     .catch(() => [] as Existing[])
 
   const have = new Map(existing.map((p) => [`${p.osm_type}:${p.osm_id}`, p]))
 
   /**
-   * A row that was already here but has no district under it.
+   * A row that was already here and is behind the snapshot.
    *
-   * Adding the missing places is not enough on its own: the rows that
-   * predate a snapshot keep whatever they had, and those are the oldest and
-   * most-used entries in the index — the malls and campuses. They showed as a
-   * bare category where every newly added place showed its district.
+   * Adding the missing places is not enough on its own. Rows that predate a
+   * snapshot keep whatever they had, and those are the oldest and most-used
+   * entries in the index — the malls and campuses. Twice now that has shipped
+   * a fix everywhere except where it mattered:
    *
-   * Only ever fills a blank. A district worked out by annotate-places, or
-   * corrected by hand, is never overwritten from a file.
+   *   context  they showed a bare category while every newly added place
+   *            showed its district.
+   *   search   the searchable text gained the district, so a query naming a
+   *            shop AND a place could match — but only for rows written after
+   *            the change. The rest kept a name-only haystack and kept
+   *            failing, which is the bug the change was meant to fix.
+   *
+   * Context is only ever FILLED, never overwritten: one worked out by
+   * annotate-places or corrected by hand outranks a file. The search text is
+   * derived, so it is simply rebuilt to match whichever context wins.
    */
-  const unlocated = QATAR_PLACES.flatMap((p) => {
+  const stale = QATAR_PLACES.flatMap((p) => {
     const row = have.get(`${p.osm_type}:${p.osm_id}`)
-    return row && !row.context && p.context ? [{ id: row.id, context: p.context }] : []
+    if (!row) return []
+
+    const context = row.context ?? p.context ?? null
+    const search = searchText({ name_en: p.name_en, name_ar: p.name_ar, context })
+    if (row.context === context && row.search === search) return []
+
+    return [{ id: row.id, context, search }]
   })
 
   const missing = QATAR_PLACES.filter((p) => !have.has(`${p.osm_type}:${p.osm_id}`))
 
-  if (!missing.length && !unlocated.length) return
+  if (!missing.length && !stale.length) return
 
   logger.info(
     `places: index has ${existing.length} of the snapshot's ${QATAR_PLACES.length} — ` +
-      `adding ${missing.length}, locating ${unlocated.length}`
+      `adding ${missing.length}, repairing ${stale.length}`
   )
 
   // Batched: several thousand inserts one at a time is several thousand round
@@ -77,7 +97,7 @@ export default async function ensurePlaceIndex(container: MedusaContainer) {
       .catch((e) => logger.warn(`places: ${(e as Error).message.slice(0, 100)}`))
   }
 
-  for (const row of unlocated) {
+  for (const row of stale) {
     await service.updatePlaces(row).catch((e) => logger.warn(`places: ${(e as Error).message.slice(0, 100)}`))
   }
 
