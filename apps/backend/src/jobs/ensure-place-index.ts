@@ -4,9 +4,12 @@ import { PLACE_INDEX_MODULE } from "../modules/place-index"
 import { QATAR_PLACES } from "../data/qatar-places"
 import { searchText } from "../lib/osm-places"
 
+type Existing = { id: string; osm_type: string; osm_id: string; context: string | null }
+
 type Service = {
-  listPlaces: (filters: object, config?: object) => Promise<Array<{ osm_type: string; osm_id: string }>>
+  listPlaces: (filters: object, config?: object) => Promise<Existing[]>
   createPlaces: (data: object[]) => Promise<unknown>
+  updatePlaces: (data: object) => Promise<unknown>
 }
 
 /**
@@ -30,18 +33,34 @@ export default async function ensurePlaceIndex(container: MedusaContainer) {
   const service = container.resolve(PLACE_INDEX_MODULE) as Service
 
   const existing = await service
-    .listPlaces({}, { take: 200000, select: ["osm_type", "osm_id"] })
-    .catch(() => [] as Array<{ osm_type: string; osm_id: string }>)
+    .listPlaces({}, { take: 200000, select: ["id", "osm_type", "osm_id", "context"] })
+    .catch(() => [] as Existing[])
 
-  if (existing.length >= QATAR_PLACES.length) return
+  const have = new Map(existing.map((p) => [`${p.osm_type}:${p.osm_id}`, p]))
 
-  const have = new Set(existing.map((p) => `${p.osm_type}:${p.osm_id}`))
+  /**
+   * A row that was already here but has no district under it.
+   *
+   * Adding the missing places is not enough on its own: the rows that
+   * predate a snapshot keep whatever they had, and those are the oldest and
+   * most-used entries in the index — the malls and campuses. They showed as a
+   * bare category where every newly added place showed its district.
+   *
+   * Only ever fills a blank. A district worked out by annotate-places, or
+   * corrected by hand, is never overwritten from a file.
+   */
+  const unlocated = QATAR_PLACES.flatMap((p) => {
+    const row = have.get(`${p.osm_type}:${p.osm_id}`)
+    return row && !row.context && p.context ? [{ id: row.id, context: p.context }] : []
+  })
+
   const missing = QATAR_PLACES.filter((p) => !have.has(`${p.osm_type}:${p.osm_id}`))
 
-  if (!missing.length) return
+  if (!missing.length && !unlocated.length) return
 
   logger.info(
-    `places: index has ${existing.length} of the snapshot's ${QATAR_PLACES.length} — adding ${missing.length}`
+    `places: index has ${existing.length} of the snapshot's ${QATAR_PLACES.length} — ` +
+      `adding ${missing.length}, locating ${unlocated.length}`
   )
 
   // Batched: several thousand inserts one at a time is several thousand round
@@ -56,6 +75,10 @@ export default async function ensurePlaceIndex(container: MedusaContainer) {
         }))
       )
       .catch((e) => logger.warn(`places: ${(e as Error).message.slice(0, 100)}`))
+  }
+
+  for (const row of unlocated) {
+    await service.updatePlaces(row).catch((e) => logger.warn(`places: ${(e as Error).message.slice(0, 100)}`))
   }
 
   logger.info(`places: index topped up to the snapshot`)
