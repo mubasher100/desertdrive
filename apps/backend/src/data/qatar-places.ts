@@ -19858,16 +19858,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.49729
   },
   {
-    "osm_type": "node",
-    "osm_id": "4835608678",
-    "name_en": "Afghan Brothers Restaurant",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Ain Gardens",
-    "lat": 25.243366,
-    "lng": 51.455067
-  },
-  {
     "osm_type": "way",
     "osm_id": "490580057",
     "name_en": "Afghan Brothers Restaurant",
@@ -19876,6 +19866,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "New Al Rayyan",
     "lat": 25.28889,
     "lng": 51.42008
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4835608678",
+    "name_en": "Afghan Brothers Restaurant",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Al Ain Gardens",
+    "lat": 25.243366,
+    "lng": 51.455067
   },
   {
     "osm_type": "node",
@@ -20468,16 +20468,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.407555
   },
   {
-    "osm_type": "node",
-    "osm_id": "1251720424",
-    "name_en": "Al Shami Home",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Asiri",
-    "lat": 25.258102,
-    "lng": 51.485992
-  },
-  {
     "osm_type": "way",
     "osm_id": "490962499",
     "name_en": "Al Shami Home",
@@ -20486,6 +20476,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Bin Mahmoud",
     "lat": 25.275814,
     "lng": 51.50895
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1251720424",
+    "name_en": "Al Shami Home",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Al Asiri",
+    "lat": 25.258102,
+    "lng": 51.485992
   },
   {
     "osm_type": "node",
@@ -20609,16 +20609,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4827923229",
-    "name_en": "Al-Kababji",
-    "name_ar": null,
-    "kind": "food",
-    "context": "New Al Rayyan",
-    "lat": 25.288853,
-    "lng": 51.420662
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4841982608",
     "name_en": "Al-Kababji",
     "name_ar": null,
@@ -20626,6 +20616,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Sadd",
     "lat": 25.277489,
     "lng": 51.50021
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4827923229",
+    "name_en": "Al-Kababji",
+    "name_ar": null,
+    "kind": "food",
+    "context": "New Al Rayyan",
+    "lat": 25.288853,
+    "lng": 51.420662
   },
   {
     "osm_type": "node",
@@ -20839,16 +20839,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4779123264",
-    "name_en": "Amwaj Restaurant",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Umm Ghuwailina",
-    "lat": 25.274963,
-    "lng": 51.546436
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4807815353",
     "name_en": "Amwaj Restaurant",
     "name_ar": null,
@@ -20856,6 +20846,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Old Airport",
     "lat": 25.250702,
     "lng": 51.552544
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4779123264",
+    "name_en": "Amwaj Restaurant",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Umm Ghuwailina",
+    "lat": 25.274963,
+    "lng": 51.546436
   },
   {
     "osm_type": "node",
@@ -20929,6 +20929,46 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "2428002277",
+    "name_en": "Applebee's",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Lekhwair",
+    "lat": 25.316612,
+    "lng": 51.513977
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "490981694",
+    "name_en": "Applebee's",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Al Sadd",
+    "lat": 25.277122,
+    "lng": 51.50757
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4820516708",
+    "name_en": "Applebee's",
+    "name_ar": null,
+    "kind": "food",
+    "context": "The Pearl-Qatar",
+    "lat": 25.368217,
+    "lng": 51.552597
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4304308991",
+    "name_en": "Applebee's",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Al Dafna",
+    "lat": 25.324993,
+    "lng": 51.529697
+  },
+  {
+    "osm_type": "node",
     "osm_id": "2508537373",
     "name_en": "Applebee's",
     "name_ar": null,
@@ -20956,46 +20996,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Al Manseer",
     "lat": 25.200891,
     "lng": 51.423737
-  },
-  {
-    "osm_type": "way",
-    "osm_id": "490981694",
-    "name_en": "Applebee's",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Sadd",
-    "lat": 25.277122,
-    "lng": 51.50757
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "2428002277",
-    "name_en": "Applebee's",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Lekhwair",
-    "lat": 25.316612,
-    "lng": 51.513977
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4304308991",
-    "name_en": "Applebee's",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Dafna",
-    "lat": 25.324993,
-    "lng": 51.529697
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4820516708",
-    "name_en": "Applebee's",
-    "name_ar": null,
-    "kind": "food",
-    "context": "The Pearl-Qatar",
-    "lat": 25.368217,
-    "lng": 51.552597
   },
   {
     "osm_type": "way",
@@ -21069,16 +21069,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "2292361211",
-    "name_en": "Aryas Restraurent",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Fereej Ibn Dirham",
-    "lat": 25.271748,
-    "lng": 51.52866
-  },
-  {
-    "osm_type": "node",
     "osm_id": "2283768504",
     "name_en": "Aryas Restraurent",
     "name_ar": null,
@@ -21086,6 +21076,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Rawdat Al Khail",
     "lat": 25.2745,
     "lng": 51.52263
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "2292361211",
+    "name_en": "Aryas Restraurent",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Fereej Ibn Dirham",
+    "lat": 25.271748,
+    "lng": 51.52866
   },
   {
     "osm_type": "node",
@@ -21149,16 +21149,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "1730110199",
-    "name_en": "Asiana",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Sadd",
-    "lat": 25.282528,
-    "lng": 51.502388
-  },
-  {
-    "osm_type": "node",
     "osm_id": "2571993333",
     "name_en": "Asiana",
     "name_ar": null,
@@ -21166,6 +21156,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Hilal",
     "lat": 25.263823,
     "lng": 51.555443
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1730110199",
+    "name_en": "Asiana",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Al Sadd",
+    "lat": 25.282528,
+    "lng": 51.502388
   },
   {
     "osm_type": "node",
@@ -21479,16 +21479,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4818461467",
-    "name_en": "Beyti Kabab",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Ain Gardens",
-    "lat": 25.23233,
-    "lng": 51.48616
-  },
-  {
-    "osm_type": "node",
     "osm_id": "8635856717",
     "name_en": "Beyti Kabab",
     "name_ar": "Beyti Kabab",
@@ -21496,6 +21486,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Ain Gardens",
     "lat": 25.232407,
     "lng": 51.486004
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4818461467",
+    "name_en": "Beyti Kabab",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Al Ain Gardens",
+    "lat": 25.23233,
+    "lng": 51.48616
   },
   {
     "osm_type": "way",
@@ -21699,36 +21699,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "1589649736",
-    "name_en": "Burger King",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Old Al Rayyan",
-    "lat": 25.298532,
-    "lng": 51.44659
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4818667674",
-    "name_en": "Burger King",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Nuaija",
-    "lat": 25.237629,
-    "lng": 51.49935
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4827342175",
-    "name_en": "Burger King",
-    "name_ar": null,
-    "kind": "food",
-    "context": "New Al Rayyan",
-    "lat": 25.293,
-    "lng": 51.420166
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4837097007",
     "name_en": "Burger King",
     "name_ar": null,
@@ -21748,6 +21718,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.442818
   },
   {
+    "osm_type": "node",
+    "osm_id": "4818667674",
+    "name_en": "Burger King",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Nuaija",
+    "lat": 25.237629,
+    "lng": 51.49935
+  },
+  {
     "osm_type": "way",
     "osm_id": "490986012",
     "name_en": "Burger King",
@@ -21756,26 +21736,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Sadd",
     "lat": 25.276798,
     "lng": 51.507607
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4820516710",
-    "name_en": "Burger King",
-    "name_ar": null,
-    "kind": "food",
-    "context": "The Pearl-Qatar",
-    "lat": 25.368238,
-    "lng": 51.552452
-  },
-  {
-    "osm_type": "way",
-    "osm_id": "490450662",
-    "name_en": "Burger King",
-    "name_ar": "برجر كينج",
-    "kind": "food",
-    "context": "Al Markhiya",
-    "lat": 25.322514,
-    "lng": 51.48717
   },
   {
     "osm_type": "node",
@@ -21796,6 +21756,46 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Salwa",
     "lat": 24.82147,
     "lng": 50.731968
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4827342175",
+    "name_en": "Burger King",
+    "name_ar": null,
+    "kind": "food",
+    "context": "New Al Rayyan",
+    "lat": 25.293,
+    "lng": 51.420166
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1589649736",
+    "name_en": "Burger King",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Old Al Rayyan",
+    "lat": 25.298532,
+    "lng": 51.44659
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "490450662",
+    "name_en": "Burger King",
+    "name_ar": "برجر كينج",
+    "kind": "food",
+    "context": "Al Markhiya",
+    "lat": 25.322514,
+    "lng": 51.48717
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4820516710",
+    "name_en": "Burger King",
+    "name_ar": null,
+    "kind": "food",
+    "context": "The Pearl-Qatar",
+    "lat": 25.368238,
+    "lng": 51.552452
   },
   {
     "osm_type": "node",
@@ -21989,6 +21989,26 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "8524123460",
+    "name_en": "Caribou Coffee",
+    "name_ar": "كاريبو كوفي",
+    "kind": "food",
+    "context": "The Pearl-Qatar",
+    "lat": 25.367746,
+    "lng": 51.550735
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "10233441091",
+    "name_en": "Caribou Coffee",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Al Ain Gardens",
+    "lat": 25.242998,
+    "lng": 51.46293
+  },
+  {
+    "osm_type": "node",
     "osm_id": "2755894118",
     "name_en": "Caribou Coffee",
     "name_ar": null,
@@ -21996,6 +22016,26 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Ain Khaled",
     "lat": 25.22554,
     "lng": 51.477364
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4436934270",
+    "name_en": "Caribou Coffee",
+    "name_ar": "كاريبو كوفي",
+    "kind": "food",
+    "context": "Marsa Arabia",
+    "lat": 25.37321,
+    "lng": 51.544617
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "445304769",
+    "name_en": "Caribou Coffee",
+    "name_ar": "كاريبو كوفي",
+    "kind": "food",
+    "context": "Fereej Al Nasr",
+    "lat": 25.275826,
+    "lng": 51.507904
   },
   {
     "osm_type": "node",
@@ -22016,46 +22056,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Asiri",
     "lat": 25.238493,
     "lng": 51.498566
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "10233441091",
-    "name_en": "Caribou Coffee",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Ain Gardens",
-    "lat": 25.242998,
-    "lng": 51.46293
-  },
-  {
-    "osm_type": "way",
-    "osm_id": "445304769",
-    "name_en": "Caribou Coffee",
-    "name_ar": "كاريبو كوفي",
-    "kind": "food",
-    "context": "Fereej Al Nasr",
-    "lat": 25.275826,
-    "lng": 51.507904
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4436934270",
-    "name_en": "Caribou Coffee",
-    "name_ar": "كاريبو كوفي",
-    "kind": "food",
-    "context": "Marsa Arabia",
-    "lat": 25.37321,
-    "lng": 51.544617
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "8524123460",
-    "name_en": "Caribou Coffee",
-    "name_ar": "كاريبو كوفي",
-    "kind": "food",
-    "context": "The Pearl-Qatar",
-    "lat": 25.367746,
-    "lng": 51.550735
   },
   {
     "osm_type": "way",
@@ -22339,16 +22339,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4450006472",
-    "name_en": "Cicchetti",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Fereej Bin Mahmoud",
-    "lat": 25.28142,
-    "lng": 51.50715
-  },
-  {
-    "osm_type": "node",
     "osm_id": "10621225898",
     "name_en": "Cicchetti",
     "name_ar": null,
@@ -22356,6 +22346,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Bidda",
     "lat": 25.286562,
     "lng": 51.526115
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4450006472",
+    "name_en": "Cicchetti",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Fereej Bin Mahmoud",
+    "lat": 25.28142,
+    "lng": 51.50715
   },
   {
     "osm_type": "node",
@@ -22379,16 +22379,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "way",
-    "osm_id": "490182100",
-    "name_en": "Coffee Beanery",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Fereej Al Nasr",
-    "lat": 25.271236,
-    "lng": 51.51125
-  },
-  {
-    "osm_type": "way",
     "osm_id": "1126369435",
     "name_en": "Coffee Beanery",
     "name_ar": null,
@@ -22406,6 +22396,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Abu Nakhla",
     "lat": 25.12811,
     "lng": 51.33734
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "490182100",
+    "name_en": "Coffee Beanery",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Fereej Al Nasr",
+    "lat": 25.271236,
+    "lng": 51.51125
   },
   {
     "osm_type": "node",
@@ -22469,13 +22469,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4426463123",
+    "osm_id": "4428083070",
     "name_en": "Costa",
     "name_ar": null,
     "kind": "food",
-    "context": "Rawdat Al Khail",
-    "lat": 25.27469,
-    "lng": 51.515526
+    "context": "Unaiza",
+    "lat": 25.34971,
+    "lng": 51.52202
   },
   {
     "osm_type": "node",
@@ -22486,6 +22486,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Rawdat Al Khail",
     "lat": 25.27452,
     "lng": 51.516296
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "13380848162",
+    "name_en": "Costa",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Al Dafna",
+    "lat": 25.31906,
+    "lng": 51.527523
   },
   {
     "osm_type": "node",
@@ -22509,23 +22519,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4428083070",
+    "osm_id": "4426463123",
     "name_en": "Costa",
     "name_ar": null,
     "kind": "food",
-    "context": "Unaiza",
-    "lat": 25.34971,
-    "lng": 51.52202
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "13380848162",
-    "name_en": "Costa",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Dafna",
-    "lat": 25.31906,
-    "lng": 51.527523
+    "context": "Rawdat Al Khail",
+    "lat": 25.27469,
+    "lng": 51.515526
   },
   {
     "osm_type": "node",
@@ -22649,16 +22649,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4780013185",
-    "name_en": "Daily Fresh",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Fereej Ibn Dirham",
-    "lat": 25.269257,
-    "lng": 51.53563
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4831638572",
     "name_en": "Daily Fresh",
     "name_ar": null,
@@ -22666,6 +22656,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Bin Omran",
     "lat": 25.305946,
     "lng": 51.494804
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4780013185",
+    "name_en": "Daily Fresh",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Fereej Ibn Dirham",
+    "lat": 25.269257,
+    "lng": 51.53563
   },
   {
     "osm_type": "node",
@@ -22889,16 +22889,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4821100879",
-    "name_en": "Domino's Pizza",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Rawdat Al Khail",
-    "lat": 25.272314,
-    "lng": 51.522934
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4827635244",
     "name_en": "Domino's Pizza",
     "name_ar": null,
@@ -22906,6 +22896,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "New Al Rayyan",
     "lat": 25.293343,
     "lng": 51.420086
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4816723444",
+    "name_en": "Domino's Pizza",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Qanat Quartier",
+    "lat": 25.376015,
+    "lng": 51.543385
   },
   {
     "osm_type": "node",
@@ -22919,13 +22919,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4816723444",
+    "osm_id": "4821100879",
     "name_en": "Domino's Pizza",
     "name_ar": null,
     "kind": "food",
-    "context": "Qanat Quartier",
-    "lat": 25.376015,
-    "lng": 51.543385
+    "context": "Rawdat Al Khail",
+    "lat": 25.272314,
+    "lng": 51.522934
   },
   {
     "osm_type": "node",
@@ -23118,16 +23118,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.500618
   },
   {
-    "osm_type": "node",
-    "osm_id": "9574206562",
-    "name_en": "Empire Coffee",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Onaiza",
-    "lat": 25.318956,
-    "lng": 51.521782
-  },
-  {
     "osm_type": "way",
     "osm_id": "1039491241",
     "name_en": "Empire Coffee",
@@ -23136,6 +23126,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Tarfa",
     "lat": 25.379303,
     "lng": 51.49895
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "9574206562",
+    "name_en": "Empire Coffee",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Onaiza",
+    "lat": 25.318956,
+    "lng": 51.521782
   },
   {
     "osm_type": "node",
@@ -23848,26 +23848,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.54259
   },
   {
-    "osm_type": "node",
-    "osm_id": "1705671297",
-    "name_en": "Hardee's",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Ain Gardens",
-    "lat": 25.245281,
-    "lng": 51.464066
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4818667676",
-    "name_en": "Hardee's",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Nuaija",
-    "lat": 25.238356,
-    "lng": 51.499405
-  },
-  {
     "osm_type": "way",
     "osm_id": "488330742",
     "name_en": "Hardee's",
@@ -23899,16 +23879,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4837211088",
-    "name_en": "Hardee's",
-    "name_ar": "هارديز",
-    "kind": "food",
-    "context": "Madinat Khalifa South",
-    "lat": 25.318047,
-    "lng": 51.47007
-  },
-  {
-    "osm_type": "node",
     "osm_id": "9167398945",
     "name_en": "Hardee's",
     "name_ar": null,
@@ -23926,6 +23896,36 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Khor",
     "lat": 25.67919,
     "lng": 51.497337
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1705671297",
+    "name_en": "Hardee's",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Al Ain Gardens",
+    "lat": 25.245281,
+    "lng": 51.464066
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4837211088",
+    "name_en": "Hardee's",
+    "name_ar": "هارديز",
+    "kind": "food",
+    "context": "Madinat Khalifa South",
+    "lat": 25.318047,
+    "lng": 51.47007
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4818667676",
+    "name_en": "Hardee's",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Nuaija",
+    "lat": 25.238356,
+    "lng": 51.499405
   },
   {
     "osm_type": "node",
@@ -24039,16 +24039,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4835471466",
-    "name_en": "Hot N Cool",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Muaither",
-    "lat": 25.277935,
-    "lng": 51.407543
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4835471465",
     "name_en": "Hot N Cool",
     "name_ar": null,
@@ -24056,6 +24046,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Muaither",
     "lat": 25.277737,
     "lng": 51.40755
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4835471466",
+    "name_en": "Hot N Cool",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Muaither",
+    "lat": 25.277935,
+    "lng": 51.407543
   },
   {
     "osm_type": "node",
@@ -24319,16 +24319,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4823936232",
-    "name_en": "Java U",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Fereej Al Soudan",
-    "lat": 25.271322,
-    "lng": 51.481495
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4841982587",
     "name_en": "Java U",
     "name_ar": null,
@@ -24336,6 +24326,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Sadd",
     "lat": 25.277437,
     "lng": 51.501053
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4823936232",
+    "name_en": "Java U",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Fereej Al Soudan",
+    "lat": 25.271322,
+    "lng": 51.481495
   },
   {
     "osm_type": "node",
@@ -24349,16 +24349,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4803998590",
-    "name_en": "Jawahar Restaurant",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Najma",
-    "lat": 25.269468,
-    "lng": 51.54239
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4841945522",
     "name_en": "Jawahar Restaurant",
     "name_ar": null,
@@ -24366,6 +24356,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Abdul Aziz",
     "lat": 25.276506,
     "lng": 51.521774
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4803998590",
+    "name_en": "Jawahar Restaurant",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Najma",
+    "lat": 25.269468,
+    "lng": 51.54239
   },
   {
     "osm_type": "node",
@@ -24399,13 +24399,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "1980753839",
+    "osm_id": "4837221948",
     "name_en": "Jollibee",
     "name_ar": null,
     "kind": "food",
-    "context": "Fereej Ibn Dirham",
-    "lat": 25.271809,
-    "lng": 51.529037
+    "context": "Fereej Bin Mahmoud",
+    "lat": 25.284197,
+    "lng": 51.51486
   },
   {
     "osm_type": "node",
@@ -24419,13 +24419,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4837221948",
+    "osm_id": "1980753839",
     "name_en": "Jollibee",
     "name_ar": null,
     "kind": "food",
-    "context": "Fereej Bin Mahmoud",
-    "lat": 25.284197,
-    "lng": 51.51486
+    "context": "Fereej Ibn Dirham",
+    "lat": 25.271809,
+    "lng": 51.529037
   },
   {
     "osm_type": "node",
@@ -24719,63 +24719,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "1705671272",
-    "name_en": "KFC",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Ain Gardens",
-    "lat": 25.246523,
-    "lng": 51.466236
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "1730145573",
-    "name_en": "KFC",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Sadd",
-    "lat": 25.281153,
-    "lng": 51.499016
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "2557144910",
-    "name_en": "KFC",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Nuaija",
-    "lat": 25.238173,
-    "lng": 51.499596
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4682064038",
+    "osm_id": "4821395399",
     "name_en": "KFC",
     "name_ar": "كنتاكي",
     "kind": "food",
-    "context": "New Al Rayyan",
-    "lat": 25.281134,
-    "lng": 51.432243
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4779195411",
-    "name_en": "KFC",
-    "name_ar": "دجاج كنتاكي",
-    "kind": "food",
-    "context": "Old Al Ghanim",
-    "lat": 25.27991,
-    "lng": 51.543888
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4806433694",
-    "name_en": "KFC",
-    "name_ar": "دجاج كنتاكي",
-    "kind": "food",
-    "context": "Al Hilal",
-    "lat": 25.261179,
-    "lng": 51.558163
+    "context": "Al Gharrafa",
+    "lat": 25.328085,
+    "lng": 51.45139
   },
   {
     "osm_type": "node",
@@ -24786,6 +24736,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Nuaija",
     "lat": 25.25179,
     "lng": 51.516994
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4779195411",
+    "name_en": "KFC",
+    "name_ar": "دجاج كنتاكي",
+    "kind": "food",
+    "context": "Old Al Ghanim",
+    "lat": 25.27991,
+    "lng": 51.543888
   },
   {
     "osm_type": "node",
@@ -24818,14 +24778,14 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.44339
   },
   {
-    "osm_type": "way",
-    "osm_id": "490986029",
+    "osm_type": "node",
+    "osm_id": "1730145573",
     "name_en": "KFC",
-    "name_ar": "دجاج كنتاكي",
+    "name_ar": null,
     "kind": "food",
-    "context": "Fereej Bin Mahmoud",
-    "lat": 25.275478,
-    "lng": 51.51534
+    "context": "Al Sadd",
+    "lat": 25.281153,
+    "lng": 51.499016
   },
   {
     "osm_type": "node",
@@ -24839,13 +24799,53 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4821395399",
+    "osm_id": "4806433694",
+    "name_en": "KFC",
+    "name_ar": "دجاج كنتاكي",
+    "kind": "food",
+    "context": "Al Hilal",
+    "lat": 25.261179,
+    "lng": 51.558163
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "2557144910",
+    "name_en": "KFC",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Nuaija",
+    "lat": 25.238173,
+    "lng": 51.499596
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "490986029",
+    "name_en": "KFC",
+    "name_ar": "دجاج كنتاكي",
+    "kind": "food",
+    "context": "Fereej Bin Mahmoud",
+    "lat": 25.275478,
+    "lng": 51.51534
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1705671272",
+    "name_en": "KFC",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Al Ain Gardens",
+    "lat": 25.246523,
+    "lng": 51.466236
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4682064038",
     "name_en": "KFC",
     "name_ar": "كنتاكي",
     "kind": "food",
-    "context": "Al Gharrafa",
-    "lat": 25.328085,
-    "lng": 51.45139
+    "context": "New Al Rayyan",
+    "lat": 25.281134,
+    "lng": 51.432243
   },
   {
     "osm_type": "node",
@@ -24859,16 +24859,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4837211087",
-    "name_en": "KFC",
-    "name_ar": "دجاج كنتاكي",
-    "kind": "food",
-    "context": "Madinat Khalifa South",
-    "lat": 25.317856,
-    "lng": 51.470078
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4833050330",
     "name_en": "KFC",
     "name_ar": null,
@@ -24879,13 +24869,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "10232273334",
+    "osm_id": "4837211087",
     "name_en": "KFC",
     "name_ar": "دجاج كنتاكي",
     "kind": "food",
-    "context": "Al Dafna",
-    "lat": 25.325197,
-    "lng": 51.529243
+    "context": "Madinat Khalifa South",
+    "lat": 25.317856,
+    "lng": 51.470078
   },
   {
     "osm_type": "node",
@@ -24899,6 +24889,16 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "10232273334",
+    "name_en": "KFC",
+    "name_ar": "دجاج كنتاكي",
+    "kind": "food",
+    "context": "Al Dafna",
+    "lat": 25.325197,
+    "lng": 51.529243
+  },
+  {
+    "osm_type": "node",
     "osm_id": "2188139580",
     "name_en": "KFC @ Al Meera West Bay",
     "name_ar": null,
@@ -24909,16 +24909,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4818288121",
-    "name_en": "Khaiber Restaurant",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Mushaireb",
-    "lat": 25.282965,
-    "lng": 51.517593
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4837443061",
     "name_en": "Khaiber Restaurant",
     "name_ar": null,
@@ -24926,6 +24916,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Old Al Ghanim",
     "lat": 25.280466,
     "lng": 51.541473
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4818288121",
+    "name_en": "Khaiber Restaurant",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Mushaireb",
+    "lat": 25.282965,
+    "lng": 51.517593
   },
   {
     "osm_type": "node",
@@ -25398,16 +25398,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.407543
   },
   {
-    "osm_type": "node",
-    "osm_id": "4842530604",
-    "name_en": "Little Sailor Seafood",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Fereej Abdul Aziz",
-    "lat": 25.275316,
-    "lng": 51.526062
-  },
-  {
     "osm_type": "way",
     "osm_id": "490965547",
     "name_en": "Little Sailor Seafood",
@@ -25416,6 +25406,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Bin Mahmoud",
     "lat": 25.275167,
     "lng": 51.509148
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4842530604",
+    "name_en": "Little Sailor Seafood",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Fereej Abdul Aziz",
+    "lat": 25.275316,
+    "lng": 51.526062
   },
   {
     "osm_type": "node",
@@ -25759,23 +25759,23 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "1589649735",
+    "osm_id": "4363588389",
     "name_en": "McDonald's",
     "name_ar": "ماكدونالدز",
     "kind": "food",
-    "context": "Old Al Rayyan",
-    "lat": 25.298523,
-    "lng": 51.44668
+    "context": "(Sharg Zone) - Al Hitmi / Al Rufaa",
+    "lat": 25.282999,
+    "lng": 51.54732
   },
   {
     "osm_type": "node",
-    "osm_id": "1706193005",
+    "osm_id": "6814834394",
     "name_en": "McDonald's",
     "name_ar": "ماكدونالدز",
     "kind": "food",
-    "context": "Al Sadd",
-    "lat": 25.282232,
-    "lng": 51.49532
+    "context": "Baaya",
+    "lat": 25.262068,
+    "lng": 51.430218
   },
   {
     "osm_type": "node",
@@ -25789,6 +25789,26 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "1706193005",
+    "name_en": "McDonald's",
+    "name_ar": "ماكدونالدز",
+    "kind": "food",
+    "context": "Al Sadd",
+    "lat": 25.282232,
+    "lng": 51.49532
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "212638098",
+    "name_en": "McDonald's",
+    "name_ar": "ماكدونالدز",
+    "kind": "food",
+    "context": "Al Ain Gardens",
+    "lat": 25.24258,
+    "lng": 51.46319
+  },
+  {
+    "osm_type": "node",
     "osm_id": "2426593167",
     "name_en": "McDonald's",
     "name_ar": "ماكدونالدز",
@@ -25799,33 +25819,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4363588389",
+    "osm_id": "4464653796",
     "name_en": "McDonald's",
     "name_ar": "ماكدونالدز",
     "kind": "food",
-    "context": "(Sharg Zone) - Al Hitmi / Al Rufaa",
-    "lat": 25.282999,
-    "lng": 51.54732
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4682064037",
-    "name_en": "McDonald's",
-    "name_ar": "ماكدونالدز",
-    "kind": "food",
-    "context": "New Al Rayyan",
-    "lat": 25.281141,
-    "lng": 51.432095
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4818703042",
-    "name_en": "McDonald's",
-    "name_ar": "ماكدونالدز",
-    "kind": "food",
-    "context": "Nuaija",
-    "lat": 25.238146,
-    "lng": 51.499626
+    "context": "Al Dafna",
+    "lat": 25.325628,
+    "lng": 51.53076
   },
   {
     "osm_type": "node",
@@ -25839,33 +25839,23 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "6814834394",
+    "osm_id": "4818703042",
     "name_en": "McDonald's",
     "name_ar": "ماكدونالدز",
     "kind": "food",
-    "context": "Baaya",
-    "lat": 25.262068,
-    "lng": 51.430218
+    "context": "Nuaija",
+    "lat": 25.238146,
+    "lng": 51.499626
   },
   {
-    "osm_type": "way",
-    "osm_id": "212638098",
+    "osm_type": "node",
+    "osm_id": "1589649735",
     "name_en": "McDonald's",
     "name_ar": "ماكدونالدز",
     "kind": "food",
-    "context": "Al Ain Gardens",
-    "lat": 25.24258,
-    "lng": 51.46319
-  },
-  {
-    "osm_type": "way",
-    "osm_id": "219737657",
-    "name_en": "McDonald's",
-    "name_ar": "ماكدونالدز",
-    "kind": "food",
-    "context": "Al Hilal",
-    "lat": 25.261608,
-    "lng": 51.557755
+    "context": "Old Al Rayyan",
+    "lat": 25.298523,
+    "lng": 51.44668
   },
   {
     "osm_type": "way",
@@ -25888,44 +25878,24 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.489643
   },
   {
-    "osm_type": "node",
-    "osm_id": "4464653796",
+    "osm_type": "way",
+    "osm_id": "219737657",
     "name_en": "McDonald's",
     "name_ar": "ماكدونالدز",
     "kind": "food",
-    "context": "Al Dafna",
-    "lat": 25.325628,
-    "lng": 51.53076
+    "context": "Al Hilal",
+    "lat": 25.261608,
+    "lng": 51.557755
   },
   {
     "osm_type": "node",
-    "osm_id": "4821395400",
+    "osm_id": "4682064037",
     "name_en": "McDonald's",
     "name_ar": "ماكدونالدز",
     "kind": "food",
-    "context": "Al Gharrafa",
-    "lat": 25.328363,
-    "lng": 51.45041
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4831635215",
-    "name_en": "McDonald's",
-    "name_ar": "ماكدونالدز",
-    "kind": "food",
-    "context": "Umm Salal Muhammad",
-    "lat": 25.409512,
-    "lng": 51.41983
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "7524681820",
-    "name_en": "McDonald's",
-    "name_ar": "ماكدونالدز",
-    "kind": "food",
-    "context": "Al Wajba",
-    "lat": 25.33029,
-    "lng": 51.384876
+    "context": "New Al Rayyan",
+    "lat": 25.281141,
+    "lng": 51.432095
   },
   {
     "osm_type": "way",
@@ -25956,6 +25926,36 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Dukhan",
     "lat": 25.421083,
     "lng": 50.793
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4821395400",
+    "name_en": "McDonald's",
+    "name_ar": "ماكدونالدز",
+    "kind": "food",
+    "context": "Al Gharrafa",
+    "lat": 25.328363,
+    "lng": 51.45041
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4831635215",
+    "name_en": "McDonald's",
+    "name_ar": "ماكدونالدز",
+    "kind": "food",
+    "context": "Umm Salal Muhammad",
+    "lat": 25.409512,
+    "lng": 51.41983
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "7524681820",
+    "name_en": "McDonald's",
+    "name_ar": "ماكدونالدز",
+    "kind": "food",
+    "context": "Al Wajba",
+    "lat": 25.33029,
+    "lng": 51.384876
   },
   {
     "osm_type": "node",
@@ -26179,16 +26179,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4359226260",
-    "name_en": "MRA",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Ain Gardens",
-    "lat": 25.242916,
-    "lng": 51.459972
-  },
-  {
-    "osm_type": "node",
     "osm_id": "5906247264",
     "name_en": "MRA",
     "name_ar": null,
@@ -26196,6 +26186,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Barwa City",
     "lat": 25.188118,
     "lng": 51.462486
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4359226260",
+    "name_en": "MRA",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Al Ain Gardens",
+    "lat": 25.242916,
+    "lng": 51.459972
   },
   {
     "osm_type": "way",
@@ -26869,16 +26869,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4825417696",
-    "name_en": "Own Pizza",
-    "name_ar": null,
-    "kind": "food",
-    "context": "New Al Rayyan",
-    "lat": 25.295921,
-    "lng": 51.42073
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4831548660",
     "name_en": "Own Pizza",
     "name_ar": null,
@@ -26886,6 +26876,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Nuaija",
     "lat": 25.238237,
     "lng": 51.499527
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4825417696",
+    "name_en": "Own Pizza",
+    "name_ar": null,
+    "kind": "food",
+    "context": "New Al Rayyan",
+    "lat": 25.295921,
+    "lng": 51.42073
   },
   {
     "osm_type": "node",
@@ -26919,56 +26919,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "2755894471",
-    "name_en": "Papa John's",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Ain Khaled",
-    "lat": 25.225586,
-    "lng": 51.477104
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4806141635",
-    "name_en": "Papa John's",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Fereej Al Nasr",
-    "lat": 25.26505,
-    "lng": 51.499584
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4807798819",
-    "name_en": "Papa John's",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Old Airport",
-    "lat": 25.250174,
-    "lng": 51.550365
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4818703041",
-    "name_en": "Papa John's",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Nuaija",
-    "lat": 25.238314,
-    "lng": 51.499447
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4825763517",
-    "name_en": "Papa John's",
-    "name_ar": null,
-    "kind": "food",
-    "context": "New Al Rayyan",
-    "lat": 25.291468,
-    "lng": 51.420692
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4836931079",
     "name_en": "Papa John's",
     "name_ar": "بيتزا بابا جونز",
@@ -26976,6 +26926,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Ain Gardens",
     "lat": 25.241297,
     "lng": 51.456234
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "2755894471",
+    "name_en": "Papa John's",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Ain Khaled",
+    "lat": 25.225586,
+    "lng": 51.477104
   },
   {
     "osm_type": "node",
@@ -26989,13 +26949,43 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4443278630",
+    "osm_id": "4818703041",
     "name_en": "Papa John's",
     "name_ar": null,
     "kind": "food",
-    "context": "Unaiza",
-    "lat": 25.33637,
-    "lng": 51.50643
+    "context": "Nuaija",
+    "lat": 25.238314,
+    "lng": 51.499447
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4807798819",
+    "name_en": "Papa John's",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Old Airport",
+    "lat": 25.250174,
+    "lng": 51.550365
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4825763517",
+    "name_en": "Papa John's",
+    "name_ar": null,
+    "kind": "food",
+    "context": "New Al Rayyan",
+    "lat": 25.291468,
+    "lng": 51.420692
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4806141635",
+    "name_en": "Papa John's",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Fereej Al Nasr",
+    "lat": 25.26505,
+    "lng": 51.499584
   },
   {
     "osm_type": "node",
@@ -27006,6 +26996,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Wadi Al Sail",
     "lat": 25.301937,
     "lng": 51.500553
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4443278630",
+    "name_en": "Papa John's",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Unaiza",
+    "lat": 25.33637,
+    "lng": 51.50643
   },
   {
     "osm_type": "node",
@@ -27149,16 +27149,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "1470735103",
-    "name_en": "Pizza Hut",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Hilal",
-    "lat": 25.26341,
-    "lng": 51.55551
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4502645391",
     "name_en": "Pizza Hut",
     "name_ar": null,
@@ -27166,16 +27156,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Old Al Ghanim",
     "lat": 25.27773,
     "lng": 51.540813
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4806480138",
-    "name_en": "Pizza Hut",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Old Airport",
-    "lat": 25.25422,
-    "lng": 51.563274
   },
   {
     "osm_type": "node",
@@ -27189,6 +27169,16 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "4806480138",
+    "name_en": "Pizza Hut",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Old Airport",
+    "lat": 25.25422,
+    "lng": 51.563274
+  },
+  {
+    "osm_type": "node",
     "osm_id": "4818667675",
     "name_en": "Pizza Hut",
     "name_ar": null,
@@ -27199,23 +27189,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "10232273324",
+    "osm_id": "1470735103",
     "name_en": "Pizza Hut",
     "name_ar": null,
     "kind": "food",
-    "context": "Baaya",
-    "lat": 25.260632,
-    "lng": 51.443295
-  },
-  {
-    "osm_type": "way",
-    "osm_id": "213211122",
-    "name_en": "Pizza Hut",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Messila",
-    "lat": 25.294716,
-    "lng": 51.485085
+    "context": "Al Hilal",
+    "lat": 25.26341,
+    "lng": 51.55551
   },
   {
     "osm_type": "way",
@@ -27229,13 +27209,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "1589660835",
+    "osm_id": "10232273324",
     "name_en": "Pizza Hut",
     "name_ar": null,
     "kind": "food",
-    "context": "New Al Rayyan",
-    "lat": 25.308546,
-    "lng": 51.409008
+    "context": "Baaya",
+    "lat": 25.260632,
+    "lng": 51.443295
   },
   {
     "osm_type": "node",
@@ -27249,6 +27229,16 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "1589660835",
+    "name_en": "Pizza Hut",
+    "name_ar": null,
+    "kind": "food",
+    "context": "New Al Rayyan",
+    "lat": 25.308546,
+    "lng": 51.409008
+  },
+  {
+    "osm_type": "node",
     "osm_id": "2338587121",
     "name_en": "Pizza Hut",
     "name_ar": null,
@@ -27256,6 +27246,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Khor",
     "lat": 25.686184,
     "lng": 51.495075
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "213211122",
+    "name_en": "Pizza Hut",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Al Messila",
+    "lat": 25.294716,
+    "lng": 51.485085
   },
   {
     "osm_type": "node",
@@ -27659,16 +27659,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4428083078",
-    "name_en": "Rotana",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Fereej Bin Mahmoud",
-    "lat": 25.279928,
-    "lng": 51.51846
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4818892343",
     "name_en": "Rotana",
     "name_ar": null,
@@ -27676,6 +27666,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Wadi Al Sail",
     "lat": 25.301573,
     "lng": 51.500828
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4428083078",
+    "name_en": "Rotana",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Fereej Bin Mahmoud",
+    "lat": 25.279928,
+    "lng": 51.51846
   },
   {
     "osm_type": "node",
@@ -27919,16 +27919,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4823790962",
-    "name_en": "Saudia Hot Chicken",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Sadd",
-    "lat": 25.282682,
-    "lng": 51.503532
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4837221967",
     "name_en": "Saudia Hot Chicken",
     "name_ar": null,
@@ -27936,6 +27926,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Bin Mahmoud",
     "lat": 25.285923,
     "lng": 51.514313
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4823790962",
+    "name_en": "Saudia Hot Chicken",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Al Sadd",
+    "lat": 25.282682,
+    "lng": 51.503532
   },
   {
     "osm_type": "node",
@@ -28199,16 +28199,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "3508022433",
-    "name_en": "Sidra Food Court",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Umm Salal Muhammad",
-    "lat": 25.433556,
-    "lng": 51.41102
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4045357211",
     "name_en": "Sidra Food Court",
     "name_ar": null,
@@ -28216,6 +28206,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Purple Island",
     "lat": 25.724806,
     "lng": 51.52794
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "3508022433",
+    "name_en": "Sidra Food Court",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Umm Salal Muhammad",
+    "lat": 25.433556,
+    "lng": 51.41102
   },
   {
     "osm_type": "node",
@@ -28419,56 +28419,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "1768646981",
-    "name_en": "Starbucks",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Fereej Al Nasr",
-    "lat": 25.270733,
-    "lng": 51.50921
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4231081500",
-    "name_en": "Starbucks",
-    "name_ar": "ستاربكس",
-    "kind": "food",
-    "context": "Al Thumama",
-    "lat": 25.238485,
-    "lng": 51.563133
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "6784043885",
-    "name_en": "Starbucks",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Muaither North",
-    "lat": 25.268734,
-    "lng": 51.424652
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "6342701385",
-    "name_en": "Starbucks",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Barwa City",
-    "lat": 25.19616,
-    "lng": 51.508648
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "6812052626",
-    "name_en": "Starbucks",
-    "name_ar": "ستاربكس",
-    "kind": "food",
-    "context": "Baaya",
-    "lat": 25.258402,
-    "lng": 51.432137
-  },
-  {
-    "osm_type": "node",
     "osm_id": "9574206561",
     "name_en": "Starbucks",
     "name_ar": "ستاربكس",
@@ -28489,13 +28439,33 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "11617805535",
+    "osm_id": "4231081500",
     "name_en": "Starbucks",
     "name_ar": "ستاربكس",
     "kind": "food",
-    "context": "Porto Arabia",
-    "lat": 25.371315,
-    "lng": 51.540287
+    "context": "Al Thumama",
+    "lat": 25.238485,
+    "lng": 51.563133
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "6342701385",
+    "name_en": "Starbucks",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Barwa City",
+    "lat": 25.19616,
+    "lng": 51.508648
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1768646981",
+    "name_en": "Starbucks",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Fereej Al Nasr",
+    "lat": 25.270733,
+    "lng": 51.50921
   },
   {
     "osm_type": "node",
@@ -28519,6 +28489,36 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "11617805535",
+    "name_en": "Starbucks",
+    "name_ar": "ستاربكس",
+    "kind": "food",
+    "context": "Porto Arabia",
+    "lat": 25.371315,
+    "lng": 51.540287
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "6784043885",
+    "name_en": "Starbucks",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Muaither North",
+    "lat": 25.268734,
+    "lng": 51.424652
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "6812052626",
+    "name_en": "Starbucks",
+    "name_ar": "ستاربكس",
+    "kind": "food",
+    "context": "Baaya",
+    "lat": 25.258402,
+    "lng": 51.432137
+  },
+  {
+    "osm_type": "node",
     "osm_id": "3314814789",
     "name_en": "Stickhouse",
     "name_ar": null,
@@ -28526,86 +28526,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Marsa Arabia",
     "lat": 25.372845,
     "lng": 51.546135
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "2298707531",
-    "name_en": "Subway",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Rawdat Al Khail",
-    "lat": 25.268278,
-    "lng": 51.515244
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4689640514",
-    "name_en": "Subway",
-    "name_ar": null,
-    "kind": "food",
-    "context": "New Al Rayyan",
-    "lat": 25.281315,
-    "lng": 51.43241
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4779239676",
-    "name_en": "Subway",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Old Al Ghanim",
-    "lat": 25.279871,
-    "lng": 51.54455
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4818703043",
-    "name_en": "Subway",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Nuaija",
-    "lat": 25.237873,
-    "lng": 51.499615
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4827635282",
-    "name_en": "Subway",
-    "name_ar": null,
-    "kind": "food",
-    "context": "New Al Rayyan",
-    "lat": 25.288336,
-    "lng": 51.42017
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4833553798",
-    "name_en": "Subway",
-    "name_ar": "صب واي",
-    "kind": "food",
-    "context": "Barahat Al Jufairi",
-    "lat": 25.28291,
-    "lng": 51.534016
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "5435790721",
-    "name_en": "Subway",
-    "name_ar": "صب واي",
-    "kind": "food",
-    "context": "Fereej Bin Mahmoud",
-    "lat": 25.280386,
-    "lng": 51.511673
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "5435792322",
-    "name_en": "Subway",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Fereej Bin Mahmoud",
-    "lat": 25.280176,
-    "lng": 51.510857
   },
   {
     "osm_type": "node",
@@ -28619,13 +28539,93 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "1589660816",
+    "osm_id": "4779239676",
+    "name_en": "Subway",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Old Al Ghanim",
+    "lat": 25.279871,
+    "lng": 51.54455
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "5435792322",
+    "name_en": "Subway",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Fereej Bin Mahmoud",
+    "lat": 25.280176,
+    "lng": 51.510857
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4818703043",
+    "name_en": "Subway",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Nuaija",
+    "lat": 25.237873,
+    "lng": 51.499615
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "2298707531",
+    "name_en": "Subway",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Rawdat Al Khail",
+    "lat": 25.268278,
+    "lng": 51.515244
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4827635282",
     "name_en": "Subway",
     "name_ar": null,
     "kind": "food",
     "context": "New Al Rayyan",
-    "lat": 25.308313,
-    "lng": 51.409203
+    "lat": 25.288336,
+    "lng": 51.42017
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "5435790721",
+    "name_en": "Subway",
+    "name_ar": "صب واي",
+    "kind": "food",
+    "context": "Fereej Bin Mahmoud",
+    "lat": 25.280386,
+    "lng": 51.511673
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4689640514",
+    "name_en": "Subway",
+    "name_ar": null,
+    "kind": "food",
+    "context": "New Al Rayyan",
+    "lat": 25.281315,
+    "lng": 51.43241
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4833553798",
+    "name_en": "Subway",
+    "name_ar": "صب واي",
+    "kind": "food",
+    "context": "Barahat Al Jufairi",
+    "lat": 25.28291,
+    "lng": 51.534016
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "2624319976",
+    "name_en": "Subway",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Al Khor",
+    "lat": 25.679033,
+    "lng": 51.497272
   },
   {
     "osm_type": "node",
@@ -28639,13 +28639,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "2624319976",
+    "osm_id": "1589660816",
     "name_en": "Subway",
     "name_ar": null,
     "kind": "food",
-    "context": "Al Khor",
-    "lat": 25.679033,
-    "lng": 51.497272
+    "context": "New Al Rayyan",
+    "lat": 25.308313,
+    "lng": 51.409203
   },
   {
     "osm_type": "node",
@@ -29029,16 +29029,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "6833405283",
-    "name_en": "Tea Time",
-    "name_ar": null,
-    "kind": "food",
-    "context": "New Al Rayyan",
-    "lat": 25.297817,
-    "lng": 51.42018
-  },
-  {
-    "osm_type": "node",
     "osm_id": "6814834393",
     "name_en": "Tea Time",
     "name_ar": "وقت الشاي",
@@ -29049,13 +29039,23 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "10232273321",
+    "osm_id": "6833405283",
     "name_en": "Tea Time",
     "name_ar": null,
     "kind": "food",
-    "context": "Fereej Al Nasr",
-    "lat": 25.271873,
-    "lng": 51.509163
+    "context": "New Al Rayyan",
+    "lat": 25.297817,
+    "lng": 51.42018
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "1223202651",
+    "name_en": "Tea Time",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Abraj Quartier",
+    "lat": 25.381855,
+    "lng": 51.528812
   },
   {
     "osm_type": "way",
@@ -29069,6 +29069,16 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "10232273321",
+    "name_en": "Tea Time",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Fereej Al Nasr",
+    "lat": 25.271873,
+    "lng": 51.509163
+  },
+  {
+    "osm_type": "node",
     "osm_id": "11346315489",
     "name_en": "Tea Time",
     "name_ar": null,
@@ -29076,26 +29086,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Abraj Quartier",
     "lat": 25.381863,
     "lng": 51.52878
-  },
-  {
-    "osm_type": "way",
-    "osm_id": "1223202651",
-    "name_en": "Tea Time",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Abraj Quartier",
-    "lat": 25.381855,
-    "lng": 51.528812
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4804198163",
-    "name_en": "Tea World",
-    "name_ar": null,
-    "kind": "food",
-    "context": "منطقة العمادي",
-    "lat": 25.266754,
-    "lng": 51.551308
   },
   {
     "osm_type": "node",
@@ -29106,6 +29096,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Thumama",
     "lat": 25.242813,
     "lng": 51.569347
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4804198163",
+    "name_en": "Tea World",
+    "name_ar": null,
+    "kind": "food",
+    "context": "منطقة العمادي",
+    "lat": 25.266754,
+    "lng": 51.551308
   },
   {
     "osm_type": "node",
@@ -29439,16 +29439,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4833560717",
-    "name_en": "Top Form Restaurant",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Barahat Al Jufairi",
-    "lat": 25.283201,
-    "lng": 51.53264
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4835227844",
     "name_en": "Top Form Restaurant",
     "name_ar": null,
@@ -29456,6 +29446,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Mushaireb",
     "lat": 25.280945,
     "lng": 51.528625
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4833560717",
+    "name_en": "Top Form Restaurant",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Barahat Al Jufairi",
+    "lat": 25.283201,
+    "lng": 51.53264
   },
   {
     "osm_type": "node",
@@ -29659,16 +29659,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "10292738412",
-    "name_en": "Viva Mexico",
-    "name_ar": null,
-    "kind": "food",
-    "context": "Al Bidda",
-    "lat": 25.28701,
-    "lng": 51.52433
-  },
-  {
-    "osm_type": "node",
     "osm_id": "7211048188",
     "name_en": "Viva Mexico",
     "name_ar": null,
@@ -29676,6 +29666,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Qanat Quartier",
     "lat": 25.376915,
     "lng": 51.544308
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "10292738412",
+    "name_en": "Viva Mexico",
+    "name_ar": null,
+    "kind": "food",
+    "context": "Al Bidda",
+    "lat": 25.28701,
+    "lng": 51.52433
   },
   {
     "osm_type": "node",
@@ -39609,13 +39609,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4818548680",
+    "osm_id": "4842724096",
     "name_en": "Al Jazeera Finance",
     "name_ar": null,
     "kind": "office",
-    "context": "Al Ain Gardens",
-    "lat": 25.240484,
-    "lng": 51.458584
+    "context": "Al Asiri",
+    "lat": 25.26492,
+    "lng": 51.49774
   },
   {
     "osm_type": "node",
@@ -39629,13 +39629,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4842724096",
+    "osm_id": "4818548680",
     "name_en": "Al Jazeera Finance",
     "name_ar": null,
     "kind": "office",
-    "context": "Al Asiri",
-    "lat": 25.26492,
-    "lng": 51.49774
+    "context": "Al Ain Gardens",
+    "lat": 25.240484,
+    "lng": 51.458584
   },
   {
     "osm_type": "node",
@@ -42069,16 +42069,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4823346722",
-    "name_en": "Haddadco",
-    "name_ar": null,
-    "kind": "office",
-    "context": "Al Sadd",
-    "lat": 25.286608,
-    "lng": 51.505394
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4823877882",
     "name_en": "Haddadco",
     "name_ar": null,
@@ -42086,6 +42076,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Sadd",
     "lat": 25.282522,
     "lng": 51.500496
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4823346722",
+    "name_en": "Haddadco",
+    "name_ar": null,
+    "kind": "office",
+    "context": "Al Sadd",
+    "lat": 25.286608,
+    "lng": 51.505394
   },
   {
     "osm_type": "node",
@@ -42528,16 +42528,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.504345
   },
   {
-    "osm_type": "node",
-    "osm_id": "13155515171",
-    "name_en": "KEO International Consultants",
-    "name_ar": null,
-    "kind": "office",
-    "context": "Umm Ghuwailina",
-    "lat": 25.268835,
-    "lng": 51.551514
-  },
-  {
     "osm_type": "way",
     "osm_id": "484992694",
     "name_en": "KEO International Consultants",
@@ -42545,6 +42535,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "kind": "office",
     "context": "Umm Ghuwailina",
     "lat": 25.268837,
+    "lng": 51.551514
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "13155515171",
+    "name_en": "KEO International Consultants",
+    "name_ar": null,
+    "kind": "office",
+    "context": "Umm Ghuwailina",
+    "lat": 25.268835,
     "lng": 51.551514
   },
   {
@@ -42799,16 +42799,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4818354285",
-    "name_en": "Masraf Al Rayan",
-    "name_ar": null,
-    "kind": "office",
-    "context": "Al Sadd",
-    "lat": 25.281528,
-    "lng": 51.504288
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4834921464",
     "name_en": "Masraf Al Rayan",
     "name_ar": "مصرف الريان",
@@ -42816,6 +42806,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Barahat Al Jufairi",
     "lat": 25.281563,
     "lng": 51.53452
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4818354285",
+    "name_en": "Masraf Al Rayan",
+    "name_ar": null,
+    "kind": "office",
+    "context": "Al Sadd",
+    "lat": 25.281528,
+    "lng": 51.504288
   },
   {
     "osm_type": "node",
@@ -42929,16 +42929,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "way",
-    "osm_id": "485161842",
-    "name_en": "Ministry of Education and Higher Education",
-    "name_ar": "وزارة التربية والتعليم",
-    "kind": "office",
-    "context": "منطقة العمادي",
-    "lat": 25.264776,
-    "lng": 51.54687
-  },
-  {
-    "osm_type": "way",
     "osm_id": "25937221",
     "name_en": "Ministry of Education and Higher Education",
     "name_ar": null,
@@ -42946,6 +42936,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Dafna",
     "lat": 25.320623,
     "lng": 51.52536
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "485161842",
+    "name_en": "Ministry of Education and Higher Education",
+    "name_ar": "وزارة التربية والتعليم",
+    "kind": "office",
+    "context": "منطقة العمادي",
+    "lat": 25.264776,
+    "lng": 51.54687
   },
   {
     "osm_type": "way",
@@ -43088,16 +43088,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.54015
   },
   {
-    "osm_type": "node",
-    "osm_id": "4841938741",
-    "name_en": "Ministry of Municipality & Environment",
-    "name_ar": null,
-    "kind": "office",
-    "context": "(Sharg Zone) - Aslata",
-    "lat": 25.288942,
-    "lng": 51.543823
-  },
-  {
     "osm_type": "way",
     "osm_id": "490566049",
     "name_en": "Ministry of Municipality & Environment",
@@ -43106,6 +43096,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Dafna",
     "lat": 25.327063,
     "lng": 51.528263
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4841938741",
+    "name_en": "Ministry of Municipality & Environment",
+    "name_ar": null,
+    "kind": "office",
+    "context": "(Sharg Zone) - Aslata",
+    "lat": 25.288942,
+    "lng": 51.543823
   },
   {
     "osm_type": "way",
@@ -43459,26 +43459,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4428083060",
-    "name_en": "Ooredoo",
-    "name_ar": null,
-    "kind": "office",
-    "context": "Mushaireb",
-    "lat": 25.281967,
-    "lng": 51.518158
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4827342208",
-    "name_en": "Ooredoo",
-    "name_ar": null,
-    "kind": "office",
-    "context": "New Al Rayyan",
-    "lat": 25.294407,
-    "lng": 51.420166
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4835692183",
     "name_en": "Ooredoo",
     "name_ar": null,
@@ -43496,6 +43476,26 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Dukhan",
     "lat": 25.421566,
     "lng": 50.793808
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4428083060",
+    "name_en": "Ooredoo",
+    "name_ar": null,
+    "kind": "office",
+    "context": "Mushaireb",
+    "lat": 25.281967,
+    "lng": 51.518158
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4827342208",
+    "name_en": "Ooredoo",
+    "name_ar": null,
+    "kind": "office",
+    "context": "New Al Rayyan",
+    "lat": 25.294407,
+    "lng": 51.420166
   },
   {
     "osm_type": "node",
@@ -43669,16 +43669,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "way",
-    "osm_id": "491708336",
-    "name_en": "Public Relations Department",
-    "name_ar": null,
-    "kind": "office",
-    "context": "Old Al Ghanim",
-    "lat": 25.285757,
-    "lng": 51.539722
-  },
-  {
-    "osm_type": "way",
     "osm_id": "1115392566",
     "name_en": "Public Relations Department",
     "name_ar": null,
@@ -43706,6 +43696,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Old Al Ghanim",
     "lat": 25.285717,
     "lng": 51.539524
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "491708336",
+    "name_en": "Public Relations Department",
+    "name_ar": null,
+    "kind": "office",
+    "context": "Old Al Ghanim",
+    "lat": 25.285757,
+    "lng": 51.539722
   },
   {
     "osm_type": "way",
@@ -43779,16 +43779,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4831548666",
-    "name_en": "Qatar Charity",
-    "name_ar": null,
-    "kind": "office",
-    "context": "Nuaija",
-    "lat": 25.238808,
-    "lng": 51.499542
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4835471459",
     "name_en": "Qatar Charity",
     "name_ar": null,
@@ -43796,6 +43786,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Muaither",
     "lat": 25.27758,
     "lng": 51.407547
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4831548666",
+    "name_en": "Qatar Charity",
+    "name_ar": null,
+    "kind": "office",
+    "context": "Nuaija",
+    "lat": 25.238808,
+    "lng": 51.499542
   },
   {
     "osm_type": "node",
@@ -43868,16 +43868,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.507496
   },
   {
-    "osm_type": "node",
-    "osm_id": "4823601783",
-    "name_en": "Qatar General Electricity & Water Corporation",
-    "name_ar": null,
-    "kind": "office",
-    "context": "West Bay",
-    "lat": 25.31975,
-    "lng": 51.531025
-  },
-  {
     "osm_type": "way",
     "osm_id": "299890061",
     "name_en": "Qatar General Electricity & Water Corporation",
@@ -43886,6 +43876,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "West Bay",
     "lat": 25.32123,
     "lng": 51.53218
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4823601783",
+    "name_en": "Qatar General Electricity & Water Corporation",
+    "name_ar": null,
+    "kind": "office",
+    "context": "West Bay",
+    "lat": 25.31975,
+    "lng": 51.531025
   },
   {
     "osm_type": "way",
@@ -44679,16 +44679,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4834906483",
-    "name_en": "Talib Upholstery",
-    "name_ar": null,
-    "kind": "office",
-    "context": "Barahat Al Jufairi",
-    "lat": 25.280472,
-    "lng": 51.532036
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4834906471",
     "name_en": "Talib Upholstery",
     "name_ar": null,
@@ -44696,6 +44686,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Barahat Al Jufairi",
     "lat": 25.28067,
     "lng": 51.53187
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4834906483",
+    "name_en": "Talib Upholstery",
+    "name_ar": null,
+    "kind": "office",
+    "context": "Barahat Al Jufairi",
+    "lat": 25.280472,
+    "lng": 51.532036
   },
   {
     "osm_type": "node",
@@ -46018,16 +46018,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.449066
   },
   {
-    "osm_type": "node",
-    "osm_id": "12137185015",
-    "name_en": "974 Bikers",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Madinat Khalifa North",
-    "lat": 25.3247,
-    "lng": 51.472923
-  },
-  {
     "osm_type": "way",
     "osm_id": "1311566688",
     "name_en": "974 Bikers",
@@ -46036,6 +46026,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Madinat Khalifa North",
     "lat": 25.324787,
     "lng": 51.47302
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "12137185015",
+    "name_en": "974 Bikers",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Madinat Khalifa North",
+    "lat": 25.3247,
+    "lng": 51.472923
   },
   {
     "osm_type": "node",
@@ -46169,6 +46169,16 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "4837101325",
+    "name_en": "Abdul Samad Al Qurashi",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Ain Gardens",
+    "lat": 25.244638,
+    "lng": 51.454384
+  },
+  {
+    "osm_type": "node",
     "osm_id": "4818360862",
     "name_en": "Abdul Samad Al Qurashi",
     "name_ar": null,
@@ -46186,16 +46196,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "New Al Rayyan",
     "lat": 25.293701,
     "lng": 51.420692
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4837101325",
-    "name_en": "Abdul Samad Al Qurashi",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Ain Gardens",
-    "lat": 25.244638,
-    "lng": 51.454384
   },
   {
     "osm_type": "node",
@@ -46669,33 +46669,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "10199088785",
+    "osm_id": "12606497009",
     "name_en": "Ahmed Al Maghribi",
     "name_ar": "أحمد المغربي للعطور",
     "kind": "shop",
-    "context": "Al Waab",
-    "lat": 25.251656,
-    "lng": 51.469135
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "10199130429",
-    "name_en": "Ahmed Al Maghribi",
-    "name_ar": "أحمد المغربي للعطور",
-    "kind": "shop",
-    "context": "Fereej Bin Mahmoud",
-    "lat": 25.283709,
-    "lng": 51.512833
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "12165452612",
-    "name_en": "Ahmed Al Maghribi",
-    "name_ar": "أحمد المغربي للعطور",
-    "kind": "shop",
-    "context": "Al Waab",
-    "lat": 25.249926,
-    "lng": 51.47033
+    "context": "Al Ain Gardens",
+    "lat": 25.244892,
+    "lng": 51.456215
   },
   {
     "osm_type": "node",
@@ -46709,23 +46689,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "12345606122",
+    "osm_id": "10199130429",
     "name_en": "Ahmed Al Maghribi",
     "name_ar": "أحمد المغربي للعطور",
     "kind": "shop",
-    "context": "Baaya",
-    "lat": 25.261599,
-    "lng": 51.430267
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "12606497009",
-    "name_en": "Ahmed Al Maghribi",
-    "name_ar": "أحمد المغربي للعطور",
-    "kind": "shop",
-    "context": "Al Ain Gardens",
-    "lat": 25.244892,
-    "lng": 51.456215
+    "context": "Fereej Bin Mahmoud",
+    "lat": 25.283709,
+    "lng": 51.512833
   },
   {
     "osm_type": "node",
@@ -46739,53 +46709,33 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "12345606125",
+    "osm_id": "10199088785",
     "name_en": "Ahmed Al Maghribi",
     "name_ar": "أحمد المغربي للعطور",
     "kind": "shop",
-    "context": "Fereej Al Nasr",
-    "lat": 25.27287,
-    "lng": 51.495102
+    "context": "Al Waab",
+    "lat": 25.251656,
+    "lng": 51.469135
   },
   {
     "osm_type": "node",
-    "osm_id": "12187760480",
+    "osm_id": "12345606122",
     "name_en": "Ahmed Al Maghribi",
     "name_ar": "أحمد المغربي للعطور",
     "kind": "shop",
-    "context": "New Al Rayyan",
-    "lat": 25.293533,
-    "lng": 51.420685
+    "context": "Baaya",
+    "lat": 25.261599,
+    "lng": 51.430267
   },
   {
     "osm_type": "node",
-    "osm_id": "12187760483",
+    "osm_id": "12165452612",
     "name_en": "Ahmed Al Maghribi",
     "name_ar": "أحمد المغربي للعطور",
     "kind": "shop",
-    "context": "Fereej Al Nasr",
-    "lat": 25.273205,
-    "lng": 51.49843
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "10199130427",
-    "name_en": "Ahmed Al Maghribi",
-    "name_ar": "أحمد المغربي للعطور",
-    "kind": "shop",
-    "context": "Al Tarfa",
-    "lat": 25.369566,
-    "lng": 51.474503
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "10199130431",
-    "name_en": "Ahmed Al Maghribi",
-    "name_ar": "أحمد المغربي للعطور",
-    "kind": "shop",
-    "context": "Duhail",
-    "lat": 25.384384,
-    "lng": 51.441715
+    "context": "Al Waab",
+    "lat": 25.249926,
+    "lng": 51.47033
   },
   {
     "osm_type": "node",
@@ -46799,13 +46749,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "12204865393",
+    "osm_id": "12187760480",
     "name_en": "Ahmed Al Maghribi",
     "name_ar": "أحمد المغربي للعطور",
     "kind": "shop",
-    "context": "Fereej Kulaib",
-    "lat": 25.319994,
-    "lng": 51.48621
+    "context": "New Al Rayyan",
+    "lat": 25.293533,
+    "lng": 51.420685
   },
   {
     "osm_type": "node",
@@ -46819,13 +46769,43 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "10199130428",
+    "osm_id": "12345606125",
     "name_en": "Ahmed Al Maghribi",
     "name_ar": "أحمد المغربي للعطور",
     "kind": "shop",
-    "context": "Al Wajba",
-    "lat": 25.32584,
-    "lng": 51.350082
+    "context": "Fereej Al Nasr",
+    "lat": 25.27287,
+    "lng": 51.495102
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "12204865393",
+    "name_en": "Ahmed Al Maghribi",
+    "name_ar": "أحمد المغربي للعطور",
+    "kind": "shop",
+    "context": "Fereej Kulaib",
+    "lat": 25.319994,
+    "lng": 51.48621
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "12165452613",
+    "name_en": "Ahmed Al Maghribi",
+    "name_ar": "أحمد المغربي للعطور",
+    "kind": "shop",
+    "context": "Al Khor",
+    "lat": 25.671356,
+    "lng": 51.492336
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "10199130427",
+    "name_en": "Ahmed Al Maghribi",
+    "name_ar": "أحمد المغربي للعطور",
+    "kind": "shop",
+    "context": "Al Tarfa",
+    "lat": 25.369566,
+    "lng": 51.474503
   },
   {
     "osm_type": "node",
@@ -46839,13 +46819,33 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "12165452613",
+    "osm_id": "10199130428",
     "name_en": "Ahmed Al Maghribi",
     "name_ar": "أحمد المغربي للعطور",
     "kind": "shop",
-    "context": "Al Khor",
-    "lat": 25.671356,
-    "lng": 51.492336
+    "context": "Al Wajba",
+    "lat": 25.32584,
+    "lng": 51.350082
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "10199130431",
+    "name_en": "Ahmed Al Maghribi",
+    "name_ar": "أحمد المغربي للعطور",
+    "kind": "shop",
+    "context": "Duhail",
+    "lat": 25.384384,
+    "lng": 51.441715
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "12187760483",
+    "name_en": "Ahmed Al Maghribi",
+    "name_ar": "أحمد المغربي للعطور",
+    "kind": "shop",
+    "context": "Fereej Al Nasr",
+    "lat": 25.273205,
+    "lng": 51.49843
   },
   {
     "osm_type": "node",
@@ -46968,16 +46968,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.45626
   },
   {
-    "osm_type": "node",
-    "osm_id": "4818236451",
-    "name_en": "Ajmal Grocery",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Aziziya",
-    "lat": 25.236032,
-    "lng": 51.444103
-  },
-  {
     "osm_type": "way",
     "osm_id": "491459138",
     "name_en": "Ajmal Grocery",
@@ -46986,6 +46976,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Aziziya",
     "lat": 25.237097,
     "lng": 51.442844
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4818236451",
+    "name_en": "Ajmal Grocery",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Aziziya",
+    "lat": 25.236032,
+    "lng": 51.444103
   },
   {
     "osm_type": "node",
@@ -47439,16 +47439,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4807862930",
-    "name_en": "Al Amana Decor",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Thumama",
-    "lat": 25.243378,
-    "lng": 51.569046
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4818548664",
     "name_en": "Al Amana Decor",
     "name_ar": null,
@@ -47456,6 +47446,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Ain Gardens",
     "lat": 25.238394,
     "lng": 51.455055
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4807862930",
+    "name_en": "Al Amana Decor",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Thumama",
+    "lat": 25.243378,
+    "lng": 51.569046
   },
   {
     "osm_type": "node",
@@ -47529,16 +47529,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4837475758",
-    "name_en": "Al Anaqa",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Bin Mahmoud",
-    "lat": 25.284706,
-    "lng": 51.510647
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4837475760",
     "name_en": "Al Anaqa",
     "name_ar": null,
@@ -47546,6 +47536,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Bin Mahmoud",
     "lat": 25.284721,
     "lng": 51.51057
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4837475758",
+    "name_en": "Al Anaqa",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Bin Mahmoud",
+    "lat": 25.284706,
+    "lng": 51.510647
   },
   {
     "osm_type": "node",
@@ -47589,16 +47589,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4446317601",
-    "name_en": "Al Annabi",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Mushaireb",
-    "lat": 25.282404,
-    "lng": 51.517857
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4837097004",
     "name_en": "Al Annabi",
     "name_ar": null,
@@ -47609,6 +47599,16 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "4446317601",
+    "name_en": "Al Annabi",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Mushaireb",
+    "lat": 25.282404,
+    "lng": 51.517857
+  },
+  {
+    "osm_type": "node",
     "osm_id": "3043280276",
     "name_en": "Al Annabi Electronics",
     "name_ar": null,
@@ -47616,6 +47616,26 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Barahat Al Jufairi",
     "lat": 25.281769,
     "lng": 51.53241
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4833475962",
+    "name_en": "Al Ansari",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Doha Al Jadeeda",
+    "lat": 25.275206,
+    "lng": 51.537273
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4842417042",
+    "name_en": "Al Ansari",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Souq",
+    "lat": 25.288431,
+    "lng": 51.536705
   },
   {
     "osm_type": "node",
@@ -47639,26 +47659,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4833475962",
-    "name_en": "Al Ansari",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Doha Al Jadeeda",
-    "lat": 25.275206,
-    "lng": 51.537273
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4835311317",
-    "name_en": "Al Ansari",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Mushaireb",
-    "lat": 25.283508,
-    "lng": 51.52764
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4837475770",
     "name_en": "Al Ansari",
     "name_ar": null,
@@ -47669,13 +47669,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4842417042",
+    "osm_id": "4835311317",
     "name_en": "Al Ansari",
     "name_ar": null,
     "kind": "shop",
-    "context": "Al Souq",
-    "lat": 25.288431,
-    "lng": 51.536705
+    "context": "Mushaireb",
+    "lat": 25.283508,
+    "lng": 51.52764
   },
   {
     "osm_type": "node",
@@ -47999,16 +47999,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4837202612",
-    "name_en": "Al Badiya Saloon",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Bin Mahmoud",
-    "lat": 25.280544,
-    "lng": 51.513424
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4820548864",
     "name_en": "Al Badiya Saloon",
     "name_ar": null,
@@ -48016,6 +48006,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Madinat Khalifa North",
     "lat": 25.320532,
     "lng": 51.46585
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4837202612",
+    "name_en": "Al Badiya Saloon",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Bin Mahmoud",
+    "lat": 25.280544,
+    "lng": 51.513424
   },
   {
     "osm_type": "node",
@@ -48759,16 +48759,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4825417652",
-    "name_en": "Al Fairozi Saloon",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "New Al Rayyan",
-    "lat": 25.296505,
-    "lng": 51.420734
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4831444047",
     "name_en": "Al Fairozi Saloon",
     "name_ar": null,
@@ -48786,6 +48776,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Bin Mahmoud",
     "lat": 25.28428,
     "lng": 51.511402
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4825417652",
+    "name_en": "Al Fairozi Saloon",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "New Al Rayyan",
+    "lat": 25.296505,
+    "lng": 51.420734
   },
   {
     "osm_type": "node",
@@ -48899,16 +48899,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4837264565",
-    "name_en": "Al Faris",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Old Al Ghanim",
-    "lat": 25.280376,
-    "lng": 51.53976
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4818802011",
     "name_en": "Al Faris",
     "name_ar": null,
@@ -48916,6 +48906,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Gharrafa",
     "lat": 25.32692,
     "lng": 51.46338
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4837264565",
+    "name_en": "Al Faris",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Old Al Ghanim",
+    "lat": 25.280376,
+    "lng": 51.53976
   },
   {
     "osm_type": "node",
@@ -50929,16 +50929,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4682064036",
-    "name_en": "Al Meera",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "New Al Rayyan",
-    "lat": 25.28123,
-    "lng": 51.43289
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4831662121",
     "name_en": "Al Meera",
     "name_ar": null,
@@ -50948,74 +50938,14 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.49756
   },
   {
-    "osm_type": "way",
-    "osm_id": "489615840",
-    "name_en": "Al Meera",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Aziziya",
-    "lat": 25.249428,
-    "lng": 51.440186
-  },
-  {
     "osm_type": "node",
-    "osm_id": "1598389903",
+    "osm_id": "2339003204",
     "name_en": "Al Meera",
     "name_ar": null,
     "kind": "shop",
-    "context": "Unaiza",
-    "lat": 25.331583,
-    "lng": 51.511387
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "10567917505",
-    "name_en": "Al Meera",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Onaiza",
-    "lat": 25.3174,
-    "lng": 51.519493
-  },
-  {
-    "osm_type": "way",
-    "osm_id": "25977777",
-    "name_en": "Al Meera",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Bin Omran",
-    "lat": 25.303322,
-    "lng": 51.490246
-  },
-  {
-    "osm_type": "way",
-    "osm_id": "248698656",
-    "name_en": "Al Meera",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Education City",
-    "lat": 25.331703,
-    "lng": 51.428104
-  },
-  {
-    "osm_type": "way",
-    "osm_id": "490944978",
-    "name_en": "Al Meera",
-    "name_ar": "الميرة",
-    "kind": "shop",
-    "context": "Al Tarfa",
-    "lat": 25.369467,
-    "lng": 51.474426
-  },
-  {
-    "osm_type": "way",
-    "osm_id": "491031161",
-    "name_en": "Al Meera",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Unaiza",
-    "lat": 25.337399,
-    "lng": 51.50538
+    "context": "Purple Island",
+    "lat": 25.71437,
+    "lng": 51.53009
   },
   {
     "osm_type": "way",
@@ -51029,33 +50959,43 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "way",
-    "osm_id": "727175116",
+    "osm_id": "489615840",
     "name_en": "Al Meera",
-    "name_ar": "الميرة",
+    "name_ar": null,
     "kind": "shop",
-    "context": "Al Wajba",
-    "lat": 25.266098,
-    "lng": 51.363895
-  },
-  {
-    "osm_type": "way",
-    "osm_id": "727175117",
-    "name_en": "Al Meera",
-    "name_ar": "الميرة",
-    "kind": "shop",
-    "context": "Fereej Al Manseer",
-    "lat": 25.23094,
-    "lng": 51.3803
+    "context": "Al Aziziya",
+    "lat": 25.249428,
+    "lng": 51.440186
   },
   {
     "osm_type": "node",
-    "osm_id": "5348828121",
+    "osm_id": "10567917505",
     "name_en": "Al Meera",
-    "name_ar": "الميرة",
+    "name_ar": null,
     "kind": "shop",
-    "context": "Al Wajba",
-    "lat": 25.33044,
-    "lng": 51.38481
+    "context": "Onaiza",
+    "lat": 25.3174,
+    "lng": 51.519493
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "491031161",
+    "name_en": "Al Meera",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Unaiza",
+    "lat": 25.337399,
+    "lng": 51.50538
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "248698656",
+    "name_en": "Al Meera",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Education City",
+    "lat": 25.331703,
+    "lng": 51.428104
   },
   {
     "osm_type": "way",
@@ -51068,14 +51008,14 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.38056
   },
   {
-    "osm_type": "node",
-    "osm_id": "2339003204",
+    "osm_type": "way",
+    "osm_id": "727175116",
     "name_en": "Al Meera",
-    "name_ar": null,
+    "name_ar": "الميرة",
     "kind": "shop",
-    "context": "Purple Island",
-    "lat": 25.71437,
-    "lng": 51.53009
+    "context": "Al Wajba",
+    "lat": 25.266098,
+    "lng": 51.363895
   },
   {
     "osm_type": "node",
@@ -51089,13 +51029,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "way",
-    "osm_id": "645551559",
+    "osm_id": "25977777",
     "name_en": "Al Meera",
     "name_ar": null,
     "kind": "shop",
-    "context": "Al Ghuwayriya",
-    "lat": 25.830124,
-    "lng": 51.247368
+    "context": "Fereej Bin Omran",
+    "lat": 25.303322,
+    "lng": 51.490246
   },
   {
     "osm_type": "node",
@@ -51106,6 +51046,66 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": null,
     "lat": 24.854807,
     "lng": 51.509495
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "727175117",
+    "name_en": "Al Meera",
+    "name_ar": "الميرة",
+    "kind": "shop",
+    "context": "Fereej Al Manseer",
+    "lat": 25.23094,
+    "lng": 51.3803
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4682064036",
+    "name_en": "Al Meera",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "New Al Rayyan",
+    "lat": 25.28123,
+    "lng": 51.43289
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "645551559",
+    "name_en": "Al Meera",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Ghuwayriya",
+    "lat": 25.830124,
+    "lng": 51.247368
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "5348828121",
+    "name_en": "Al Meera",
+    "name_ar": "الميرة",
+    "kind": "shop",
+    "context": "Al Wajba",
+    "lat": 25.33044,
+    "lng": 51.38481
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "490944978",
+    "name_en": "Al Meera",
+    "name_ar": "الميرة",
+    "kind": "shop",
+    "context": "Al Tarfa",
+    "lat": 25.369467,
+    "lng": 51.474426
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1598389903",
+    "name_en": "Al Meera",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Unaiza",
+    "lat": 25.331583,
+    "lng": 51.511387
   },
   {
     "osm_type": "way",
@@ -52519,16 +52519,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4842564982",
-    "name_en": "Al Reem",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Souq",
-    "lat": 25.28761,
-    "lng": 51.539215
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4842568198",
     "name_en": "Al Reem",
     "name_ar": null,
@@ -52536,6 +52526,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Souq",
     "lat": 25.28873,
     "lng": 51.537685
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4842564982",
+    "name_en": "Al Reem",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Souq",
+    "lat": 25.28761,
+    "lng": 51.539215
   },
   {
     "osm_type": "node",
@@ -52589,6 +52589,16 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "12017229877",
+    "name_en": "Al Rifai",
+    "name_ar": "محمصة الرفاعي",
+    "kind": "shop",
+    "context": "Fereej Al Nasr",
+    "lat": 25.272709,
+    "lng": 51.494324
+  },
+  {
+    "osm_type": "node",
     "osm_id": "12017229874",
     "name_en": "Al Rifai",
     "name_ar": "محمصة الرفاعي",
@@ -52599,13 +52609,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "12017229877",
+    "osm_id": "12017229872",
     "name_en": "Al Rifai",
     "name_ar": "محمصة الرفاعي",
     "kind": "shop",
-    "context": "Fereej Al Nasr",
-    "lat": 25.272709,
-    "lng": 51.494324
+    "context": "Nuaija",
+    "lat": 25.25245,
+    "lng": 51.5381
   },
   {
     "osm_type": "node",
@@ -52626,36 +52636,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Ain Khaled",
     "lat": 25.225697,
     "lng": 51.47755
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "12017229872",
-    "name_en": "Al Rifai",
-    "name_ar": "محمصة الرفاعي",
-    "kind": "shop",
-    "context": "Nuaija",
-    "lat": 25.25245,
-    "lng": 51.5381
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "12017229873",
-    "name_en": "Al Rifai",
-    "name_ar": "محمصة الرفاعي",
-    "kind": "shop",
-    "context": "Qetaifan Island South 2",
-    "lat": 25.405252,
-    "lng": 51.518284
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "12025763306",
-    "name_en": "Al Rifai",
-    "name_ar": "محمصة الرفاعي",
-    "kind": "shop",
-    "context": "Umm Salal Muhammad",
-    "lat": 25.436453,
-    "lng": 51.44167
   },
   {
     "osm_type": "node",
@@ -52686,6 +52666,26 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Gharrafa",
     "lat": 25.336119,
     "lng": 51.46056
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "12025763306",
+    "name_en": "Al Rifai",
+    "name_ar": "محمصة الرفاعي",
+    "kind": "shop",
+    "context": "Umm Salal Muhammad",
+    "lat": 25.436453,
+    "lng": 51.44167
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "12017229873",
+    "name_en": "Al Rifai",
+    "name_ar": "محمصة الرفاعي",
+    "kind": "shop",
+    "context": "Qetaifan Island South 2",
+    "lat": 25.405252,
+    "lng": 51.518284
   },
   {
     "osm_type": "node",
@@ -52759,6 +52759,26 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "4837571135",
+    "name_en": "Al Romaizan",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Old Al Ghanim",
+    "lat": 25.286118,
+    "lng": 51.537315
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "12174673680",
+    "name_en": "Al Romaizan",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Umm Lekhba",
+    "lat": 25.338099,
+    "lng": 51.481102
+  },
+  {
+    "osm_type": "node",
     "osm_id": "4825417697",
     "name_en": "Al Romaizan",
     "name_ar": null,
@@ -52769,13 +52789,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4837571135",
+    "osm_id": "12174673679",
     "name_en": "Al Romaizan",
     "name_ar": null,
     "kind": "shop",
-    "context": "Old Al Ghanim",
-    "lat": 25.286118,
-    "lng": 51.537315
+    "context": "Barahat Al Jufairi",
+    "lat": 25.285686,
+    "lng": 51.53255
   },
   {
     "osm_type": "node",
@@ -52796,26 +52816,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Old Al Ghanim",
     "lat": 25.285852,
     "lng": 51.538055
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "12174673679",
-    "name_en": "Al Romaizan",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Barahat Al Jufairi",
-    "lat": 25.285686,
-    "lng": 51.53255
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "12174673680",
-    "name_en": "Al Romaizan",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Umm Lekhba",
-    "lat": 25.338099,
-    "lng": 51.481102
   },
   {
     "osm_type": "node",
@@ -53299,16 +53299,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4777465325",
-    "name_en": "Al Shaibani",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Old Al Ghanim",
-    "lat": 25.278383,
-    "lng": 51.541718
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4823243830",
     "name_en": "Al Shaibani",
     "name_ar": null,
@@ -53316,6 +53306,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Gharrafa",
     "lat": 25.328259,
     "lng": 51.455223
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4777465325",
+    "name_en": "Al Shaibani",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Old Al Ghanim",
+    "lat": 25.278383,
+    "lng": 51.541718
   },
   {
     "osm_type": "node",
@@ -53599,23 +53599,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4821202742",
+    "osm_id": "4837571136",
     "name_en": "Al Sulaiman Jewellers",
     "name_ar": null,
     "kind": "shop",
-    "context": "Rawdat Al Khail",
-    "lat": 25.27236,
-    "lng": 51.525043
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4825763458",
-    "name_en": "Al Sulaiman Jewellers",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "New Al Rayyan",
-    "lat": 25.293995,
-    "lng": 51.420692
+    "context": "Old Al Ghanim",
+    "lat": 25.286118,
+    "lng": 51.537243
   },
   {
     "osm_type": "node",
@@ -53629,13 +53619,23 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4837571136",
+    "osm_id": "4825763458",
     "name_en": "Al Sulaiman Jewellers",
     "name_ar": null,
     "kind": "shop",
-    "context": "Old Al Ghanim",
-    "lat": 25.286118,
-    "lng": 51.537243
+    "context": "New Al Rayyan",
+    "lat": 25.293995,
+    "lng": 51.420692
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4821202742",
+    "name_en": "Al Sulaiman Jewellers",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Rawdat Al Khail",
+    "lat": 25.27236,
+    "lng": 51.525043
   },
   {
     "osm_type": "node",
@@ -54019,16 +54019,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4779195366",
-    "name_en": "Al Watan",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Old Al Ghanim",
-    "lat": 25.27869,
-    "lng": 51.542294
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4823243832",
     "name_en": "Al Watan",
     "name_ar": null,
@@ -54036,6 +54026,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Gharrafa",
     "lat": 25.328274,
     "lng": 51.455112
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4779195366",
+    "name_en": "Al Watan",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Old Al Ghanim",
+    "lat": 25.27869,
+    "lng": 51.542294
   },
   {
     "osm_type": "node",
@@ -54239,16 +54239,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4835548685",
-    "name_en": "Al Zahra",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Ain Gardens",
-    "lat": 25.238974,
-    "lng": 51.45371
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4837329301",
     "name_en": "Al Zahra",
     "name_ar": null,
@@ -54256,6 +54246,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Old Al Ghanim",
     "lat": 25.279184,
     "lng": 51.536434
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4835548685",
+    "name_en": "Al Zahra",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Ain Gardens",
+    "lat": 25.238974,
+    "lng": 51.45371
   },
   {
     "osm_type": "node",
@@ -55369,16 +55369,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4835471458",
-    "name_en": "Algawas",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Muaither",
-    "lat": 25.277617,
-    "lng": 51.407547
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4840836082",
     "name_en": "Algawas",
     "name_ar": null,
@@ -55386,6 +55376,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Muaither North",
     "lat": 25.273085,
     "lng": 51.412563
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4835471458",
+    "name_en": "Algawas",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Muaither",
+    "lat": 25.277617,
+    "lng": 51.407547
   },
   {
     "osm_type": "node",
@@ -55548,6 +55548,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.540455
   },
   {
+    "osm_type": "way",
+    "osm_id": "489454107",
+    "name_en": "Almana & Partners",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Mushaireb",
+    "lat": 25.284807,
+    "lng": 51.523357
+  },
+  {
     "osm_type": "node",
     "osm_id": "4807862927",
     "name_en": "Almana & Partners",
@@ -55566,16 +55576,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Asiri",
     "lat": 25.261507,
     "lng": 51.491726
-  },
-  {
-    "osm_type": "way",
-    "osm_id": "489454107",
-    "name_en": "Almana & Partners",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Mushaireb",
-    "lat": 25.284807,
-    "lng": 51.523357
   },
   {
     "osm_type": "node",
@@ -55879,16 +55879,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4779898791",
-    "name_en": "Amani Novelty",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Ibn Dirham",
-    "lat": 25.269224,
-    "lng": 51.534634
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4780013162",
     "name_en": "Amani Novelty",
     "name_ar": null,
@@ -55896,6 +55886,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Ibn Dirham",
     "lat": 25.269054,
     "lng": 51.534782
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4779898791",
+    "name_en": "Amani Novelty",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Ibn Dirham",
+    "lat": 25.269224,
+    "lng": 51.534634
   },
   {
     "osm_type": "node",
@@ -55949,6 +55949,26 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "4821028023",
+    "name_en": "Amazon Travel & Tourism",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Gharrafa",
+    "lat": 25.32703,
+    "lng": 51.458157
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4818788211",
+    "name_en": "Amazon Travel & Tourism",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Kulaib",
+    "lat": 25.314505,
+    "lng": 51.49504
+  },
+  {
+    "osm_type": "node",
     "osm_id": "4827635285",
     "name_en": "Amazon Travel & Tourism",
     "name_ar": null,
@@ -55969,23 +55989,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4818788211",
-    "name_en": "Amazon Travel & Tourism",
+    "osm_id": "4837571134",
+    "name_en": "Ambassador Travel",
     "name_ar": null,
     "kind": "shop",
-    "context": "Fereej Kulaib",
-    "lat": 25.314505,
-    "lng": 51.49504
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4821028023",
-    "name_en": "Amazon Travel & Tourism",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Gharrafa",
-    "lat": 25.32703,
-    "lng": 51.458157
+    "context": "Old Al Ghanim",
+    "lat": 25.286118,
+    "lng": 51.537388
   },
   {
     "osm_type": "node",
@@ -55996,16 +56006,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Mushaireb",
     "lat": 25.286049,
     "lng": 51.516373
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4837571134",
-    "name_en": "Ambassador Travel",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Old Al Ghanim",
-    "lat": 25.286118,
-    "lng": 51.537388
   },
   {
     "osm_type": "node",
@@ -57419,6 +57419,16 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "4836877743",
+    "name_en": "Berger Paints",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Muaither North",
+    "lat": 25.273159,
+    "lng": 51.415215
+  },
+  {
+    "osm_type": "node",
     "osm_id": "4779898808",
     "name_en": "Berger Paints",
     "name_ar": null,
@@ -57446,16 +57456,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Muaither",
     "lat": 25.276554,
     "lng": 51.414055
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4836877743",
-    "name_en": "Berger Paints",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Muaither North",
-    "lat": 25.273159,
-    "lng": 51.415215
   },
   {
     "osm_type": "node",
@@ -58059,16 +58059,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4833459625",
-    "name_en": "Bridgestone",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Old Al Ghanim",
-    "lat": 25.27606,
-    "lng": 51.53849
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4833402622",
     "name_en": "Bridgestone",
     "name_ar": null,
@@ -58076,6 +58066,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Ain Gardens",
     "lat": 25.238737,
     "lng": 51.453297
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4833459625",
+    "name_en": "Bridgestone",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Old Al Ghanim",
+    "lat": 25.27606,
+    "lng": 51.53849
   },
   {
     "osm_type": "node",
@@ -58649,16 +58649,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4835050450",
-    "name_en": "Castle Men's Saloon",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Barahat Al Jufairi",
-    "lat": 25.281408,
-    "lng": 51.534054
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4837248969",
     "name_en": "Castle Men's Saloon",
     "name_ar": null,
@@ -58666,6 +58656,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Bin Mahmoud",
     "lat": 25.285835,
     "lng": 51.51526
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4835050450",
+    "name_en": "Castle Men's Saloon",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Barahat Al Jufairi",
+    "lat": 25.281408,
+    "lng": 51.534054
   },
   {
     "osm_type": "node",
@@ -58719,16 +58719,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4816822745",
-    "name_en": "Ceramic World",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Asiri",
-    "lat": 25.260824,
-    "lng": 51.492733
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4833589274",
     "name_en": "Ceramic World",
     "name_ar": null,
@@ -58736,6 +58726,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Barahat Al Jufairi",
     "lat": 25.28342,
     "lng": 51.532288
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4816822745",
+    "name_en": "Ceramic World",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Asiri",
+    "lat": 25.260824,
+    "lng": 51.492733
   },
   {
     "osm_type": "node",
@@ -58839,23 +58839,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4777654671",
-    "name_en": "Chevrolet",
-    "name_ar": "شيفروليه",
-    "kind": "shop",
-    "context": "Umm Ghuwailina",
-    "lat": 25.272339,
-    "lng": 51.545197
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4807862931",
+    "osm_id": "1195327350",
     "name_en": "Chevrolet",
     "name_ar": null,
     "kind": "shop",
-    "context": "Al Thumama",
-    "lat": 25.243216,
-    "lng": 51.569138
+    "context": "Lejbailat",
+    "lat": 25.316439,
+    "lng": 51.500645
   },
   {
     "osm_type": "node",
@@ -58869,6 +58859,16 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "4807862931",
+    "name_en": "Chevrolet",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Thumama",
+    "lat": 25.243216,
+    "lng": 51.569138
+  },
+  {
+    "osm_type": "node",
     "osm_id": "1190785186",
     "name_en": "Chevrolet",
     "name_ar": null,
@@ -58879,13 +58879,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "1195327350",
+    "osm_id": "4777654671",
     "name_en": "Chevrolet",
-    "name_ar": null,
+    "name_ar": "شيفروليه",
     "kind": "shop",
-    "context": "Lejbailat",
-    "lat": 25.316439,
-    "lng": 51.500645
+    "context": "Umm Ghuwailina",
+    "lat": 25.272339,
+    "lng": 51.545197
   },
   {
     "osm_type": "node",
@@ -59629,16 +59629,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4818255599",
-    "name_en": "Damas",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Sadd",
-    "lat": 25.280792,
-    "lng": 51.50369
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4823877863",
     "name_en": "Damas",
     "name_ar": null,
@@ -59656,6 +59646,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "New Al Rayyan",
     "lat": 25.293377,
     "lng": 51.42022
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4818255599",
+    "name_en": "Damas",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Sadd",
+    "lat": 25.280792,
+    "lng": 51.50369
   },
   {
     "osm_type": "node",
@@ -59899,16 +59899,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "way",
-    "osm_id": "492000622",
-    "name_en": "Dayana Beauty Center",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Muaither",
-    "lat": 25.278973,
-    "lng": 51.416798
-  },
-  {
-    "osm_type": "way",
     "osm_id": "492147969",
     "name_en": "Dayana Beauty Center",
     "name_ar": null,
@@ -59916,6 +59906,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Al Manseer",
     "lat": 25.234533,
     "lng": 51.398724
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "492000622",
+    "name_en": "Dayana Beauty Center",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Muaither",
+    "lat": 25.278973,
+    "lng": 51.416798
   },
   {
     "osm_type": "node",
@@ -60789,16 +60789,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4835485023",
-    "name_en": "Dunlop",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Aziziya",
-    "lat": 25.229856,
-    "lng": 51.43806
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4835565787",
     "name_en": "Dunlop",
     "name_ar": null,
@@ -60806,6 +60796,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Al Manseer",
     "lat": 25.227125,
     "lng": 51.43306
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4835485023",
+    "name_en": "Dunlop",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Aziziya",
+    "lat": 25.229856,
+    "lng": 51.43806
   },
   {
     "osm_type": "node",
@@ -61789,16 +61789,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "way",
-    "osm_id": "491193507",
-    "name_en": "Family Shopping Complex",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Ain Khaled",
-    "lat": 25.23653,
-    "lng": 51.449413
-  },
-  {
-    "osm_type": "way",
     "osm_id": "491664530",
     "name_en": "Family Shopping Complex",
     "name_ar": null,
@@ -61806,6 +61796,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Al Manseer",
     "lat": 25.23637,
     "lng": 51.429325
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "491193507",
+    "name_en": "Family Shopping Complex",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Ain Khaled",
+    "lat": 25.23653,
+    "lng": 51.449413
   },
   {
     "osm_type": "node",
@@ -62358,16 +62358,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.51508
   },
   {
-    "osm_type": "node",
-    "osm_id": "4807742435",
-    "name_en": "Food Palace",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Old Airport",
-    "lat": 25.252823,
-    "lng": 51.55755
-  },
-  {
     "osm_type": "way",
     "osm_id": "489603496",
     "name_en": "Food Palace",
@@ -62376,6 +62366,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Abdul Aziz",
     "lat": 25.279863,
     "lng": 51.521713
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4807742435",
+    "name_en": "Food Palace",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Old Airport",
+    "lat": 25.252823,
+    "lng": 51.55755
   },
   {
     "osm_type": "node",
@@ -62409,16 +62409,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4833468151",
-    "name_en": "Food World",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Ain Gardens",
-    "lat": 25.24366,
-    "lng": 51.461205
-  },
-  {
-    "osm_type": "node",
     "osm_id": "5486416327",
     "name_en": "Food World",
     "name_ar": null,
@@ -62426,6 +62416,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Dukhan",
     "lat": 25.421614,
     "lng": 50.79344
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4833468151",
+    "name_en": "Food World",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Ain Gardens",
+    "lat": 25.24366,
+    "lng": 51.461205
   },
   {
     "osm_type": "node",
@@ -62449,16 +62449,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4804157891",
-    "name_en": "Ford",
-    "name_ar": "فورد",
-    "kind": "shop",
-    "context": "Najma",
-    "lat": 25.269503,
-    "lng": 51.54694
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4833488152",
     "name_en": "Ford",
     "name_ar": null,
@@ -62466,6 +62456,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Waab",
     "lat": 25.25369,
     "lng": 51.478256
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4804157891",
+    "name_en": "Ford",
+    "name_ar": "فورد",
+    "kind": "shop",
+    "context": "Najma",
+    "lat": 25.269503,
+    "lng": 51.54694
   },
   {
     "osm_type": "way",
@@ -63548,14 +63548,14 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.46508
   },
   {
-    "osm_type": "node",
-    "osm_id": "4344851489",
+    "osm_type": "way",
+    "osm_id": "249019517",
     "name_en": "Grand Mart",
     "name_ar": null,
     "kind": "shop",
-    "context": "Al Thumama",
-    "lat": 25.237688,
-    "lng": 51.55433
+    "context": "Al Asiri",
+    "lat": 25.23846,
+    "lng": 51.499157
   },
   {
     "osm_type": "node",
@@ -63568,14 +63568,14 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.537727
   },
   {
-    "osm_type": "way",
-    "osm_id": "249019517",
+    "osm_type": "node",
+    "osm_id": "4344851489",
     "name_en": "Grand Mart",
     "name_ar": null,
     "kind": "shop",
-    "context": "Al Asiri",
-    "lat": 25.23846,
-    "lng": 51.499157
+    "context": "Al Thumama",
+    "lat": 25.237688,
+    "lng": 51.55433
   },
   {
     "osm_type": "node",
@@ -63739,16 +63739,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "7072772078",
-    "name_en": "Grocery Outlet",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Bin Omran",
-    "lat": 25.304241,
-    "lng": 51.496166
-  },
-  {
-    "osm_type": "node",
     "osm_id": "7072772079",
     "name_en": "Grocery Outlet",
     "name_ar": null,
@@ -63756,6 +63746,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Bin Omran",
     "lat": 25.303654,
     "lng": 51.496185
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "7072772078",
+    "name_en": "Grocery Outlet",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Bin Omran",
+    "lat": 25.304241,
+    "lng": 51.496166
   },
   {
     "osm_type": "node",
@@ -63929,16 +63929,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4837079301",
-    "name_en": "Gulf Pastry",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Ain Gardens",
-    "lat": 25.241745,
-    "lng": 51.456028
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4840836075",
     "name_en": "Gulf Pastry",
     "name_ar": null,
@@ -63946,6 +63936,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Muaither North",
     "lat": 25.273304,
     "lng": 51.41357
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4837079301",
+    "name_en": "Gulf Pastry",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Ain Gardens",
+    "lat": 25.241745,
+    "lng": 51.456028
   },
   {
     "osm_type": "node",
@@ -63969,16 +63969,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4835358458",
-    "name_en": "Gulf Saloon",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Mushaireb",
-    "lat": 25.282185,
-    "lng": 51.528423
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4818802013",
     "name_en": "Gulf Saloon",
     "name_ar": null,
@@ -63986,6 +63976,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Gharrafa",
     "lat": 25.326885,
     "lng": 51.46358
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4835358458",
+    "name_en": "Gulf Saloon",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Mushaireb",
+    "lat": 25.282185,
+    "lng": 51.528423
   },
   {
     "osm_type": "node",
@@ -64309,16 +64309,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "1524668939",
-    "name_en": "Happy Land",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Najma",
-    "lat": 25.271057,
-    "lng": 51.543648
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4835407523",
     "name_en": "Happy Land",
     "name_ar": null,
@@ -64326,6 +64316,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Muaither",
     "lat": 25.275904,
     "lng": 51.40757
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "1524668939",
+    "name_en": "Happy Land",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Najma",
+    "lat": 25.271057,
+    "lng": 51.543648
   },
   {
     "osm_type": "node",
@@ -64489,16 +64489,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4779195390",
-    "name_en": "Hempel Paints",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Old Al Ghanim",
-    "lat": 25.279202,
-    "lng": 51.543053
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4838738380",
     "name_en": "Hempel Paints",
     "name_ar": null,
@@ -64506,6 +64496,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Abdul Aziz",
     "lat": 25.276516,
     "lng": 51.526436
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4779195390",
+    "name_en": "Hempel Paints",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Old Al Ghanim",
+    "lat": 25.279202,
+    "lng": 51.543053
   },
   {
     "osm_type": "node",
@@ -64718,16 +64718,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.407856
   },
   {
-    "osm_type": "node",
-    "osm_id": "4842530605",
-    "name_en": "Hot Bread Bakery",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Abdul Aziz",
-    "lat": 25.275318,
-    "lng": 51.525967
-  },
-  {
     "osm_type": "way",
     "osm_id": "165499582",
     "name_en": "Hot Bread Bakery",
@@ -64736,6 +64726,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Mansoura",
     "lat": 25.264744,
     "lng": 51.537445
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4842530605",
+    "name_en": "Hot Bread Bakery",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Abdul Aziz",
+    "lat": 25.275318,
+    "lng": 51.525967
   },
   {
     "osm_type": "node",
@@ -64819,16 +64819,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "2188131344",
-    "name_en": "Hyundai",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Al Nasr",
-    "lat": 25.271482,
-    "lng": 51.508713
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4779849234",
     "name_en": "Hyundai",
     "name_ar": null,
@@ -64836,6 +64826,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Doha Al Jadeeda",
     "lat": 25.274883,
     "lng": 51.530613
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "2188131344",
+    "name_en": "Hyundai",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Al Nasr",
+    "lat": 25.271482,
+    "lng": 51.508713
   },
   {
     "osm_type": "node",
@@ -64899,16 +64899,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4837050445",
-    "name_en": "Ibn Al Qayyim Bookstore",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Ain Gardens",
-    "lat": 25.244032,
-    "lng": 51.46187
-  },
-  {
-    "osm_type": "node",
     "osm_id": "2356235797",
     "name_en": "Ibn Al Qayyim Bookstore",
     "name_ar": null,
@@ -64916,6 +64906,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Khor",
     "lat": 25.675655,
     "lng": 51.49952
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4837050445",
+    "name_en": "Ibn Al Qayyim Bookstore",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Ain Gardens",
+    "lat": 25.244032,
+    "lng": 51.46187
   },
   {
     "osm_type": "node",
@@ -64979,6 +64979,16 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "4840836081",
+    "name_en": "Imalco",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Muaither North",
+    "lat": 25.2731,
+    "lng": 51.412678
+  },
+  {
+    "osm_type": "node",
     "osm_id": "4818472865",
     "name_en": "Imalco",
     "name_ar": null,
@@ -64996,16 +65006,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Asiri",
     "lat": 25.263775,
     "lng": 51.4956
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4840836081",
-    "name_en": "Imalco",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Muaither North",
-    "lat": 25.2731,
-    "lng": 51.412678
   },
   {
     "osm_type": "node",
@@ -65498,16 +65498,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.545185
   },
   {
-    "osm_type": "node",
-    "osm_id": "4317256989",
-    "name_en": "Jarir Bookstore",
-    "name_ar": "مكتبة جرير",
-    "kind": "shop",
-    "context": "Umm Ghuwailina",
-    "lat": 25.272602,
-    "lng": 51.545135
-  },
-  {
     "osm_type": "way",
     "osm_id": "135723719",
     "name_en": "Jarir Bookstore",
@@ -65516,6 +65506,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Al Nasr",
     "lat": 25.271687,
     "lng": 51.50774
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4317256989",
+    "name_en": "Jarir Bookstore",
+    "name_ar": "مكتبة جرير",
+    "kind": "shop",
+    "context": "Umm Ghuwailina",
+    "lat": 25.272602,
+    "lng": 51.545135
   },
   {
     "osm_type": "way",
@@ -65779,6 +65779,16 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "4836888001",
+    "name_en": "Jotun",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Muaither North",
+    "lat": 25.270157,
+    "lng": 51.41606
+  },
+  {
+    "osm_type": "node",
     "osm_id": "4779898793",
     "name_en": "Jotun",
     "name_ar": null,
@@ -65786,46 +65796,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Ibn Dirham",
     "lat": 25.269262,
     "lng": 51.534798
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4780013167",
-    "name_en": "Jotun",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Ibn Dirham",
-    "lat": 25.269066,
-    "lng": 51.53488
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4781368271",
-    "name_en": "Jotun",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Najma",
-    "lat": 25.266167,
-    "lng": 51.537987
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4804118492",
-    "name_en": "Jotun",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Najma",
-    "lat": 25.269045,
-    "lng": 51.543316
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4807862939",
-    "name_en": "Jotun",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Thumama",
-    "lat": 25.242743,
-    "lng": 51.56938
   },
   {
     "osm_type": "node",
@@ -65839,23 +65809,23 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4831444059",
+    "osm_id": "4804118492",
     "name_en": "Jotun",
     "name_ar": null,
     "kind": "shop",
-    "context": "Al Asiri",
-    "lat": 25.239265,
-    "lng": 51.499405
+    "context": "Najma",
+    "lat": 25.269045,
+    "lng": 51.543316
   },
   {
     "osm_type": "node",
-    "osm_id": "4836877758",
+    "osm_id": "4781368271",
     "name_en": "Jotun",
     "name_ar": null,
     "kind": "shop",
-    "context": "Muaither North",
-    "lat": 25.272532,
-    "lng": 51.41545
+    "context": "Najma",
+    "lat": 25.266167,
+    "lng": 51.537987
   },
   {
     "osm_type": "node",
@@ -65869,16 +65839,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4836888001",
-    "name_en": "Jotun",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Muaither North",
-    "lat": 25.270157,
-    "lng": 51.41606
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4837155979",
     "name_en": "Jotun",
     "name_ar": null,
@@ -65886,6 +65846,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Aziziya",
     "lat": 25.253143,
     "lng": 51.45075
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4836877758",
+    "name_en": "Jotun",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Muaither North",
+    "lat": 25.272532,
+    "lng": 51.41545
   },
   {
     "osm_type": "node",
@@ -65899,13 +65869,43 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4842562206",
+    "osm_id": "4831444059",
     "name_en": "Jotun",
     "name_ar": null,
     "kind": "shop",
-    "context": "Fereej Abdul Aziz",
-    "lat": 25.276703,
-    "lng": 51.522614
+    "context": "Al Asiri",
+    "lat": 25.239265,
+    "lng": 51.499405
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4807862939",
+    "name_en": "Jotun",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Thumama",
+    "lat": 25.242743,
+    "lng": 51.56938
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4780013167",
+    "name_en": "Jotun",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Ibn Dirham",
+    "lat": 25.269066,
+    "lng": 51.53488
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "226863640",
+    "name_en": "Jotun",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Khor",
+    "lat": 25.684542,
+    "lng": 51.505978
   },
   {
     "osm_type": "node",
@@ -65918,14 +65918,14 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.467297
   },
   {
-    "osm_type": "way",
-    "osm_id": "226863640",
+    "osm_type": "node",
+    "osm_id": "4842562206",
     "name_en": "Jotun",
     "name_ar": null,
     "kind": "shop",
-    "context": "Al Khor",
-    "lat": 25.684542,
-    "lng": 51.505978
+    "context": "Fereej Abdul Aziz",
+    "lat": 25.276703,
+    "lng": 51.522614
   },
   {
     "osm_type": "node",
@@ -66089,16 +66089,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "way",
-    "osm_id": "1107503851",
-    "name_en": "Karkafi Hair",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Hilal",
-    "lat": 25.252674,
-    "lng": 51.544106
-  },
-  {
-    "osm_type": "way",
     "osm_id": "1107503852",
     "name_en": "Karkafi Hair",
     "name_ar": null,
@@ -66106,6 +66096,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Hilal",
     "lat": 25.252754,
     "lng": 51.544292
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "1107503851",
+    "name_en": "Karkafi Hair",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Hilal",
+    "lat": 25.252674,
+    "lng": 51.544106
   },
   {
     "osm_type": "node",
@@ -66849,16 +66849,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4837449663",
-    "name_en": "Larissa",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Al Soudan",
-    "lat": 25.273315,
-    "lng": 51.49037
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4837543579",
     "name_en": "Larissa",
     "name_ar": null,
@@ -66866,6 +66856,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Sadd",
     "lat": 25.280666,
     "lng": 51.50158
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4837449663",
+    "name_en": "Larissa",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Al Soudan",
+    "lat": 25.273315,
+    "lng": 51.49037
   },
   {
     "osm_type": "way",
@@ -67109,16 +67109,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4827553568",
-    "name_en": "Lexus",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "New Al Rayyan",
-    "lat": 25.298552,
-    "lng": 51.420082
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4837060915",
     "name_en": "Lexus",
     "name_ar": null,
@@ -67126,6 +67116,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Ain Gardens",
     "lat": 25.243986,
     "lng": 51.461773
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4827553568",
+    "name_en": "Lexus",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "New Al Rayyan",
+    "lat": 25.298552,
+    "lng": 51.420082
   },
   {
     "osm_type": "node",
@@ -67488,6 +67488,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.502144
   },
   {
+    "osm_type": "way",
+    "osm_id": "248753817",
+    "name_en": "Lulu Express",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Education City",
+    "lat": 25.32664,
+    "lng": 51.417736
+  },
+  {
     "osm_type": "node",
     "osm_id": "9518927029",
     "name_en": "Lulu Express",
@@ -67499,16 +67509,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "way",
-    "osm_id": "248753817",
-    "name_en": "Lulu Express",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Education City",
-    "lat": 25.32664,
-    "lng": 51.417736
-  },
-  {
-    "osm_type": "way",
     "osm_id": "491202489",
     "name_en": "Lulu Hyper Market",
     "name_ar": "اللولو هايبر ماركت",
@@ -67516,6 +67516,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Ain Gardens",
     "lat": 25.241901,
     "lng": 51.458076
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "234521315",
+    "name_en": "Lulu Hypermarket",
+    "name_ar": "اللولو هايبر ماركت",
+    "kind": "shop",
+    "context": "Umm Lekhba",
+    "lat": 25.337976,
+    "lng": 51.459503
   },
   {
     "osm_type": "node",
@@ -67536,16 +67546,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Hilal",
     "lat": 25.254082,
     "lng": 51.54573
-  },
-  {
-    "osm_type": "way",
-    "osm_id": "234521315",
-    "name_en": "Lulu Hypermarket",
-    "name_ar": "اللولو هايبر ماركت",
-    "kind": "shop",
-    "context": "Umm Lekhba",
-    "lat": 25.337976,
-    "lng": 51.459503
   },
   {
     "osm_type": "way",
@@ -67719,16 +67719,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4835227880",
-    "name_en": "Madrid Boutique",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Mushaireb",
-    "lat": 25.282028,
-    "lng": 51.528442
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4835358428",
     "name_en": "Madrid Boutique",
     "name_ar": null,
@@ -67736,6 +67726,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Mushaireb",
     "lat": 25.283573,
     "lng": 51.52818
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4835227880",
+    "name_en": "Madrid Boutique",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Mushaireb",
+    "lat": 25.282028,
+    "lng": 51.528442
   },
   {
     "osm_type": "node",
@@ -68469,16 +68469,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4825763446",
-    "name_en": "Matnaflex",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "New Al Rayyan",
-    "lat": 25.293095,
-    "lng": 51.42069
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4820494307",
     "name_en": "Matnaflex",
     "name_ar": null,
@@ -68486,6 +68476,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Gharrafa",
     "lat": 25.32618,
     "lng": 51.464035
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4825763446",
+    "name_en": "Matnaflex",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "New Al Rayyan",
+    "lat": 25.293095,
+    "lng": 51.42069
   },
   {
     "osm_type": "node",
@@ -68649,16 +68649,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4833126225",
-    "name_en": "Mega Star",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Muaither",
-    "lat": 25.27394,
-    "lng": 51.414505
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4836786439",
     "name_en": "Mega Star",
     "name_ar": null,
@@ -68666,6 +68656,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Muaither",
     "lat": 25.277235,
     "lng": 51.407543
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4833126225",
+    "name_en": "Mega Star",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Muaither",
+    "lat": 25.27394,
+    "lng": 51.414505
   },
   {
     "osm_type": "node",
@@ -68839,16 +68839,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4807882007",
-    "name_en": "Michelin",
-    "name_ar": "ميشلان",
-    "kind": "shop",
-    "context": "Al Thumama",
-    "lat": 25.23914,
-    "lng": 51.571285
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4831717252",
     "name_en": "Michelin",
     "name_ar": "ميشلان",
@@ -68856,6 +68846,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Asiri",
     "lat": 25.263172,
     "lng": 51.494564
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4807882007",
+    "name_en": "Michelin",
+    "name_ar": "ميشلان",
+    "kind": "shop",
+    "context": "Al Thumama",
+    "lat": 25.23914,
+    "lng": 51.571285
   },
   {
     "osm_type": "way",
@@ -69089,16 +69089,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4833567486",
-    "name_en": "Mitsubishi Electric",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Asiri",
-    "lat": 25.254774,
-    "lng": 51.482986
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4821028032",
     "name_en": "Mitsubishi Electric",
     "name_ar": null,
@@ -69106,6 +69096,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Gharrafa",
     "lat": 25.327423,
     "lng": 51.460167
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4833567486",
+    "name_en": "Mitsubishi Electric",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Asiri",
+    "lat": 25.254774,
+    "lng": 51.482986
   },
   {
     "osm_type": "node",
@@ -69769,16 +69769,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4821748615",
-    "name_en": "My Fair",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Aljeriyan I",
-    "lat": 25.309772,
-    "lng": 51.474197
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4829157620",
     "name_en": "My Fair",
     "name_ar": null,
@@ -69786,6 +69776,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Lavander Village (Main Gate)",
     "lat": 25.352003,
     "lng": 51.439705
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4821748615",
+    "name_en": "My Fair",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Aljeriyan I",
+    "lat": 25.309772,
+    "lng": 51.474197
   },
   {
     "osm_type": "node",
@@ -69969,16 +69969,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4827553571",
-    "name_en": "Naseej",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "New Al Rayyan",
-    "lat": 25.298174,
-    "lng": 51.420128
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4820494306",
     "name_en": "Naseej",
     "name_ar": null,
@@ -69986,6 +69976,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Gharrafa",
     "lat": 25.326193,
     "lng": 51.46397
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4827553571",
+    "name_en": "Naseej",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "New Al Rayyan",
+    "lat": 25.298174,
+    "lng": 51.420128
   },
   {
     "osm_type": "node",
@@ -70079,13 +70079,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4781380135",
+    "osm_id": "4836887991",
     "name_en": "National Paints",
     "name_ar": null,
     "kind": "shop",
-    "context": "Souq Al-Haraj",
-    "lat": 25.2668,
-    "lng": 51.538
+    "context": "Muaither North",
+    "lat": 25.271152,
+    "lng": 51.41593
   },
   {
     "osm_type": "node",
@@ -70099,6 +70099,16 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "4781380135",
+    "name_en": "National Paints",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Souq Al-Haraj",
+    "lat": 25.2668,
+    "lng": 51.538
+  },
+  {
+    "osm_type": "node",
     "osm_id": "4833146839",
     "name_en": "National Paints",
     "name_ar": null,
@@ -70106,16 +70116,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Muaither North",
     "lat": 25.271152,
     "lng": 51.415462
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4836887991",
-    "name_en": "National Paints",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Muaither North",
-    "lat": 25.271152,
-    "lng": 51.41593
   },
   {
     "osm_type": "node",
@@ -70859,16 +70859,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4833234979",
-    "name_en": "Olive Fashion",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Muaither",
-    "lat": 25.277456,
-    "lng": 51.41422
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4842568183",
     "name_en": "Olive Fashion",
     "name_ar": null,
@@ -70876,6 +70866,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Souq",
     "lat": 25.28852,
     "lng": 51.539127
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4833234979",
+    "name_en": "Olive Fashion",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Muaither",
+    "lat": 25.277456,
+    "lng": 51.41422
   },
   {
     "osm_type": "node",
@@ -70999,16 +70999,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4833151575",
-    "name_en": "Ooredoo",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Muaither North",
-    "lat": 25.26931,
-    "lng": 51.415714
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4820479982",
     "name_en": "Ooredoo",
     "name_ar": null,
@@ -71016,6 +71006,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "The Pearl-Qatar",
     "lat": 25.367027,
     "lng": 51.550217
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4833151575",
+    "name_en": "Ooredoo",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Muaither North",
+    "lat": 25.26931,
+    "lng": 51.415714
   },
   {
     "osm_type": "way",
@@ -71199,16 +71199,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4837571138",
-    "name_en": "Oscado Saloon",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Old Al Ghanim",
-    "lat": 25.28611,
-    "lng": 51.537052
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4842564965",
     "name_en": "Oscado Saloon",
     "name_ar": null,
@@ -71216,6 +71206,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "(Sharg Zone) - Aslata",
     "lat": 25.287071,
     "lng": 51.5438
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4837571138",
+    "name_en": "Oscado Saloon",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Old Al Ghanim",
+    "lat": 25.28611,
+    "lng": 51.537052
   },
   {
     "osm_type": "node",
@@ -71499,16 +71499,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "3234072243",
-    "name_en": "Party Kingdom",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Bin Mahmoud",
-    "lat": 25.280281,
-    "lng": 51.517822
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4821457656",
     "name_en": "Party Kingdom",
     "name_ar": null,
@@ -71516,6 +71506,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Rawdat Al Khail",
     "lat": 25.272036,
     "lng": 51.523987
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "3234072243",
+    "name_en": "Party Kingdom",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Bin Mahmoud",
+    "lat": 25.280281,
+    "lng": 51.517822
   },
   {
     "osm_type": "node",
@@ -71538,6 +71538,26 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.522068
   },
   {
+    "osm_type": "way",
+    "osm_id": "491413324",
+    "name_en": "Patisserie Suisse",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Ain Gardens",
+    "lat": 25.240898,
+    "lng": 51.45577
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4841873652",
+    "name_en": "Patisserie Suisse",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Al Nasr",
+    "lat": 25.273863,
+    "lng": 51.50245
+  },
+  {
     "osm_type": "node",
     "osm_id": "4816726521",
     "name_en": "Patisserie Suisse",
@@ -71556,26 +71576,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "New Al Rayyan",
     "lat": 25.288454,
     "lng": 51.42017
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4841873652",
-    "name_en": "Patisserie Suisse",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Al Nasr",
-    "lat": 25.273863,
-    "lng": 51.50245
-  },
-  {
-    "osm_type": "way",
-    "osm_id": "491413324",
-    "name_en": "Patisserie Suisse",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Ain Gardens",
-    "lat": 25.240898,
-    "lng": 51.45577
   },
   {
     "osm_type": "node",
@@ -71809,13 +71809,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4777448162",
+    "osm_id": "4833535340",
     "name_en": "Pirelli",
     "name_ar": null,
     "kind": "shop",
-    "context": "Old Al Ghanim",
-    "lat": 25.277308,
-    "lng": 51.540226
+    "context": "Fereej Al Manseer",
+    "lat": 25.228212,
+    "lng": 51.437847
   },
   {
     "osm_type": "node",
@@ -71829,16 +71829,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4823844019",
-    "name_en": "Pirelli",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Rawdat Al Khail",
-    "lat": 25.27513,
-    "lng": 51.520866
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4833402624",
     "name_en": "Pirelli",
     "name_ar": null,
@@ -71849,13 +71839,23 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4833535340",
+    "osm_id": "4823844019",
     "name_en": "Pirelli",
     "name_ar": null,
     "kind": "shop",
-    "context": "Fereej Al Manseer",
-    "lat": 25.228212,
-    "lng": 51.437847
+    "context": "Rawdat Al Khail",
+    "lat": 25.27513,
+    "lng": 51.520866
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4777448162",
+    "name_en": "Pirelli",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Old Al Ghanim",
+    "lat": 25.277308,
+    "lng": 51.540226
   },
   {
     "osm_type": "node",
@@ -71969,16 +71969,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "way",
-    "osm_id": "488501849",
-    "name_en": "Porsche",
-    "name_ar": "بورشه",
-    "kind": "shop",
-    "context": "Al Thumama",
-    "lat": 25.23391,
-    "lng": 51.574024
-  },
-  {
-    "osm_type": "way",
     "osm_id": "771833681",
     "name_en": "Porsche",
     "name_ar": null,
@@ -71986,6 +71976,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "The Pearl-Qatar",
     "lat": 25.369413,
     "lng": 51.55262
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "488501849",
+    "name_en": "Porsche",
+    "name_ar": "بورشه",
+    "kind": "shop",
+    "context": "Al Thumama",
+    "lat": 25.23391,
+    "lng": 51.574024
   },
   {
     "osm_type": "node",
@@ -72288,16 +72288,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.412437
   },
   {
-    "osm_type": "way",
-    "osm_id": "490980223",
-    "name_en": "Q-Tire",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Al Soudan",
-    "lat": 25.269354,
-    "lng": 51.47734
-  },
-  {
     "osm_type": "node",
     "osm_id": "4831635195",
     "name_en": "Q-Tire",
@@ -72306,6 +72296,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Umm Salal Muhammad",
     "lat": 25.408958,
     "lng": 51.418045
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "490980223",
+    "name_en": "Q-Tire",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Al Soudan",
+    "lat": 25.269354,
+    "lng": 51.47734
   },
   {
     "osm_type": "node",
@@ -72499,16 +72499,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4835358424",
-    "name_en": "Qatar Optics",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Mushaireb",
-    "lat": 25.28365,
-    "lng": 51.528046
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4842716234",
     "name_en": "Qatar Optics",
     "name_ar": null,
@@ -72516,6 +72506,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Al Nasr",
     "lat": 25.267132,
     "lng": 51.501423
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4835358424",
+    "name_en": "Qatar Optics",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Mushaireb",
+    "lat": 25.28365,
+    "lng": 51.528046
   },
   {
     "osm_type": "node",
@@ -73149,43 +73149,13 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "12288015102",
+    "osm_id": "12288015101",
     "name_en": "Redtag",
     "name_ar": "ردتاغ",
     "kind": "shop",
-    "context": "Al Asiri",
-    "lat": 25.257425,
-    "lng": 51.49789
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "12288015103",
-    "name_en": "Redtag",
-    "name_ar": "ردتاغ",
-    "kind": "shop",
-    "context": "Al Hilal",
-    "lat": 25.265629,
-    "lng": 51.552914
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "12287994299",
-    "name_en": "Redtag",
-    "name_ar": "ردتاغ",
-    "kind": "shop",
-    "context": "Rawdat Al Khail",
-    "lat": 25.274736,
-    "lng": 51.515903
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "12287994297",
-    "name_en": "Redtag",
-    "name_ar": "ردتاغ",
-    "kind": "shop",
-    "context": "Ain Khaled",
-    "lat": 25.233454,
-    "lng": 51.44684
+    "context": "Al Khor",
+    "lat": 25.677586,
+    "lng": 51.500053
   },
   {
     "osm_type": "node",
@@ -73199,13 +73169,43 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "12288015101",
+    "osm_id": "12287994299",
     "name_en": "Redtag",
     "name_ar": "ردتاغ",
     "kind": "shop",
-    "context": "Al Khor",
-    "lat": 25.677586,
-    "lng": 51.500053
+    "context": "Rawdat Al Khail",
+    "lat": 25.274736,
+    "lng": 51.515903
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "12288015102",
+    "name_en": "Redtag",
+    "name_ar": "ردتاغ",
+    "kind": "shop",
+    "context": "Al Asiri",
+    "lat": 25.257425,
+    "lng": 51.49789
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "12287994297",
+    "name_en": "Redtag",
+    "name_ar": "ردتاغ",
+    "kind": "shop",
+    "context": "Ain Khaled",
+    "lat": 25.233454,
+    "lng": 51.44684
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "12288015103",
+    "name_en": "Redtag",
+    "name_ar": "ردتاغ",
+    "kind": "shop",
+    "context": "Al Hilal",
+    "lat": 25.265629,
+    "lng": 51.552914
   },
   {
     "osm_type": "node",
@@ -73869,16 +73869,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4841843404",
-    "name_en": "Royal Toys",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Al Nasr",
-    "lat": 25.273726,
-    "lng": 51.499416
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4823243827",
     "name_en": "Royal Toys",
     "name_ar": null,
@@ -73886,6 +73876,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Gharrafa",
     "lat": 25.32821,
     "lng": 51.455494
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4841843404",
+    "name_en": "Royal Toys",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Al Nasr",
+    "lat": 25.273726,
+    "lng": 51.499416
   },
   {
     "osm_type": "node",
@@ -73939,16 +73939,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4834906448",
-    "name_en": "Rusiya Trading",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Barahat Al Jufairi",
-    "lat": 25.281334,
-    "lng": 51.53208
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4836888000",
     "name_en": "Rusiya Trading",
     "name_ar": null,
@@ -73956,6 +73946,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Muaither North",
     "lat": 25.270227,
     "lng": 51.416054
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4834906448",
+    "name_en": "Rusiya Trading",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Barahat Al Jufairi",
+    "lat": 25.281334,
+    "lng": 51.53208
   },
   {
     "osm_type": "node",
@@ -74279,16 +74279,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4805974042",
-    "name_en": "Sahran",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Nuaija",
-    "lat": 25.254644,
-    "lng": 51.534107
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4842089082",
     "name_en": "Sahran",
     "name_ar": null,
@@ -74296,6 +74286,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "(Sharg Zone) - Al Hitmi / Al Rufaa",
     "lat": 25.28665,
     "lng": 51.545998
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4805974042",
+    "name_en": "Sahran",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Nuaija",
+    "lat": 25.254644,
+    "lng": 51.534107
   },
   {
     "osm_type": "node",
@@ -74649,16 +74649,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4823346772",
-    "name_en": "Samsung",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Arumaila",
-    "lat": 25.289978,
-    "lng": 51.506107
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4837781341",
     "name_en": "Samsung",
     "name_ar": null,
@@ -74678,16 +74668,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "lng": 51.517853
   },
   {
-    "osm_type": "way",
-    "osm_id": "490986027",
-    "name_en": "Samsung",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Bin Mahmoud",
-    "lat": 25.27491,
-    "lng": 51.514862
-  },
-  {
     "osm_type": "node",
     "osm_id": "8524123454",
     "name_en": "Samsung",
@@ -74696,6 +74676,26 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "The Pearl-Qatar",
     "lat": 25.367393,
     "lng": 51.55063
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4823346772",
+    "name_en": "Samsung",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Arumaila",
+    "lat": 25.289978,
+    "lng": 51.506107
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "490986027",
+    "name_en": "Samsung",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Bin Mahmoud",
+    "lat": 25.27491,
+    "lng": 51.514862
   },
   {
     "osm_type": "node",
@@ -74849,16 +74849,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "way",
-    "osm_id": "490580063",
-    "name_en": "Saudia Hypermarket",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "New Al Rayyan",
-    "lat": 25.28787,
-    "lng": 51.420097
-  },
-  {
-    "osm_type": "way",
     "osm_id": "491174772",
     "name_en": "Saudia Hypermarket",
     "name_ar": null,
@@ -74866,6 +74856,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Muaither",
     "lat": 25.279911,
     "lng": 51.413334
+  },
+  {
+    "osm_type": "way",
+    "osm_id": "490580063",
+    "name_en": "Saudia Hypermarket",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "New Al Rayyan",
+    "lat": 25.28787,
+    "lng": 51.420097
   },
   {
     "osm_type": "node",
@@ -75439,16 +75439,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4842532523",
-    "name_en": "Shorook Neon",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Abdul Aziz",
-    "lat": 25.275085,
-    "lng": 51.524628
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4842532531",
     "name_en": "Shorook Neon",
     "name_ar": null,
@@ -75456,6 +75446,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Fereej Abdul Aziz",
     "lat": 25.274927,
     "lng": 51.523895
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4842532523",
+    "name_en": "Shorook Neon",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Abdul Aziz",
+    "lat": 25.275085,
+    "lng": 51.524628
   },
   {
     "osm_type": "node",
@@ -75579,16 +75579,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4779965470",
-    "name_en": "Sigma Paints",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Ibn Dirham",
-    "lat": 25.268753,
-    "lng": 51.53312
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4781378019",
     "name_en": "Sigma Paints",
     "name_ar": null,
@@ -75596,6 +75586,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Najma",
     "lat": 25.26642,
     "lng": 51.537907
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4779965470",
+    "name_en": "Sigma Paints",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Ibn Dirham",
+    "lat": 25.268753,
+    "lng": 51.53312
   },
   {
     "osm_type": "node",
@@ -75839,16 +75839,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4835050491",
-    "name_en": "Sky Jewellery",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Mushaireb",
-    "lat": 25.280514,
-    "lng": 51.528984
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4837571141",
     "name_en": "Sky Jewellery",
     "name_ar": null,
@@ -75856,6 +75846,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Old Al Ghanim",
     "lat": 25.286112,
     "lng": 51.536057
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4835050491",
+    "name_en": "Sky Jewellery",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Mushaireb",
+    "lat": 25.280514,
+    "lng": 51.528984
   },
   {
     "osm_type": "node",
@@ -76189,16 +76189,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "9704744863",
-    "name_en": "Spar",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Qanat Quartier",
-    "lat": 25.376038,
-    "lng": 51.543888
-  },
-  {
-    "osm_type": "node",
     "osm_id": "9727328558",
     "name_en": "Spar",
     "name_ar": null,
@@ -76206,6 +76196,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "The Pearl-Qatar",
     "lat": 25.370916,
     "lng": 51.548283
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "9704744863",
+    "name_en": "Spar",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Qanat Quartier",
+    "lat": 25.376038,
+    "lng": 51.543888
   },
   {
     "osm_type": "node",
@@ -76319,16 +76319,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4818375604",
-    "name_en": "Sports Corner",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Al Waab",
-    "lat": 25.249382,
-    "lng": 51.470875
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4827342162",
     "name_en": "Sports Corner",
     "name_ar": null,
@@ -76336,6 +76326,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "New Al Rayyan",
     "lat": 25.28993,
     "lng": 51.420166
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4818375604",
+    "name_en": "Sports Corner",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Al Waab",
+    "lat": 25.249382,
+    "lng": 51.470875
   },
   {
     "osm_type": "node",
@@ -76499,16 +76499,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4827553573",
-    "name_en": "Star Link",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "New Al Rayyan",
-    "lat": 25.298008,
-    "lng": 51.42013
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4835407192",
     "name_en": "Star Link",
     "name_ar": null,
@@ -76516,6 +76506,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Muaither",
     "lat": 25.274515,
     "lng": 51.40755
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4827553573",
+    "name_en": "Star Link",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "New Al Rayyan",
+    "lat": 25.298008,
+    "lng": 51.42013
   },
   {
     "osm_type": "node",
@@ -76659,16 +76659,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4833214230",
-    "name_en": "Studio",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Muaither",
-    "lat": 25.27833,
-    "lng": 51.413914
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4835441395",
     "name_en": "Studio",
     "name_ar": null,
@@ -76676,6 +76666,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Ain Gardens",
     "lat": 25.244259,
     "lng": 51.453983
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4833214230",
+    "name_en": "Studio",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Muaither",
+    "lat": 25.27833,
+    "lng": 51.413914
   },
   {
     "osm_type": "node",
@@ -76699,16 +76699,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4836674196",
-    "name_en": "Styles Saloon",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Muaither North",
-    "lat": 25.268248,
-    "lng": 51.40967
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4836674201",
     "name_en": "Styles Saloon",
     "name_ar": null,
@@ -76716,6 +76706,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Muaither North",
     "lat": 25.26805,
     "lng": 51.409714
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4836674196",
+    "name_en": "Styles Saloon",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Muaither North",
+    "lat": 25.268248,
+    "lng": 51.40967
   },
   {
     "osm_type": "way",
@@ -76869,16 +76869,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4825763511",
-    "name_en": "Supermarket",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "New Al Rayyan",
-    "lat": 25.290733,
-    "lng": 51.42068
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4835407180",
     "name_en": "Supermarket",
     "name_ar": null,
@@ -76886,6 +76876,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Muaither",
     "lat": 25.272856,
     "lng": 51.407543
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4825763511",
+    "name_en": "Supermarket",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "New Al Rayyan",
+    "lat": 25.290733,
+    "lng": 51.42068
   },
   {
     "osm_type": "way",
@@ -77099,16 +77099,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4827635253",
-    "name_en": "Tamim Optics",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "New Al Rayyan",
-    "lat": 25.289516,
-    "lng": 51.420174
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4823259242",
     "name_en": "Tamim Optics",
     "name_ar": null,
@@ -77116,6 +77106,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Al Gharrafa",
     "lat": 25.328661,
     "lng": 51.452763
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4827635253",
+    "name_en": "Tamim Optics",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "New Al Rayyan",
+    "lat": 25.289516,
+    "lng": 51.420174
   },
   {
     "osm_type": "node",
@@ -78449,16 +78449,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "12606786319",
-    "name_en": "V Perfumes",
-    "name_ar": "للعطور V",
-    "kind": "shop",
-    "context": "Qetaifan Island South 2",
-    "lat": 25.40454,
-    "lng": 51.51842
-  },
-  {
-    "osm_type": "node",
     "osm_id": "13509317386",
     "name_en": "V Perfumes",
     "name_ar": "للعطور V",
@@ -78466,6 +78456,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Umm Lekhba",
     "lat": 25.337963,
     "lng": 51.48047
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "12606786319",
+    "name_en": "V Perfumes",
+    "name_ar": "للعطور V",
+    "kind": "shop",
+    "context": "Qetaifan Island South 2",
+    "lat": 25.40454,
+    "lng": 51.51842
   },
   {
     "osm_type": "node",
@@ -78649,6 +78649,16 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
+    "osm_id": "4445117884",
+    "name_en": "Vodafone",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Fereej Kulaib",
+    "lat": 25.317848,
+    "lng": 51.496998
+  },
+  {
+    "osm_type": "node",
     "osm_id": "4837096355",
     "name_en": "Vodafone",
     "name_ar": null,
@@ -78666,16 +78676,6 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Marsa Arabia",
     "lat": 25.37316,
     "lng": 51.545025
-  },
-  {
-    "osm_type": "node",
-    "osm_id": "4445117884",
-    "name_en": "Vodafone",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Fereej Kulaib",
-    "lat": 25.317848,
-    "lng": 51.496998
   },
   {
     "osm_type": "node",
@@ -79369,16 +79369,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "4838664947",
-    "name_en": "Zafar Jewellery",
-    "name_ar": null,
-    "kind": "shop",
-    "context": "Old Al Ghanim",
-    "lat": 25.285675,
-    "lng": 51.53748
-  },
-  {
-    "osm_type": "node",
     "osm_id": "4837889171",
     "name_en": "Zafar Jewellery",
     "name_ar": null,
@@ -79386,6 +79376,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Old Al Ghanim",
     "lat": 25.285793,
     "lng": 51.53715
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "4838664947",
+    "name_en": "Zafar Jewellery",
+    "name_ar": null,
+    "kind": "shop",
+    "context": "Old Al Ghanim",
+    "lat": 25.285675,
+    "lng": 51.53748
   },
   {
     "osm_type": "node",
@@ -79619,16 +79619,6 @@ export const QATAR_PLACES: OsmPlace[] = [
   },
   {
     "osm_type": "node",
-    "osm_id": "6283116386",
-    "name_en": "العنه",
-    "name_ar": "العنه",
-    "kind": "shop",
-    "context": "Aljeriyan II",
-    "lat": 25.292124,
-    "lng": 51.469643
-  },
-  {
-    "osm_type": "node",
     "osm_id": "6283116387",
     "name_en": "العنه",
     "name_ar": "العنه",
@@ -79636,6 +79626,16 @@ export const QATAR_PLACES: OsmPlace[] = [
     "context": "Rawdat Rashed",
     "lat": 25.192469,
     "lng": 51.191547
+  },
+  {
+    "osm_type": "node",
+    "osm_id": "6283116386",
+    "name_en": "العنه",
+    "name_ar": "العنه",
+    "kind": "shop",
+    "context": "Aljeriyan II",
+    "lat": 25.292124,
+    "lng": 51.469643
   },
   {
     "osm_type": "node",

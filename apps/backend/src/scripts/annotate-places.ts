@@ -2,12 +2,15 @@ import { ExecArgs } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { PLACE_INDEX_MODULE } from "../modules/place-index"
 import { haversineKm } from "../lib/geo"
+import { searchText } from "../lib/osm-places"
 
 type Row = {
   id: string
   name_en: string
+  name_ar: string | null
   kind: string
   context: string | null
+  search: string
   lat: number
   lng: number
 }
@@ -47,7 +50,7 @@ export default async function annotatePlaces({ container }: ExecArgs) {
 
   const all = await service.listPlaces(
     {},
-    { take: 200000, select: ["id", "name_en", "kind", "context", "lat", "lng"] }
+    { take: 200000, select: ["id", "name_en", "name_ar", "kind", "context", "search", "lat", "lng"] }
   )
 
   const areas = all.filter((p) => AREA_KINDS.has(p.kind))
@@ -63,25 +66,32 @@ export default async function annotatePlaces({ container }: ExecArgs) {
 
   for (const place of all) {
     // A district is not "in" itself, and naming a city after its own
-    // neighbourhood reads as a mistake.
-    if (AREA_KINDS.has(place.kind)) continue
+    // neighbourhood reads as a mistake. Its search text is still checked
+    // below, because that is about the words, not the district.
+    const area = AREA_KINDS.has(place.kind) ? null : closest(place, areas)
 
-    const nearest = closest(place, areas)
-
-    // Beyond this there is no district worth claiming: the empty desert
+    // Beyond 12 km there is no district worth claiming: the empty desert
     // between towns would otherwise be labelled with whatever is least far.
-    if (!nearest || nearest.km > 12) {
-      tooFar++
-      continue
-    }
+    const context = area && area.km <= 12 ? area.area.name_en : place.context
+    if (!AREA_KINDS.has(place.kind) && (!area || area.km > 12)) tooFar++
 
-    if (place.context === nearest.area.name_en) {
+    /**
+     * The search text carries the district too.
+     *
+     * Someone typing "al meera wakra" is naming a shop and a place in one
+     * breath, and the place is only in `context` — so without this the query
+     * cannot match however the words are split, and the customer is sent to
+     * WhatsApp for a destination we can price perfectly well.
+     */
+    const search = searchText({ name_en: place.name_en, name_ar: place.name_ar, context })
+
+    if (place.context === context && place.search === search) {
       unchanged++
       continue
     }
 
     await service
-      .updatePlaces({ id: place.id, context: nearest.area.name_en })
+      .updatePlaces({ id: place.id, context, search })
       .then(() => {
         written++
       })
@@ -89,7 +99,7 @@ export default async function annotatePlaces({ container }: ExecArgs) {
   }
 
   logger.info(
-    `places: located ${written} (${unchanged} already right, ${tooFar} with no district within 12 km), ` +
+    `places: wrote ${written} (${unchanged} already right, ${tooFar} with no district within 12 km), ` +
       `against ${areas.length} districts`
   )
 }
