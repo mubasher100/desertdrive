@@ -253,8 +253,28 @@ export function toPlace(el: OverpassElement, kind?: string): OsmPlace | null {
  * alef forms, ya/alef maqsura, ta marbuta and the diacritics people omit —
  * so "الدوحه" finds "الدوحة".
  */
-export function searchText(place: Pick<OsmPlace, "name_en" | "name_ar">): string {
-  return normaliseSearch([place.name_en, place.name_ar].filter(Boolean).join(" "))
+export function searchText(place: Pick<OsmPlace, "name_en" | "name_ar" | "context">): string {
+  return normaliseSearch([place.name_en, place.name_ar, place.context].filter(Boolean).join(" "))
+}
+
+/**
+ * The words a query is actually made of.
+ *
+ * People type a name and a place in one breath — "al meera wakra south" — and
+ * matching that as one string finds nothing, because no row contains that
+ * phrase. Every word does exist though: "al meera" in the name, "wakra" in
+ * the district. So the query is split and the words are matched separately.
+ */
+export function searchTokens(query: string): string[] {
+  return normaliseSearch(query)
+    .split(" ")
+    .filter((t) => t.length >= 2)
+    .slice(0, 6)
+}
+
+/** How many of the query's words this row contains. More is a better match. */
+export function tokenScore(search: string, tokens: string[]): number {
+  return tokens.reduce((n, t) => (search.includes(t) ? n + 1 : n), 0)
 }
 
 export function normaliseSearch(value: string): string {
@@ -281,8 +301,22 @@ export function rankPlaces<T extends { name_en: string; kind: string; search: st
   query: string
 ): T[] {
   const q = normaliseSearch(query)
+  const tokens = searchTokens(query)
 
   return [...places].sort((a, b) => {
+    /**
+     * Words matched comes before everything else.
+     *
+     * For "al meera wakra south", a row that has the name AND the district
+     * beats one that only has the name, whatever either of them is. Below
+     * this line the old rules still decide, which is what keeps a one-word
+     * query behaving exactly as it did.
+     */
+    if (tokens.length > 1) {
+      const score = tokenScore(b.search, tokens) - tokenScore(a.search, tokens)
+      if (score !== 0) return score
+    }
+
     const aStarts = a.search.startsWith(q) ? 0 : 1
     const bStarts = b.search.startsWith(q) ? 0 : 1
     if (aStarts !== bStarts) return aStarts - bStarts

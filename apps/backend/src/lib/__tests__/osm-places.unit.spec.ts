@@ -1,4 +1,4 @@
-import { dedupePlaces, kindOf, normaliseSearch, rankPlaces, searchText, toPlace } from "../osm-places"
+import { dedupePlaces, kindOf, normaliseSearch, rankPlaces, searchText, searchTokens, toPlace } from "../osm-places"
 import { QATAR_PLACES } from "../../data/qatar-places"
 
 describe("toPlace", () => {
@@ -141,5 +141,44 @@ describe("the committed snapshot", () => {
       { name_en: "Lusail District", kind: "district", search: "lusail district" },
     ]
     expect(rankPlaces(rows, "lusail")[0].name_en).toBe("Lusail")
+  })
+})
+
+describe("searching by name and place together", () => {
+  const make = (name_en: string, context: string | null, kind = "shop") => ({
+    name_en,
+    kind,
+    context,
+    search: searchText({ name_en, name_ar: null, context }),
+  })
+
+  it("puts the district in the searchable text", () => {
+    // Without this, "al meera wakra" cannot match however the words are split:
+    // the name is in one column and the district in another.
+    expect(make("Al Meera", "Al Wakrah").search).toBe("al meera al wakrah")
+  })
+
+  it("splits a query into words and ignores the noise", () => {
+    expect(searchTokens("Al Meera, Wakra South")).toEqual(["al", "meera", "wakra", "south"])
+    expect(searchTokens("a b udst")).toEqual(["udst"])
+  })
+
+  it("ranks the branch in the named district above the others", () => {
+    // Reported from a phone: typing a shop and a place together returned
+    // "We don't have that one on the list yet", and the only way forward was
+    // WhatsApp — for a destination the system can price perfectly well.
+    const out = rankPlaces(
+      [make("Al Meera", "Ain Khaled"), make("Al Meera", "Al Tarfa"), make("Al Meera", "Nuaija")],
+      "al meera al tarfa"
+    )
+    expect(out[0].context).toBe("Al Tarfa")
+  })
+
+  it("leaves a one-word query ranked exactly as before", () => {
+    const out = rankPlaces(
+      [make("Lusail Palace", null, "hotel"), make("Lusail", null, "city")],
+      "lusail"
+    )
+    expect(out[0].name_en).toBe("Lusail")
   })
 })
