@@ -90,6 +90,19 @@ describe("dedupePlaces", () => {
     ]
     expect(dedupePlaces(rows)).toHaveLength(2)
   })
+
+  it("keeps every branch of a chain, because the district makes them different places", () => {
+    // Collapsing on name and kind alone returned ONE Starbucks out of thirty,
+    // so a customer outside any of the other twenty-nine could not say so —
+    // and would have been priced from a district they were nowhere near.
+    const rows = [
+      { name_en: "Starbucks", kind: "food", context: "Al Sadd" },
+      { name_en: "Starbucks", kind: "food", context: "Al Thumama" },
+      { name_en: "Starbucks", kind: "food", context: "West Bay" },
+      { name_en: "Starbucks", kind: "food", context: "Al Sadd" },
+    ]
+    expect(dedupePlaces(rows).map((p) => p.context)).toEqual(["Al Sadd", "Al Thumama", "West Bay"])
+  })
 })
 
 describe("the committed snapshot", () => {

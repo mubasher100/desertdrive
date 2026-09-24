@@ -19,6 +19,13 @@ export type OsmPlace = {
   kind: string
   lat: number
   lng: number
+  /**
+   * The district shown under the name. Absent on a place straight from
+   * Overpass — annotate-places works it out afterwards — and present in the
+   * committed snapshot, so a fresh database has readable subtitles from its
+   * first search rather than after the first weekly job.
+   */
+  context?: string | null
 }
 
 /** Mirrors, tried in turn. The main instance is the most loaded, so it is not first. */
@@ -37,19 +44,42 @@ export const OVERPASS_UA = "DesertDrive/1.0 (airport transfers; bookings@desertd
 /**
  * What a customer might type, roughly in the order they would mean it.
  *
- * Deliberately not "everything": a shop or a bus stop is noise in a list of
- * pickup points, and every extra tag is more of a free service's time.
+ * As broad as OpenStreetMap goes, on purpose. The first version took only
+ * districts, hotels, campuses, malls and hospitals — 835 rows — and a customer
+ * naming their restaurant, their gym or their child's school found nothing.
+ * Indexing everything named costs the same weekly request.
+ *
+ * This is what replaces a paid autocomplete. Google's database is larger, but
+ * it needs a key and bills per keystroke-session forever; this bills nothing,
+ * and anything neither source knows is still reachable by tapping the map.
+ *
+ * ⚠️ **Streets are deliberately excluded.** Qatari residential streets are
+ * numbered, and "Street 940" exists in a dozen different districts as dozens
+ * of separate OSM ways. Offering them in a dropdown means a customer picking
+ * the wrong one and being quoted the wrong district's fare, silently — and
+ * de-duplicating by name would make that certain rather than likely. A street
+ * address is what the map pin is for.
  *
  * All of it goes in ONE query per box. Asking separately per kind meant 64
  * requests for a country this size, which earns a 429 from a shared service
  * and deserves to — the kind is read back off the tags instead.
  */
 export const PLACE_SELECTORS = [
-  'nwr["place"~"^(city|town|suburb|neighbourhood|quarter|village|island)$"]["name"]',
-  'nwr["tourism"~"^(hotel|attraction|museum)$"]["name"]',
-  'nwr["amenity"~"^(university|college|hospital)$"]["name"]',
-  'nwr["shop"="mall"]["name"]',
-  'nwr["landuse"="residential"]["name"]',
+  'nwr["place"~"^(city|town|suburb|neighbourhood|quarter|village|island|islet)$"]["name"]',
+  'nwr["tourism"]["name"]',
+  'nwr["amenity"]["name"]',
+  'nwr["shop"]["name"]',
+  'nwr["office"]["name"]',
+  'nwr["leisure"]["name"]',
+  'nwr["healthcare"]["name"]',
+  'nwr["craft"]["name"]',
+  'nwr["historic"]["name"]',
+  'nwr["man_made"~"^(tower|lighthouse|water_tower|pier|bridge|observatory)$"]["name"]',
+  'nwr["building"~"^(office|commercial|retail|apartments|hotel|hospital|university|school|mosque|public|civic|stadium|tower)$"]["name"]',
+  'nwr["public_transport"="station"]["name"]',
+  'nwr["railway"="station"]["name"]',
+  'nwr["landuse"~"^(residential|commercial|retail|industrial)$"]["name"]',
+  'nwr["natural"~"^(beach|bay|peninsula)$"]["name"]',
   'nwr["aeroway"="aerodrome"]["name"]',
 ]
 
@@ -76,12 +106,35 @@ export function kindOf(tags: Record<string, string>): string | null {
   if (tags.place === "island" || tags.place === "islet") return "island"
   if (tags.place) return "district"
   if (tags.aeroway === "aerodrome") return "airport"
-  if (tags.amenity === "university" || tags.amenity === "college") return "campus"
-  if (tags.amenity === "hospital") return "hospital"
-  if (tags.shop === "mall") return "mall"
-  if (tags.tourism === "hotel") return "hotel"
-  if (tags.tourism === "attraction" || tags.tourism === "museum") return "landmark"
+  if (tags.amenity === "university" || tags.amenity === "college" || tags.amenity === "school")
+    return "campus"
+  if (tags.amenity === "hospital" || tags.amenity === "clinic" || tags.amenity === "doctors")
+    return "hospital"
+  if (tags.shop === "mall" || tags.shop === "department_store") return "mall"
+  if (tags.tourism === "hotel" || tags.tourism === "resort" || tags.tourism === "guest_house" || tags.tourism === "hostel" || tags.tourism === "apartment")
+    return "hotel"
+  if (tags.tourism === "attraction" || tags.tourism === "museum" || tags.tourism === "theme_park" || tags.tourism === "zoo")
+    return "landmark"
+  if (tags.amenity === "place_of_worship") return "worship"
+  if (tags.amenity === "restaurant" || tags.amenity === "cafe" || tags.amenity === "fast_food")
+    return "food"
+  if (tags.healthcare) return "hospital"
+  if (tags.historic) return "landmark"
+  if (tags.public_transport === "station" || tags.railway === "station") return "station"
+  if (tags.leisure === "park" || tags.leisure === "garden" || tags.leisure === "beach_resort")
+    return "park"
+  if (tags.natural) return "park"
+  if (tags.leisure) return "sport"
+  if (tags.shop) return "shop"
+  if (tags.office) return "office"
+  if (tags.craft) return "office"
+  if (tags.amenity) return "amenity"
+  if (tags.tourism) return "landmark"
+  if (tags.man_made) return "landmark"
   if (tags.landuse === "residential") return "compound"
+  // A named building is a tower or a block people give as their address.
+  if (tags.building) return "building"
+  if (tags.landuse) return "compound"
   return null
 }
 
@@ -92,14 +145,39 @@ export function kindOf(tags: Record<string, string>): string | null {
  * country is a handful of sparse squares.
  */
 export const QATAR_BOXES: Array<[number, number, number, number]> = [
-  [25.15, 51.40, 25.30, 51.58],
-  [25.30, 51.40, 25.45, 51.58],
-  [25.15, 51.25, 25.30, 51.40],
-  [25.30, 51.25, 25.45, 51.40],
-  [25.45, 51.30, 25.65, 51.60],
-  [24.90, 51.15, 25.15, 51.70],
-  [25.65, 51.00, 26.30, 51.70],
-  [24.40, 50.70, 24.90, 51.70],
+  // Greater Doha, quartered again: with every named feature in the query, the
+  // old boxes were large enough that a loaded Overpass answered 504 to all of
+  // them. Sixteen small queries get served where four big ones do not.
+  [25.15, 51.40, 25.2250, 51.49],
+  [25.15, 51.49, 25.2250, 51.58],
+  [25.2250, 51.40, 25.30, 51.49],
+  [25.2250, 51.49, 25.30, 51.58],
+  [25.30, 51.40, 25.3750, 51.49],
+  [25.30, 51.49, 25.3750, 51.58],
+  [25.3750, 51.40, 25.45, 51.49],
+  [25.3750, 51.49, 25.45, 51.58],
+  [25.15, 51.25, 25.2250, 51.325],
+  [25.15, 51.325, 25.2250, 51.40],
+  [25.2250, 51.25, 25.30, 51.325],
+  [25.2250, 51.325, 25.30, 51.40],
+  [25.30, 51.25, 25.3750, 51.325],
+  [25.30, 51.325, 25.3750, 51.40],
+  [25.3750, 51.25, 25.45, 51.325],
+  [25.3750, 51.325, 25.45, 51.40],
+  // Lusail and the north-east coast.
+  [25.45, 51.30, 25.55, 51.45],
+  [25.45, 51.45, 25.55, 51.60],
+  [25.55, 51.30, 25.65, 51.45],
+  [25.55, 51.45, 25.65, 51.60],
+  // Al Wakrah, Mesaieed and the south.
+  [24.90, 51.15, 25.15, 51.45],
+  [24.90, 51.45, 25.15, 51.70],
+  // The north, and the sparse west and far south.
+  [25.65, 51.00, 26.00, 51.70],
+  [26.00, 51.00, 26.30, 51.70],
+  [24.40, 50.70, 24.90, 51.20],
+  [24.40, 51.20, 24.90, 51.70],
+  [25.15, 50.70, 25.65, 51.25],
 ]
 
 /** How this row is ranked against others with a similar name. */
@@ -114,6 +192,15 @@ const KIND_RANK: Record<string, number> = {
   hospital: 7,
   landmark: 8,
   compound: 9,
+  worship: 10,
+  park: 11,
+  sport: 12,
+  food: 13,
+  shop: 14,
+  office: 15,
+  station: 16,
+  building: 17,
+  amenity: 18,
 }
 
 export function kindRank(kind: string): number {
@@ -219,13 +306,24 @@ export function rankPlaces<T extends { name_en: string; kind: string; search: st
  * are different OSM objects, so the index is right to keep them all; a
  * dropdown offering the same name three times is not.
  *
+ * ⚠️ **The district is part of the identity, and leaving it out is a bug that
+ * looks like working code.** Matching on name and kind alone was right at 835
+ * places and wrong at 8,300: Qatar has some thirty branches of the same coffee
+ * chain, and collapsing them returned exactly one Starbucks — so a customer
+ * standing outside a different one had no way to say so, and would have been
+ * priced from a district they were nowhere near. Two entries sharing a name,
+ * a kind AND a district are the same place twice over; across districts they
+ * are different places and both belong in the list.
+ *
  * Call it AFTER ranking, so the copy that survives is the best-ranked one.
  */
-export function dedupePlaces<T extends { name_en: string; kind: string }>(places: T[]): T[] {
+export function dedupePlaces<T extends { name_en: string; kind: string; context?: string | null }>(
+  places: T[]
+): T[] {
   const seen = new Set<string>()
 
   return places.filter((p) => {
-    const key = `${normaliseSearch(p.name_en)}|${p.kind}`
+    const key = `${normaliseSearch(p.name_en)}|${p.kind}|${p.context ?? ""}`
     if (seen.has(key)) return false
     seen.add(key)
     return true
