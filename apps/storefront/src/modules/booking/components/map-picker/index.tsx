@@ -59,6 +59,29 @@ const RASTER_OVERRIDE =
       }
     : null
 
+/**
+ * Satellite imagery, when a provider is configured.
+ *
+ * There is no free, key-less, high-resolution satellite layer that permits
+ * commercial use — Esri's World Imagery is the one everyone reaches for and
+ * its terms require a key and exclude commercial use; Google, Bing, Mapbox and
+ * MapTiler all want a key too. The free open imagery that exists (Sentinel-2,
+ * NASA GIBS) is 10 m per pixel or coarser, where a villa is a pixel or two,
+ * which is not a view you can pick a house off.
+ *
+ * So this is off unless `NEXT_PUBLIC_MAP_SATELLITE_URL` is set, and the toggle
+ * is not rendered at all when it is not — a dead control is worse than no
+ * control. Set the attribution with it: every provider requires one.
+ */
+const SATELLITE =
+  process.env.NEXT_PUBLIC_MAP_SATELLITE_URL && process.env.NEXT_PUBLIC_MAP_SATELLITE_ATTRIBUTION
+    ? {
+        url: process.env.NEXT_PUBLIC_MAP_SATELLITE_URL,
+        attribution: process.env.NEXT_PUBLIC_MAP_SATELLITE_ATTRIBUTION,
+        subdomains: process.env.NEXT_PUBLIC_MAP_SATELLITE_SUBDOMAINS || "abcd",
+      }
+    : null
+
 const VECTOR_STYLE = "https://tiles.openfreemap.org/styles/liberty"
 
 const VECTOR_ATTRIBUTION =
@@ -106,6 +129,9 @@ export default function MapPicker({
   const [locateError, setLocateError] = useState<string | null>(null)
   /** Set by the geolocation button; read inside the map closure. */
   const commitRef = useRef<((lat: number, lng: number) => void) | null>(null)
+  /** Swapping to satellite needs the map and the imagery layer after boot. */
+  const satelliteRef = useRef<import("leaflet").TileLayer | null>(null)
+  const [satellite, setSatellite] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -139,6 +165,14 @@ export default function MapPicker({
             attribution: tiles.attribution,
             subdomains: tiles.subdomains,
           }).addTo(map)
+
+        if (SATELLITE) {
+          satelliteRef.current = L.tileLayer(SATELLITE.url, {
+            maxZoom: 20,
+            attribution: SATELLITE.attribution,
+            subdomains: SATELLITE.subdomains,
+          })
+        }
 
         if (language === "ar" || RASTER_OVERRIDE) {
           raster(RASTER_OVERRIDE && language !== "ar" ? RASTER_OVERRIDE : OSM)
@@ -305,6 +339,28 @@ export default function MapPicker({
    * pin — someone booking from abroad should not have their hotel in London
    * priced as a Doha transfer.
    */
+  /**
+   * Swap between the street map and the imagery.
+   *
+   * Imagery goes ON TOP rather than replacing the base: it is the thing that
+   * can fail — a provider's quota, a bad key — and when it does the customer
+   * is left looking at the street map rather than at nothing. The pin sits
+   * above both either way, so a trip stays bookable through any of it.
+   */
+  function toggleSatellite() {
+    const map = mapRef.current
+    const layer = satelliteRef.current
+    if (!map || !layer) return
+
+    if (satellite) {
+      map.removeLayer(layer)
+    } else {
+      layer.addTo(map)
+      layer.bringToFront()
+    }
+    setSatellite(!satellite)
+  }
+
   function locate() {
     if (!navigator.geolocation) {
       setLocateError(t("map.locateUnsupported"))
@@ -364,6 +420,21 @@ export default function MapPicker({
           </svg>
           {locating ? t("map.locating") : t("map.useMyLocation")}
         </button>
+        {SATELLITE && (
+          <button
+            type="button"
+            onClick={toggleSatellite}
+            disabled={!ready}
+            aria-pressed={satellite}
+            className="inline-flex min-h-touch items-center gap-x-1.5 text-sm font-medium text-dd-accent-text underline underline-offset-4 disabled:opacity-60"
+          >
+            <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+              <circle cx="10" cy="10" r="7.2" />
+              <path d="M2.8 10h14.4M10 2.8c2 2.2 2 12.2 0 14.4M10 2.8c-2 2.2-2 12.2 0 14.4" />
+            </svg>
+            {satellite ? t("map.showMap") : t("map.showSatellite")}
+          </button>
+        )}
         <p className="text-xs text-dd-muted">{value ? t("map.dragHelp") : t("map.tapHelp")}</p>
       </div>
 
