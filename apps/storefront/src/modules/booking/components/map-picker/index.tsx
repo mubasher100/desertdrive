@@ -22,13 +22,26 @@ const DOHA: [number, number] = [25.2854, 51.531]
  * across every tile** — every style, still HTTP 200, so nothing errors and
  * nothing logs; the customer simply sees a broken-looking map (reported from a
  * phone, 23 Sept 2026). CARTO's free key is for non-commercial use only, which
- * this is not, so the English map falls back to plain OSM until the owner
- * chooses a provider.
+ * this is not.
  *
- * `NEXT_PUBLIC_MAP_TILE_URL` overrides the English map without a deploy, for
- * whichever provider that turns out to be. Set `NEXT_PUBLIC_MAP_TILE_ATTRIBUTION`
- * with it — every provider requires one, and shipping the wrong attribution is
- * worse than shipping none.
+ * The replacement is **OpenFreeMap**: the same OSM data, free for commercial
+ * use, no key, no request limits, and its Liberty style labels in `name:latin`
+ * — which is what makes an English map English. The catch is that it serves
+ * vector tiles, so English needs MapLibre where Arabic needs nothing.
+ *
+ * Hence two paths, on purpose:
+ *
+ *   ar  → raster OSM through Leaflet. Local-language labels are CORRECT here,
+ *          and it costs the phone nothing beyond the tiles.
+ *   en  → OpenFreeMap vector through MapLibre, loaded only on the English
+ *          site, so an Arabic visitor never pays for a renderer that would
+ *          give them worse labels.
+ *
+ * `NEXT_PUBLIC_MAP_TILE_URL` still overrides English with a raster provider
+ * and skips MapLibre entirely — lighter on a phone, and the path to take if
+ * the owner ever holds a key for one. Set `NEXT_PUBLIC_MAP_TILE_ATTRIBUTION`
+ * with it: every provider requires one, and the wrong attribution is worse
+ * than none.
  */
 const OSM = {
   url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -36,17 +49,21 @@ const OSM = {
   subdomains: "abc",
 } as const
 
-const TILES = {
-  en:
-    process.env.NEXT_PUBLIC_MAP_TILE_URL && process.env.NEXT_PUBLIC_MAP_TILE_ATTRIBUTION
-      ? {
-          url: process.env.NEXT_PUBLIC_MAP_TILE_URL,
-          attribution: process.env.NEXT_PUBLIC_MAP_TILE_ATTRIBUTION,
-          subdomains: process.env.NEXT_PUBLIC_MAP_TILE_SUBDOMAINS || "abcd",
-        }
-      : OSM,
-  ar: OSM,
-} as const
+/** A raster override, when one is configured. Null means "use the default for this language". */
+const RASTER_OVERRIDE =
+  process.env.NEXT_PUBLIC_MAP_TILE_URL && process.env.NEXT_PUBLIC_MAP_TILE_ATTRIBUTION
+    ? {
+        url: process.env.NEXT_PUBLIC_MAP_TILE_URL,
+        attribution: process.env.NEXT_PUBLIC_MAP_TILE_ATTRIBUTION,
+        subdomains: process.env.NEXT_PUBLIC_MAP_TILE_SUBDOMAINS || "abcd",
+      }
+    : null
+
+const VECTOR_STYLE = "https://tiles.openfreemap.org/styles/liberty"
+
+const VECTOR_ATTRIBUTION =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · ' +
+  '<a href="https://openfreemap.org/">OpenFreeMap</a>'
 
 /**
  * The map under the destination field, always visible.
@@ -106,12 +123,67 @@ export default function MapPicker({
           // A map inside a form should not eat the page scroll on a phone.
           scrollWheelZoom: false,
         })
-        const tiles = language === "ar" ? TILES.ar : TILES.en
-        L.tileLayer(tiles.url, {
-          maxZoom: 19,
-          attribution: tiles.attribution,
-          subdomains: tiles.subdomains,
-        }).addTo(map)
+        /**
+         * English gets vector tiles so the labels are in Latin script; Arabic
+         * gets raster, because its labels are already right and a phone should
+         * not download a renderer to be given worse ones.
+         *
+         * A failure here must not take the map down: the pin, the tap-to-pick
+         * and the drag are the part that books a trip, and they work over an
+         * empty background. So the vector layer is tried, and anything that
+         * goes wrong falls through to the raster tiles everyone else gets.
+         */
+        const raster = (tiles: { url: string; attribution: string; subdomains: string }) =>
+          L.tileLayer(tiles.url, {
+            maxZoom: 19,
+            attribution: tiles.attribution,
+            subdomains: tiles.subdomains,
+          }).addTo(map)
+
+        if (language === "ar" || RASTER_OVERRIDE) {
+          raster(RASTER_OVERRIDE && language !== "ar" ? RASTER_OVERRIDE : OSM)
+        } else {
+          try {
+            const maplibre = (await import("maplibre-gl")).default
+            await import("maplibre-gl/dist/maplibre-gl.css")
+            await import("@maplibre/maplibre-gl-leaflet")
+            if (cancelled) return
+
+            const layer = L.maplibreGL({ style: VECTOR_STYLE }).addTo(map)
+
+            // The plugin takes no attribution option, and the credit is a
+            // condition of using both OSM's data and OpenFreeMap's hosting.
+            map.attributionControl.addAttribution(VECTOR_ATTRIBUTION)
+
+            /**
+             * Latin only on the English map.
+             *
+             * Liberty's default prints both scripts — "Doha" above
+             * "الدوحة" — which is right for a bilingual country and twice
+             * the labels on a 375px phone. The Arabic map is a separate path
+             * and keeps its own names.
+             *
+             * Best-effort: a style that changes shape upstream leaves the
+             * labels bilingual, which is the same map with more words on it,
+             * not a broken one.
+             */
+            const gl = layer.getMaplibreMap()
+            gl.on("styledata", () => {
+              try {
+                for (const l of gl.getStyle().layers ?? []) {
+                  if (l.type !== "symbol") continue
+                  const field = gl.getLayoutProperty(l.id, "text-field")
+                  if (field) gl.setLayoutProperty(l.id, "text-field", ["get", "name:latin"])
+                }
+              } catch {
+                /* bilingual labels are an acceptable map */
+              }
+            })
+            void maplibre
+          } catch {
+            raster(OSM)
+          }
+        }
 
         /**
          * An inline SVG pin, not Leaflet's default: the stock marker points at
