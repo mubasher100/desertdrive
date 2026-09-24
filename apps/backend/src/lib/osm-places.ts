@@ -306,16 +306,22 @@ export function rankPlaces<T extends { name_en: string; kind: string; search: st
  * are different OSM objects, so the index is right to keep them all; a
  * dropdown offering the same name three times is not.
  *
- * ⚠️ **The district is part of the identity, and leaving it out is a bug that
- * looks like working code.** Matching on name and kind alone was right at 835
- * places and wrong at 8,300: Qatar has some thirty branches of the same coffee
- * chain, and collapsing them returned exactly one Starbucks — so a customer
- * standing outside a different one had no way to say so, and would have been
- * priced from a district they were nowhere near. Two entries sharing a name,
- * a kind AND a district are the same place twice over; across districts they
- * are different places and both belong in the list.
+ * **The key is whatever the customer can actually tell apart**, which is the
+ * name and the line under it — the district where there is one, the category
+ * where there is not. Anything finer leaves the list showing what look like
+ * exact duplicates; anything coarser throws away real choices.
  *
- * Call it AFTER ranking, so the copy that survives is the best-ranked one.
+ * Both mistakes have been made here. Keying on name and kind alone was right
+ * at 835 places and wrong at 8,300: Qatar has some thirty branches of the same
+ * coffee chain, and collapsing them returned exactly one Starbucks — so a
+ * customer standing outside a different one had no way to say so, and would
+ * have been priced from a district they were nowhere near. Then adding the
+ * district but keeping the kind let Villaggio Mall appear twice, because OSM
+ * holds it both as a mall and as a retail area, and the kind it differs on is
+ * the one thing the list does not show once a district is known.
+ *
+ * Call it AFTER ranking, so the copy that survives is the best-ranked one —
+ * which is why the Villaggio row that stays is the mall and not the land.
  */
 export function dedupePlaces<T extends { name_en: string; kind: string; context?: string | null }>(
   places: T[]
@@ -323,7 +329,8 @@ export function dedupePlaces<T extends { name_en: string; kind: string; context?
   const seen = new Set<string>()
 
   return places.filter((p) => {
-    const key = `${normaliseSearch(p.name_en)}|${p.kind}|${p.context ?? ""}`
+    const subtitle = p.context ? `c:${p.context}` : `k:${p.kind}`
+    const key = `${normaliseSearch(p.name_en)}|${subtitle}`
     if (seen.has(key)) return false
     seen.add(key)
     return true
