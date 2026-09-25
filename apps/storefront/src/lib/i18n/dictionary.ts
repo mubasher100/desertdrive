@@ -94,6 +94,8 @@ export const dictionary = {
 
     "nav.call": "Call us",
     "nav.whatsapp": "WhatsApp",
+    "whatsapp.aria": "Message us on WhatsApp",
+    "whatsapp.message": "Hello Desert Drive, I have a question about an airport transfer.",
     "footer.tagline": "Explore with ease.",
     "footer.contact": "Contact",
     "footer.legal": "Legal",
@@ -336,6 +338,8 @@ export const dictionary = {
 
     "nav.call": "اتصل بنا",
     "nav.whatsapp": "واتساب",
+    "whatsapp.aria": "راسلنا على واتساب",
+    "whatsapp.message": "مرحبًا ديزرت درايف، عندي استفسار بخصوص توصيلة من المطار.",
     "footer.tagline": "استكشف بكل سهولة.",
     "footer.contact": "التواصل",
     "footer.legal": "قانوني",

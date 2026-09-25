@@ -109,7 +109,7 @@ export default function PaymentChooser({
         </p>
       )}
 
-      <div className="sticky bottom-0 z-40 -mx-4 mt-6 border-t border-dd-line bg-dd-surface/95 px-4 py-3 backdrop-blur small:static small:mx-0 small:border-0 small:bg-transparent small:p-0">
+      <div data-sticky-cta className="sticky bottom-0 z-40 -mx-4 mt-6 border-t border-dd-line bg-dd-surface/95 px-4 py-3 backdrop-blur small:static small:mx-0 small:border-0 small:bg-transparent small:p-0">
         <button
           type="button"
           onClick={confirm}

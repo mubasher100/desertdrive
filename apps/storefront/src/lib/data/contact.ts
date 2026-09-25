@@ -3,10 +3,11 @@
  * the footer, the confirmation page and the confirmation email, and they must
  * agree.
  *
- * The phone number is the owner's (supplied 2026-09-21) and is used for calls
- * and WhatsApp alike. The commercial registration number and registered
- * address are still PLACEHOLDERS — deliberately obviously fake so a real-
- * looking wrong value cannot ship by accident. Replace before launch.
+ * The phone number (2026-09-21) and the commercial registration number
+ * (2026-09-25) are the owner's. The registered ADDRESS is still missing — it
+ * is an empty string rather than a plausible-looking placeholder, and every
+ * consumer renders nothing rather than a fake. Qatar's E-Commerce Law wants it
+ * shown before contracting, so it is still outstanding.
  */
 export const CONTACT = {
   phone: {
@@ -19,8 +20,8 @@ export const CONTACT = {
     e164: "+97451514161",
   },
   email: "bookings@desertdriverental.com",
-  /** Qatari commercial registration number, for the footer. */
-  cr: "CR 00000",
+  /** Qatari commercial registration number, for the footer. Owner-supplied, 25 Sept 2026. */
+  cr: "CR 211743",
   /** Legal entity name as it should appear in the footer and on receipts. */
   legalName: "Desert Drive Rent a Car",
   /**
