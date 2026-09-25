@@ -92,6 +92,26 @@ export default class SkipCashProviderService extends AbstractPaymentProvider<Opt
     super(container, options)
     this.logger = container.logger
     this.client = new SkipCashClient(options)
+
+    /**
+     * Say it loudly when the sandbox is wired into a production deploy.
+     *
+     * Sandbox credentials do not fail — that is the whole problem. Checkout
+     * completes, 3-D Secure runs, the customer sees a confirmation, and the
+     * money goes nowhere, because SkipCash's test host took it. Nothing in
+     * the funnel can tell the difference, so the only place this can be
+     * caught is here, where the host is known.
+     *
+     * The production site ran this way and it took reading the deployed
+     * variables to notice (25 Sept 2026).
+     */
+    if (process.env.NODE_ENV === "production" && !options.base_url.includes("api.skipcash.app")) {
+      this.logger.warn(
+        `⚠️  SkipCash is pointed at ${options.base_url} in a production deploy. ` +
+          "Card payments will NOT collect real money. Set SKIPCASH_BASE_URL to " +
+          "https://api.skipcash.app with the production credentials."
+      )
+    }
   }
 
   static validateOptions(options: Record<string, unknown>) {
