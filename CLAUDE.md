@@ -703,7 +703,7 @@ Run `npm run build` in `apps/storefront`, not just `tsc`, before pushing anythin
 | 5 | Booking funnel — search widget, results, details | ✅ Done — all five steps, both languages |
 | 6 | Google Places + server-side band resolution | ✅ Built — Places merged into the destination field behind `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`, curated list as the fallback. **Needs a key from the owner to go live**; verified against a stubbed Maps API, not against Google |
 | 7 | Checkout — SkipCash card + cash-to-driver | ✅ Done — both paths verified against the SkipCash sandbox incl. 3DS |
-| 8 | Confirmation email + signed-token lookup | ✅ Done — SMTP provider (works with the Outlook mailbox), EN + AR templates, verified with a local mail catcher |
+| 8 | Confirmation email + signed-token lookup | 🟡 Built — SMTP provider, EN + AR templates, verified against a local mail catcher **and never against a real provider**. **Outlook cannot be the sender**: an app password needs basic auth, which Microsoft disabled for personal Outlook on 16 Sept 2024 and removes from M365 tenants end of Dec 2026. Use **Resend** (free, no card, what the stack table always said) — `SMTP_HOST=smtp.resend.com`, `SMTP_USER=resend`, `SMTP_PASS=<re_ key>`. Set `SMTP_REPLY_TO` to a mailbox a person reads, or a customer replying to a confirmation reaches nobody. **Blocked on the owner creating the account.** |
 | 9 | Admin Bookings screen | ✅ Done — `Bookings` page (job sheet by pickup time) + Booking card on every order with *Mark cash collected* |
 | 10 | Arabic / RTL | 🟡 Locale routing, dictionary, RTL, fonts done; native review pending |
 | 11 | Accessibility audit — target zero axe violations | ✅ 0 violations (axe-core, 7 pages × en/ar × 375/1280, 2026-09-21); re-run after UI changes |
