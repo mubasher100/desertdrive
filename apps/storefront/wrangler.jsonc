@@ -102,6 +102,6 @@
     // Qatar is the only region this store serves.
     "NEXT_PUBLIC_DEFAULT_REGION": "qa",
     "MEDUSA_BACKEND_URL": "https://ddbackend-production-e9d1.up.railway.app",
-    "NEXT_PUBLIC_BASE_URL": "https://desertdrive.officialyuvraj24.workers.dev"
+    "NEXT_PUBLIC_BASE_URL": "https://desertdriverental.com"
   }
 }

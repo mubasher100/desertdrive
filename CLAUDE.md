@@ -632,7 +632,7 @@ Fill in as each piece goes live. **Ship on `workers.dev` first** — nothing in 
 |---|---|
 | Backend API | `https://ddbackend-production-e9d1.up.railway.app` ✅ live |
 | Admin | `https://ddbackend-production-e9d1.up.railway.app/app` ✅ live |
-| Storefront | `https://desertdrive.officialyuvraj24.workers.dev` ✅ live (deployed 2026-09-20) → later `https://desertdriverental.com` |
+| Storefront | **`https://desertdriverental.com`** ✅ live (25 Sept 2026), `www` too; `https://desertdrive.officialyuvraj24.workers.dev` stays as the pinned fallback |
 | Railway project | `trustworthy-miracle`, Singapore — services `@dd/backend` (+ Redis with a `/data` volume, `redis.railway.internal`) |
 | Cloudflare | account `officialyuvraj24@gmail.com`; R2 bucket `desertdrive-cache` ✅; Worker `desertdrive` ✅ |
 | Database | Supabase `desertdrive` (`nlkicwkeqadkooumeavr`), **session pooler**, Singapore ✅ migrated + seeded |
