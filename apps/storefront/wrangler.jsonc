@@ -25,24 +25,19 @@
   },
 
   /**
-   * The live domain, attached by the deploy rather than by hand.
+   * Keep the workers.dev hostname ON, explicitly.
    *
-   * `custom_domain` makes wrangler create the Worker's domain binding and the
-   * DNS record for it, using the account token CI already holds — so the
-   * switch happens on a push instead of in a dashboard, and the repo says
-   * which hostnames are meant to serve the site.
+   * ⚠️ Adding a `routes` block turns it OFF unless this says otherwise, and
+   * wrangler only warns. On 25 Sept 2026 that took the live site down: the
+   * custom domains could not bind — the zone still held the old site's A and
+   * CNAME records, which Cloudflare refuses to overwrite — so the deploy
+   * failed having already disabled workers.dev, and nothing served at all.
    *
-   * The DNS for this zone was already on Cloudflare and answering, but with
-   * nothing bound to it: every request got Cloudflare's own "Website not
-   * found" page (25 Sept 2026). A proxied DNS record is not a served site.
-   *
-   * Both hostnames serve; canonical URLs point at the apex through
-   * NEXT_PUBLIC_BASE_URL, so www does not compete with it in search.
+   * The custom domain goes back in only after those records are deleted from
+   * the zone, and this line stays either way so the fallback never vanishes
+   * again.
    */
-  "routes": [
-    { "pattern": "desertdriverental.com", "custom_domain": true },
-    { "pattern": "www.desertdriverental.com", "custom_domain": true }
-  ],
+  "workers_dev": true,
 
   "observability": {
     "enabled": true
