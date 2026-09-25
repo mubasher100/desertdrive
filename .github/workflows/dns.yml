@@ -1,20 +1,21 @@
 # One-off DNS maintenance for desertdriverental.com.
 #
-# Manual only — it has no push or schedule trigger, so it cannot fire on its
-# own. It exists because the Cloudflare zone lives in an account only CI holds
-# a token for, and two things needed doing there: clearing the old site's
-# records so the Worker can bind its custom domain, and adding Resend's records
-# so booking confirmations reach customers rather than bouncing.
+# Manual only — no push or schedule trigger, so it cannot fire on its own. It
+# exists because the Cloudflare zone lives in an account this project's author
+# has no local token for, while CI holds one. Two things needed doing there:
+# clearing the old site's A/CNAME records, which block the Worker from binding
+# its custom domain and served "Website not found" to every visitor, and adding
+# Resend's records so booking confirmations reach customers.
 #
-# `list` is the default and changes nothing. Delete this workflow once the
-# zone is settled; a deploy pipeline is not where DNS should live.
+# `list` is the default and changes nothing. Delete this workflow once the zone
+# is settled; a deploy pipeline is not where DNS belongs.
 name: DNS (manual)
 
 on:
   workflow_dispatch:
     inputs:
       action:
-        description: "list (safe) | clear-root (delete A/CNAME on apex+www) | add-resend"
+        description: "list (safe) | clear-root | add-resend"
         required: true
         default: list
         type: choice
@@ -30,54 +31,38 @@ jobs:
           ACTION: ${{ inputs.action }}
         run: |
           set -euo pipefail
+          CF=https://api.cloudflare.com/client/v4
           api() { curl -sS -H "Authorization: Bearer $CF_TOKEN" -H "Content-Type: application/json" "$@"; }
-          ZONE=$(api "https://api.cloudflare.com/client/v4/zones?name=desertdriverental.com" \
-                 | python3 -c "import json,sys;d=json.load(sys.stdin);print(d['result'][0]['id'] if d.get('success') and d['result'] else '')")
-          if [ -z "$ZONE" ]; then
-            echo "::error::Could not read the zone. The CI token likely lacks Zone:Read / Zone:DNS on desertdriverental.com."
-            api "https://api.cloudflare.com/client/v4/zones?name=desertdriverental.com" | head -c 600; exit 1
-          fi
-          echo "zone id resolved"
 
-          list() {
-            api "https://api.cloudflare.com/client/v4/zones/$ZONE/dns_records?per_page=100" \
-            | python3 -c "
-import json,sys
-d=json.load(sys.stdin)
-for r in d.get('result',[]):
-    print(f\"  {r['type']:6} {r['name']:44} proxied={str(r.get('proxied')):5} {r['content'][:60]}\")
-"
-          }
+          ZONE=$(api "$CF/zones?name=desertdriverental.com" | jq -r '.result[0].id // empty')
+          if [ -z "$ZONE" ]; then
+            echo "::error::Cannot read the zone — the CI token likely lacks Zone:Read / Zone:DNS on this domain."
+            api "$CF/zones?name=desertdriverental.com" | jq -r '.errors // .messages // .' | head -20
+            exit 1
+          fi
+          echo "zone resolved"
+
+          show() { api "$CF/zones/$ZONE/dns_records?per_page=100" | jq -r '.result[] | "  \(.type)\t\(.name)\tproxied=\(.proxied)\t\(.content[0:58])"'; }
 
           case "$ACTION" in
-            list) echo '--- current records ---'; list ;;
+            list)
+              echo "--- current records ---"; show ;;
             clear-root)
-              echo '--- before ---'; list
-              api "https://api.cloudflare.com/client/v4/zones/$ZONE/dns_records?per_page=100" \
-              | python3 -c "
-import json,sys
-d=json.load(sys.stdin)
-keep=('desertdriverental.com','www.desertdriverental.com')
-for r in d.get('result',[]):
-    if r['type'] in ('A','AAAA','CNAME') and r['name'] in keep:
-        print(r['id'], r['type'], r['name'])
-" > /tmp/kill.txt
-              cat /tmp/kill.txt
+              echo "--- before ---"; show
+              api "$CF/zones/$ZONE/dns_records?per_page=100" \
+                | jq -r '.result[] | select(.type=="A" or .type=="AAAA" or .type=="CNAME") | select(.name=="desertdriverental.com" or .name=="www.desertdriverental.com") | "\(.id) \(.type) \(.name)"' > ids.txt
+              echo "--- deleting ---"; cat ids.txt
               while read -r id t n; do
-                [ -z "$id" ] && continue
-                echo "deleting $t $n"
-                api -X DELETE "https://api.cloudflare.com/client/v4/zones/$ZONE/dns_records/$id" | head -c 120; echo
-              done < /tmp/kill.txt
-              echo '--- after ---'; list ;;
+                [ -z "${id:-}" ] && continue
+                api -X DELETE "$CF/zones/$ZONE/dns_records/$id" | jq -r '"  \(.success) \('"'"'deleted'"'"') '"$t"' '"$n"'"' || true
+              done < ids.txt
+              echo "--- after ---"; show ;;
             add-resend)
-              add() { api -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE/dns_records" -d "$1" | python3 -c "
-import json,sys
-d=json.load(sys.stdin)
-print(('  added  ' if d.get('success') else '  FAILED ') + json.dumps(d.get('result') or d.get('errors'))[:160])
-"; }
-              add '{"type":"TXT","name":"resend._domainkey","content":"p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDz10cId8wYFizcQsAQS9MP5K9RdjmYtT9o8ylSkHDwgeZXlV82Y8AxDcHUnXgE6A+DOB5XR5TSfRE6nNF7EGeIOgCu//TSoAZqAbYlWLzObakLhVzHKhp1HpqjDN8Sy1v205CkoG2b1mxWd7g6uca2ZvHPApUBN0EAOivhUreMQIDAQAB","ttl":1}'
-              add '{"type":"MX","name":"send","content":"feedback-smtp.eu-west-1.amazonses.com","priority":10,"ttl":1}'
-              add '{"type":"TXT","name":"send","content":"v=spf1 include:amazonses.com ~all","ttl":1}'
-              add '{"type":"CNAME","name":"rsend","content":"send.forge.rmta.net","proxied":false,"ttl":1}'
-              echo '--- after ---'; list ;;
+              DKIM='p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDz10cId8wYFizcQsAQS9MP5K9RdjmYtT9o8ylSkHDwgeZXlV82Y8AxDcHUnXgE6A+DOB5XR5TSfRE6nNF7EGeIOgCu//TSoAZqAbYlWLzObakLhVzHKhp1HpqjDN8Sy1v205CkoG2b1mxWd7g6uca2ZvHPApUBN0EAOivhUreMQIDAQAB'
+              post() { api -X POST "$CF/zones/$ZONE/dns_records" -d "$1" | jq -r 'if .success then "  added \(.result.type) \(.result.name)" else "  FAILED \(.errors[0].message)" end'; }
+              post "$(jq -nc --arg c "$DKIM" '{type:"TXT",name:"resend._domainkey",content:$c,ttl:1}')"
+              post "$(jq -nc '{type:"MX",name:"send",content:"feedback-smtp.eu-west-1.amazonses.com",priority:10,ttl:1}')"
+              post "$(jq -nc '{type:"TXT",name:"send",content:"v=spf1 include:amazonses.com ~all",ttl:1}')"
+              post "$(jq -nc '{type:"CNAME",name:"rsend",content:"send.forge.rmta.net",proxied:false,ttl:1}')"
+              echo "--- after ---"; show ;;
           esac
