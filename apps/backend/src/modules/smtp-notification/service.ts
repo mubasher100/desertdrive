@@ -16,6 +16,16 @@ type Options = {
   pass: string
   /** "Desert Drive <bookings@desertdriverental.com>" */
   from: string
+  /**
+   * Where a customer's reply should land — the mailbox a person actually
+   * reads, which is not the same address the mail is sent from.
+   *
+   * Optional, and it matters as soon as the sender is a domain rather than a
+   * mailbox. Mail now leaves through a provider as bookings@<domain>; a
+   * customer answering "my flight is delayed" hits reply and reaches an
+   * address nobody opens. That is a booking lost in silence.
+   */
+  replyTo?: string
 }
 
 type InjectedDependencies = { logger: Logger }
@@ -23,11 +33,16 @@ type InjectedDependencies = { logger: Logger }
 /**
  * Email over plain SMTP.
  *
- * Chosen over a vendor SDK because the business already has a Microsoft 365
- * mailbox, and SMTP is the one interface every provider offers: Outlook now,
- * Resend or anything else later, with nothing but the SMTP_* variables
- * changing. The template lives in code (templates.ts) so the confirmation
- * email is versioned with the funnel it describes.
+ * Chosen over a vendor SDK because SMTP is the one interface every provider
+ * offers, so switching costs nothing but the SMTP_* variables. That turned
+ * out to matter: the original plan was to send through the business's own
+ * Outlook mailbox, and **Microsoft disabled basic authentication for personal
+ * Outlook accounts on 16 September 2024** — which is the only thing an app
+ * password works with — while Microsoft 365 tenants lose SMTP AUTH at the end
+ * of December 2026. An Outlook mailbox cannot be an SMTP sender any more.
+ *
+ * The template lives in code (templates.ts) so the confirmation email is
+ * versioned with the funnel it describes.
  *
  * Registered under the notification module for the "email" channel.
  */
@@ -37,11 +52,13 @@ export default class SmtpNotificationService extends AbstractNotificationProvide
   protected readonly logger: Logger
   protected readonly transporter: Transporter
   protected readonly from: string
+  protected readonly replyTo?: string
 
   constructor(container: InjectedDependencies, options: Options) {
     super()
     this.logger = container.logger
     this.from = options.from
+    this.replyTo = options.replyTo
     this.transporter = nodemailer.createTransport({
       host: options.host,
       port: options.port,
@@ -65,6 +82,7 @@ export default class SmtpNotificationService extends AbstractNotificationProvide
 
     const info = await this.transporter.sendMail({
       from: notification.from || this.from,
+      ...(this.replyTo ? { replyTo: this.replyTo } : {}),
       to: notification.to,
       subject,
       html,

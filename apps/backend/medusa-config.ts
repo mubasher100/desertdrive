@@ -247,6 +247,7 @@ module.exports = defineConfig({
                     user: process.env.SMTP_USER,
                     pass: process.env.SMTP_PASS,
                     from: process.env.SMTP_FROM,
+                    replyTo: process.env.SMTP_REPLY_TO,
                   },
                 },
               ],
