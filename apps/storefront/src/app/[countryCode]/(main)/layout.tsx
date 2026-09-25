@@ -2,6 +2,7 @@ import { Metadata } from "next"
 import { getBaseURL } from "@lib/util/env"
 import Footer from "@modules/layout/templates/footer"
 import Nav from "@modules/layout/templates/nav"
+import WhatsAppButton from "@modules/layout/components/whatsapp-button"
 import { getTranslations } from "@lib/i18n/get-translations"
 
 export const metadata: Metadata = {
@@ -34,6 +35,7 @@ export default async function PageLayout(props: {
       <Nav segment={countryCode} />
       <div id="content">{props.children}</div>
       <Footer segment={countryCode} />
+      <WhatsAppButton />
     </>
   )
 }

@@ -160,7 +160,7 @@ export default function VehiclePicker({
       </div>
 
       {/* Sticky action bar ------------------------------------------------ */}
-      <div className="sticky bottom-0 z-40 mt-6 -mx-4 border-t border-dd-line bg-dd-surface/95 px-4 py-3 backdrop-blur small:static small:mx-0 small:mt-8 small:border-0 small:bg-transparent small:p-0">
+      <div data-sticky-cta className="sticky bottom-0 z-40 mt-6 -mx-4 border-t border-dd-line bg-dd-surface/95 px-4 py-3 backdrop-blur small:static small:mx-0 small:mt-8 small:border-0 small:bg-transparent small:p-0">
         <div className="mx-auto flex max-w-content items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="truncate text-sm text-dd-muted">
