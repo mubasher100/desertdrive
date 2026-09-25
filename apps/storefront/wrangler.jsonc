@@ -39,6 +39,22 @@
    */
   "workers_dev": true,
 
+  /**
+   * The live domain.
+   *
+   * Added only after the zone's old A/CNAME records were deleted — Cloudflare
+   * refuses to bind a custom domain over externally managed DNS, and the first
+   * attempt at this failed for exactly that reason while having already turned
+   * workers.dev off. `workers_dev` above stays true so that cannot recur: if a
+   * binding fails, the site keeps serving on the workers.dev hostname.
+   *
+   * Both hostnames serve; canonical URLs point at the apex.
+   */
+  "routes": [
+    { "pattern": "desertdriverental.com", "custom_domain": true },
+    { "pattern": "www.desertdriverental.com", "custom_domain": true }
+  ],
+
   "observability": {
     "enabled": true
   },
