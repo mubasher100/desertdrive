@@ -595,6 +595,10 @@ Two rules follow:
 - **A new request field must be optional on the backend and survivable on the storefront.** `getQuote` drops `pickup_at` and re-asks when the backend rejects it; `reserveVehicle` treats a 404 on `/store/reservations` as "not deployed yet" and lets the booking through rather than blocking every checkout.
 - **A new response field must be optional in the storefront's types** and read as `x === false`, never `!x` — an older backend omits it entirely, and `!undefined` is `true`, which would grey out every vehicle on the page.
 
+> **⚠️ Adding `routes` to wrangler config switches workers.dev OFF, and only warns.** This took the live site down for fifteen minutes on 25 Sept 2026. Declaring the custom domains looked safe because a failure "would just leave workers.dev serving" — it does not. wrangler disables the workers.dev hostname whenever a `routes` block exists unless `workers_dev` is set explicitly, then attempts the custom domains, and **the ordering is not transactional**: the custom domain binding failed and the deploy exited having already removed the only hostname that was serving. `"workers_dev": true` is now pinned in `wrangler.jsonc` and must stay.
+>
+> The binding failed with `Hostname 'desertdriverental.com' already has externally managed DNS records (A, CNAME, etc). Delete them first`. **A zone whose DNS is "already set up" is not a zone ready for a Worker** — the old site's records were still there, answering with Cloudflare's own "Website not found" page, which reads like a Worker problem and is not one. Delete them before re-adding the routes.
+
 **Deploying the storefront from Windows.** wrangler ≥4.12 auto-delegates `wrangler deploy` to `opennextjs-cloudflare deploy`, whose "populate remote R2 cache" step starts a local proxy Worker that fails on Windows (`Failed to send request to R2 worker: fetch failed`, retried forever). Set `OPEN_NEXT_DEPLOY=true` to skip the delegation and do a plain upload; the R2 cache then fills on first request. CI runs on Linux where the populate step works, so prefer CI for real deploys.
 
 `railway.json` shape:
