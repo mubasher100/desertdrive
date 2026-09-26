@@ -40,11 +40,15 @@ export default async function CancellationPage({ params }: Props) {
             DD-123).
           </p>
           <h2>الإلغاء المجاني</h2>
-          <p className="placeholder">[المالك: المهلة التي يكون فيها الإلغاء مجانيًا قبل موعد الاستقبال.]</p>
+          <p>
+            يمكنك الإلغاء مجانًا حتى <strong>24 ساعة قبل موعد الاستقبال</strong>، وتسترد كامل المبلغ المدفوع.
+          </p>
           <h2>الإلغاء المتأخر وعدم الحضور</h2>
           <p className="placeholder">[المالك: الرسوم المطبقة عند الإلغاء بعد المهلة أو عند عدم الحضور.]</p>
           <h2>الاسترداد للمدفوعات بالبطاقة</h2>
-          <p className="placeholder">[المالك: طريقة الاسترداد ومدته. تُعاد المبالغ إلى البطاقة الأصلية عبر سكيب كاش.]</p>
+          <p>
+            تُعاد المبالغ إلى البطاقة التي دفعت بها عبر سكيب كاش. نبدأ الاسترداد فور تأكيد الإلغاء، ومدة ظهوره في كشف الحساب تعود إلى بنكك.
+          </p>
           <h2>الإلغاء من طرفنا</h2>
           <p>إذا تعذّر علينا تنفيذ رحلتك، نُعيد لك كامل المبلغ المدفوع ونبلغك في أقرب وقت.</p>
         </>
@@ -56,11 +60,17 @@ export default async function CancellationPage({ params }: Props) {
             your booking reference (for example DD-123).
           </p>
           <h2>Free cancellation</h2>
-          <p className="placeholder">[Owner: the window before pickup within which cancellation is free.]</p>
+          <p>
+            Cancel free of charge up to <strong>24 hours before your pickup time</strong>. You receive a full
+            refund of everything you paid.
+          </p>
           <h2>Late cancellation and no-shows</h2>
           <p className="placeholder">[Owner: the charge that applies to cancellation inside the window, and to no-shows.]</p>
           <h2>Refunds for card payments</h2>
-          <p className="placeholder">[Owner: how and how quickly refunds are made. Refunds go back to the original card via SkipCash.]</p>
+          <p>
+            Refunds go back to the card you paid with, through SkipCash. We start the refund as soon as we
+            confirm the cancellation; how quickly it appears on your statement is up to your bank.
+          </p>
           <h2>If we cancel</h2>
           <p>If we cannot provide your transfer, you receive a full refund of anything paid and we tell you as early as we can.</p>
         </>

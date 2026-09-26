@@ -3,11 +3,11 @@
  * the footer, the confirmation page and the confirmation email, and they must
  * agree.
  *
- * The phone number (2026-09-21) and the commercial registration number
- * (2026-09-25) are the owner's. The registered ADDRESS is still missing — it
- * is an empty string rather than a plausible-looking placeholder, and every
- * consumer renders nothing rather than a fake. Qatar's E-Commerce Law wants it
- * shown before contracting, so it is still outstanding.
+ * All owner-supplied: phone 2026-09-21, commercial registration and registered
+ * address 2026-09-25. Qatar's E-Commerce Law wants the trader's name,
+ * registration and address shown before contracting and on the confirmation,
+ * which is why these live in one place and are printed in the footer, on
+ * /contact, in the terms and in the confirmation email.
  */
 export const CONTACT = {
   phone: {
@@ -31,7 +31,13 @@ export const CONTACT = {
    * contracting and on the order confirmation. Empty until the owner supplies
    * it; every consumer of this field renders nothing rather than a fake.
    */
-  address: { en: "", ar: "" },
+  address: {
+    en: "Al Aqariya Tower, 10/01, Street 137, Al Mathaf, Doha, Qatar",
+    // ⚠️ Rendered from the English; needs a native reviewer like the rest of
+    // the Arabic copy. Qatar has no postal codes, so none is printed — the
+    // "00000" the owner supplied is a form artefact, not part of the address.
+    ar: "برج العقارية، 10/01، شارع 137، المتحف، الدوحة، قطر",
+  },
 } as const
 
 /** A WhatsApp deep link, optionally with a pre-filled message. */

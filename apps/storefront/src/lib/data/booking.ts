@@ -310,7 +310,7 @@ async function reserveVehicle(cartId: string): Promise<"ok" | "taken" | "error">
 const SKIPCASH_PROVIDER = "pp_skipcash_skipcash"
 
 /** Bump when the wording of /terms, /cancellation or /privacy changes materially. */
-const TERMS_VERSION = "2026-09-21"
+const TERMS_VERSION = "2026-09-26"
 
 /**
  * Records the customer's acceptance of the terms on the cart, so it is carried
