@@ -154,7 +154,7 @@ const FARE_BANDS: Array<{
 //
 // Arabic names need a native reviewer before launch.
 // ---------------------------------------------------------------------------
-const VEHICLES: Array<{
+export const VEHICLES: Array<{
   key: VehicleKey
   handle: string
   title: string
@@ -165,6 +165,17 @@ const VEHICLES: Array<{
   luggage: number
   /** How many of this vehicle exist. Owner-confirmable; defaults to one. */
   units?: number
+  /**
+   * Whether this vehicle is on sale right now.
+   *
+   * A vehicle that is not offered is created (or updated) as a DRAFT rather
+   * than deleted: the product, its variants, its prices and any orders that
+   * reference it all survive, and putting it back on sale is a one-word
+   * change. Deleting would take the order history with it.
+   *
+   * Defaults to true — only say `offered: false` to take something off sale.
+   */
+  offered?: boolean
 }> = [
   {
     key: "toyota-rush",
@@ -209,6 +220,12 @@ const VEHICLES: Array<{
     luggage: 12,
   },
   {
+    /**
+     * Off sale (owner, 26 Sept 2026): the line-up is Rush, MPV, H1 and Hiace.
+     * This comes back as the "Luxury" tier later, which is why it stays in the
+     * catalogue as a draft rather than being removed.
+     */
+    offered: false,
     key: "tesla-model-3",
     handle: "tesla-model-3",
     title: "Tesla Model 3",
@@ -348,7 +365,9 @@ export default async function seedFleet({ container }: ExecArgs) {
             title: vehicle.title,
             handle: vehicle.handle,
             description: vehicle.description,
-            status: ProductStatus.PUBLISHED,
+            // A vehicle that is not offered exists as a draft: present in the
+            // catalogue, absent from the storefront, one word from returning.
+            status: vehicle.offered === false ? ProductStatus.DRAFT : ProductStatus.PUBLISHED,
             shipping_profile_id: shippingProfile.id,
             sales_channels: [{ id: salesChannel.id }],
             /**
