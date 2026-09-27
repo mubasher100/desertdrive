@@ -44,20 +44,48 @@ type BandCode = "A" | "B" | "C" | "D"
 type VehicleKey = "toyota-rush" | "mpv" | "toyota-hiace" | "hyundai-h1" | "tesla-model-3"
 
 /**
- * Band A prices are the owner's published "Airport Transfer" prices from the
- * Desert Drive WhatsApp Business catalogue (Sept 2026). They supersede the
- * Sedan 40 / SUV 65 / Minivan 80 figures in the original brief, which were for
- * abstract classes that do not match the real fleet.
+ * The fare table. Band A is the owner's published catalogue; B, C and D are
+ * scaled from it using a COMPETITOR'S distance curve, not their price level.
  *
- * ⚠️ STILL TO CONFIRM WITH THE OWNER: whether the catalogue price is a flat
- * fare regardless of destination (in which case set B, C and D equal to A),
- * or the central-Doha fare with longer trips priced higher.
+ * Where the shape comes from: five Booking.com quotes the owner pulled on
+ * 26 Sept 2026 (one-way, 3 passengers, HIA to West Bay, Souq Al Wakra, Lusail
+ * Marina, Al Khor and Dukhan). Their absolute prices are NOT copied — the
+ * owner's instruction was to keep the catalogue — only the ratio between a
+ * short trip and a long one, per vehicle class.
+ *
+ * ⚠️ Booking.com's prices are not a function of distance and must not be fitted
+ * as one. In that sample Al Khor (58 km) cost MORE than Dukhan (90 km) — 291
+ * against 204 QAR — and their Minibus was 1,889 QAR to Al Khor against 302 to
+ * Dukhan, six times the price for a longer trip. Every page says "we'll assign
+ * a local journey provider": those are marketplace bids from different
+ * operators, not a rate card. Al Khor is therefore excluded as an outlier and
+ * C is interpolated between B and D.
+ *
+ * The ratios that survived (A = Al Wakra/West Bay, B = Lusail, D = Dukhan):
+ *
+ *            B/A    D/A     note
+ *   Rush     1.03   3.40    small car, cost is mostly the kilometres
+ *   MPV      1.22   3.27
+ *   H1       1.08   2.04
+ *   Hiace    1.18   1.70    big van, cost is mostly the vehicle
+ *
+ * ⚠️ TWO THINGS FOR THE OWNER:
+ *   1. Band A stays at the catalogue, which is ~65% above Booking.com's
+ *      equivalent (100 vs 60 QAR for the smallest car). That gap carries into
+ *      every band. It is a positioning choice — direct booking against a
+ *      marketplace — not an oversight.
+ *   2. The H1 costs more than the Hiace at every band (200 vs 180 in the
+ *      catalogue), so a 7-seater is dearer than a 12-seater. That comes
+ *      straight from the catalogue and reads oddly on the results page.
+ *
+ * Prices are the owner's to change in the admin. This table is what a FRESH
+ * database gets seeded with; it does not overwrite anything already priced.
  */
-const FARES: Record<BandCode, Record<VehicleKey, number | null>> = {
+export const FARES: Record<BandCode, Record<VehicleKey, number | null>> = {
   A: { "toyota-rush": 100, mpv: 120, "toyota-hiace": 180, "hyundai-h1": 200, "tesla-model-3": 300 },
-  B: { "toyota-rush": null, mpv: null, "toyota-hiace": null, "hyundai-h1": null, "tesla-model-3": null },
-  C: { "toyota-rush": null, mpv: null, "toyota-hiace": null, "hyundai-h1": null, "tesla-model-3": null },
-  D: { "toyota-rush": null, mpv: null, "toyota-hiace": null, "hyundai-h1": null, "tesla-model-3": null },
+  B: { "toyota-rush": 105, mpv: 145, "toyota-hiace": 210, "hyundai-h1": 215, "tesla-model-3": null },
+  C: { "toyota-rush": 240, mpv: 285, "toyota-hiace": 265, "hyundai-h1": 330, "tesla-model-3": null },
+  D: { "toyota-rush": 340, mpv: 390, "toyota-hiace": 305, "hyundai-h1": 410, "tesla-model-3": null },
 }
 
 /** Prices for the add-on products. Same rule: `null` means do not create it. */
