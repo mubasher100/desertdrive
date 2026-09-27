@@ -703,15 +703,15 @@ Run `npm run build` in `apps/storefront`, not just `tsc`, before pushing anythin
 | 1 | Supabase + Railway + Redis; backend live | ✅ Done — live, migrated, seeded |
 | 2 | Cloudflare Worker + R2; storefront live on `workers.dev` | ✅ Done — live on `workers.dev`; CI deploys on push once `CLOUDFLARE_API_TOKEN` is in GitHub secrets |
 | 3 | Branding — palette from the logo, fonts, vehicle photography | 🟡 Palette, fonts, brand.css done; photography pending |
-| 4 | Fare bands + fleet products + seed scripts | 🟡 Built; blocked on band B/C/D prices |
+| 4 | Fare bands + fleet products + seed scripts | ✅ Done — all four bands priced for all four vehicles (26 Sept 2026). The line-up is Rush, MPV, H1, Hiace; the Tesla is a DRAFT until the owner adds a Luxury tier |
 | 5 | Booking funnel — search widget, results, details | ✅ Done — all five steps, both languages |
 | 6 | Google Places + server-side band resolution | ✅ Built — Places merged into the destination field behind `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`, curated list as the fallback. **Needs a key from the owner to go live**; verified against a stubbed Maps API, not against Google |
-| 7 | Checkout — SkipCash card + cash-to-driver | ✅ Done — both paths verified against the SkipCash sandbox incl. 3DS |
-| 8 | Confirmation email + signed-token lookup | 🟡 Built — SMTP provider, EN + AR templates, verified against a local mail catcher **and never against a real provider**. **Outlook cannot be the sender**: an app password needs basic auth, which Microsoft disabled for personal Outlook on 16 Sept 2024 and removes from M365 tenants end of Dec 2026. Use **Resend** (free, no card, what the stack table always said) — `SMTP_HOST=smtp.resend.com`, `SMTP_USER=resend`, `SMTP_PASS=<re_ key>`. Set `SMTP_REPLY_TO` to a mailbox a person reads, or a customer replying to a confirmation reaches nobody. **Blocked on the owner creating the account.** |
+| 7 | Checkout — SkipCash card + cash-to-driver | ✅ **Live on PRODUCTION keys** (26 Sept 2026) — signature verified against `api.skipcash.app`, webhook pointed at Medusa. Sandbox verified earlier incl. 3DS. **No real card has been run end to end yet** |
+| 8 | Confirmation email + signed-token lookup | ✅ Done — **Resend** over SMTP from `bookings@desertdriverental.com`, domain verified, reply-to `info@desertdriverental.com`. A real message was delivered. ⚠️ **Outlook can never be the sender**: an app password needs basic auth, which Microsoft disabled for personal Outlook on 16 Sept 2024 and removes from M365 tenants end of Dec 2026 |
 | 9 | Admin Bookings screen | ✅ Done — `Bookings` page (job sheet by pickup time) + Booking card on every order with *Mark cash collected* |
 | 10 | Arabic / RTL | 🟡 Locale routing, dictionary, RTL, fonts done; native review pending |
 | 11 | Accessibility audit — target zero axe violations | ✅ 0 violations (axe-core, 7 pages × en/ar × 375/1280, 2026-09-21); re-run after UI changes |
-| 12 | Legal pages, SEO, custom domain | 🟡 Pages exist (privacy written; terms + cancellation are structural drafts awaiting the owner's terms); consent + trader identity done (see *Legal compliance*); domain pending |
+| 12 | Legal pages, SEO, custom domain | 🟡 Live on **desertdriverental.com** (25 Sept 2026) with canonicals and hreflang; CR 211743 and the registered address are in. Two `[Owner: …]` gaps remain on cancellation: the charge INSIDE the 24-hour window, and no-shows |
 | 13 | Later: hourly chauffeur, day tours, self-drive rental | 🔒 Later |
 
 ### Legal compliance (Qatar)
@@ -764,6 +764,8 @@ Do not build these without asking. Each was considered and cut:
 - **Live fare calculation, Distance Matrix, surge, or traffic-aware pricing** — fares are fixed per band, full stop
 - **Multi-stop trips and recurring transfers** — a return leg *is* now supported (owner's call, 22 Sept 2026): one booking, two legs
 - **Loyalty or a promotions engine** beyond what Medusa provides for free
+- **A currency switcher** — raised and dropped by the owner (27 Sept 2026). Displaying USD/EUR/GBP/INR while charging QAR needs a daily-cached rate feed, a picker, and an explicit "charged in QAR" line at payment; the site prices in QAR for a Qatari market and the owner decided it was not worth the surface area
+- **Distance-based fares** — investigated at the owner's request (26 Sept 2026) and dropped. Booking.com, the model to copy, does not price by distance: five of their quotes had Al Khor at 58 km costing MORE than Dukhan at 90 km, and their minibus six times dearer to the nearer town. They are a marketplace assigning local providers, so there is no curve to follow. Bands stay
 
 ---
 
@@ -771,14 +773,14 @@ Do not build these without asking. Each was considered and cut:
 
 Ask the owner. Several of these block real work:
 
-1. **Band prices for B, C and D** — or confirmation that the catalogue price is flat. Band A is the catalogue (Rush 100 · MPV 120 · Hiace 180 · H1 200 · Tesla 300). Until these land, **15 of the 38 listed destinations cannot be booked online** — all of Lusail, Al Rayyan, Al Khor and Dukhan among them. They fall back to a WhatsApp quote, which is honest but is not a booking.
+1. ~~Band prices for B, C and D~~ — set 26 Sept 2026 and live; every destination is bookable. **Two open judgements, both the owner's:** band A stays ~65% above Booking.com's equivalent (100 vs 60 QAR for the smallest car) and that gap carries into every band; and the H1 is priced above the Hiace at every band, so a 7-seater is dearer than a 12-seater. The owner was shown both and chose to keep the prices as they are.
 2. **Hamad International coordinates** — approximately `25.273 N, 51.608 E`. **Verify precisely before committing.** Every fare in the system keys off this one point.
 3. **Fleet detail** — the 120 QAR vehicle's make/model, real passenger and luggage capacities for all five, and photography (`public/fleet/<handle>.jpg`). Also **how many of each vehicle exist** (`units` on product metadata, seeded at 1): it is what the availability guard counts, so too low turns customers away and too high double-books a driver.
 4. ~~Logo and brand colours~~ — supplied and sampled. Still wanted: an SVG or transparent original, and a mark-only version.
-5. **Contact details** — phone/WhatsApp `+974 5151 4161` ✅ (2026-09-21). Still needed: the commercial registration number and the registered address (`CONTACT.cr`, `CONTACT.address` in `src/lib/data/contact.ts`; `BUSINESS_CR`, `BUSINESS_ADDRESS` on Railway).
+5. ~~Contact details~~ — phone `+974 5151 4161`, CR **211743**, registered address **Al Aqariya Tower, 10/01, Street 137, Al Mathaf, Doha**. All three live in the footer, `/contact`, the terms and the confirmation email. The Arabic address still wants a native reviewer.
 6. **Domain** — the live domain is `desertdriverental.com` (Namecheap, DNS on Cloudflare in the `officialyuvraj24@gmail.com` account). `desertdrive.qa` is unregistered and still an option: a plain `.qa` needs **no** Qatari commercial registration (only `.com.qa` does), but must be bought through a Qatar-accredited registrar or reseller.
-7. ~~SkipCash credentials~~ — sandbox supplied and working. Production keys go straight into Railway variables when the owner is ready.
-8. **Cancellation and refund policy** — the actual terms, from the owner. Required for SkipCash onboarding, and it cannot be invented. The terms and cancellation pages currently show six bracketed `[Owner: …]` gaps each, live, while customers are asked to tick "I have read and agree".
+7. ~~SkipCash credentials~~ — **production keys are live** (26 Sept 2026), webhook pointed at Medusa. Still to do: **one real booking with a real card**, to prove the merchant account settles — the plumbing is verified, the settlement is not.
+8. **Cancellation and refund policy** — free cancellation up to **24 hours**, full refund to the card, is live (Booking.com's window, the owner's call). **Two gaps remain live** while customers tick "I have read and agree": the charge for cancelling INSIDE the window, and no-shows. Also still open in the terms: free waiting time and the hourly rate beyond it.
 9. **Minimum notice for a booking** — currently defaulted to **3 hours** (`NEXT_PUBLIC_MIN_LEAD_MINUTES`). Anything sooner is sent to WhatsApp.
 10. **How long one transfer occupies a vehicle** — defaulted to **120 minutes** either side of the pickup (`BOOKING_SLOT_MINUTES`). It decides when the same car can be sold again.
-11. **Production SkipCash keys and an SMTP sender.** Until both land the site cannot take real money and sends no confirmation email — see the launch-readiness audit.
+11. ~~Production SkipCash keys and an SMTP sender~~ — both live. The site takes real money and sends real confirmation emails.
