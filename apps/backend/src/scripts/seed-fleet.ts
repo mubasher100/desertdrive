@@ -128,7 +128,8 @@ export const FARES: Record<BandCode, Record<VehicleKey, number | null>> = {
 const ADD_ON_PRICES: Record<string, number | null> = {
   "child-seat": 18,
   "extra-waiting-hour": null,
-  "meet-and-greet": null,
+  // Same 18 QAR as the child seat — the owner's call, 28 Sept 2026.
+  "meet-and-greet": 18,
   "extra-luggage": null,
 }
 
@@ -343,6 +344,13 @@ const ADD_ONS: Array<{
   description_ar: string
   /** How many of it one booking may take. Omitted means the API's default of 4. */
   max_quantity?: number
+  /**
+   * What the customer has to tell us for this add-on to be deliverable.
+   *
+   * "sign" collects the words to print on the board and, optionally, a picture
+   * to print beside them. An add-on with no `collects` is just a quantity.
+   */
+  collects?: "sign"
 }> = [
   {
     handle: "child-seat",
@@ -367,9 +375,11 @@ const ADD_ONS: Array<{
     title: "Meet & greet sign",
     title_ar: "لافتة استقبال",
     description:
-      "The driver waits in arrivals holding a name sign, rather than at the kerb.",
-    description_ar: "ينتظرك السائق في صالة الوصول حاملًا لافتة باسمك، بدلًا من الانتظار عند الرصيف.",
+      "The driver waits in arrivals holding a sign with whatever you write here, and a picture if you add one.",
+    description_ar:
+      "ينتظرك السائق في صالة الوصول حاملًا لافتة تحمل ما تكتبه هنا، مع صورة إن أضفتها.",
     max_quantity: 1,
+    collects: "sign",
   },
   {
     handle: "extra-luggage",
@@ -585,6 +595,7 @@ export default async function seedFleet({ container }: ExecArgs) {
               title_ar: addOn.title_ar,
               description_ar: addOn.description_ar,
               ...(addOn.max_quantity ? { max_quantity: addOn.max_quantity } : {}),
+              ...(addOn.collects ? { collects: addOn.collects } : {}),
             },
             options: [{ title: "Type", values: ["Standard"] }],
             variants: [

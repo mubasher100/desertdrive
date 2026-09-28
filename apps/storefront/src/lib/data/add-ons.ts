@@ -1,6 +1,7 @@
 "use server"
 
 import { sdk } from "@lib/config"
+import { cleanNote, isOurUpload } from "@lib/booking/sign"
 
 export type AddOn = {
   product_id: string
@@ -15,6 +16,20 @@ export type AddOn = {
   currency_code: string
   /** The most of this one booking may take. */
   max: number
+  /**
+   * What the customer must supply for this add-on to be deliverable. "sign"
+   * means the words for the board and, optionally, a picture.
+   */
+  collects?: "sign" | null
+}
+
+/** What the browser sends per chosen add-on. Quantity, plus anything collected. */
+export type AddOnChoice = {
+  quantity: number
+  /** The words to print. Required when the add-on collects a sign. */
+  note?: string | null
+  /** A URL returned by POST /store/sign-image. Never a URL the client invented. */
+  image_url?: string | null
 }
 
 /**
@@ -60,14 +75,55 @@ export async function getAddOns(): Promise<AddOn[]> {
  * of nine hundred all resolve to something the server was willing to sell.
  */
 export async function priceAddOns(
-  selected: Record<string, number>
-): Promise<Array<{ addOn: AddOn; quantity: number; amount: number }>> {
+  selected: Record<string, AddOnChoice>
+): Promise<
+  Array<{
+    addOn: AddOn
+    quantity: number
+    amount: number
+    note: string | null
+    imageUrl: string | null
+  }>
+> {
   const available = await getAddOns()
 
   return available.flatMap((addOn) => {
-    const raw = Math.floor(Number(selected[addOn.variant_id] ?? 0))
+    const choice = selected[addOn.variant_id]
+    const raw = Math.floor(Number(choice?.quantity ?? 0))
     if (!Number.isFinite(raw) || raw <= 0) return []
     const quantity = Math.min(raw, addOn.max)
-    return [{ addOn, quantity, amount: addOn.amount * quantity }]
+
+    const note = addOn.collects === "sign" ? cleanNote(choice?.note) : null
+
+    /**
+     * A sign with nothing on it is not a thing the driver can hold, so the
+     * add-on is dropped rather than charged for. The form asks for the text
+     * before it will submit; this is the server refusing to sell the empty
+     * case whatever the form did.
+     */
+    if (addOn.collects === "sign" && !note) return []
+
+    return [
+      {
+        addOn,
+        quantity,
+        amount: addOn.amount * quantity,
+        note,
+        /**
+         * ⚠️ Only a URL OUR OWN upload endpoint produced is kept.
+         *
+         * This value arrives from the browser, and it ends up on the order and
+         * in an email — somewhere the owner clicks. Without this check a
+         * booking could carry any link on the internet, presented by us as
+         * the customer's picture. The upload route is the only way to get a
+         * URL past this line.
+         */
+        imageUrl:
+          addOn.collects === "sign" &&
+          isOurUpload(choice?.image_url, process.env.NEXT_PUBLIC_UPLOADS_PUBLIC_URL)
+            ? String(choice!.image_url)
+            : null,
+      },
+    ]
   })
 }

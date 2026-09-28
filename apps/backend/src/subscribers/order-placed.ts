@@ -76,6 +76,7 @@ export default async function orderPlacedHandler({ event: { data }, container }:
               title: String(a.title),
               title_ar: typeof a.title_ar === "string" ? a.title_ar : null,
               quantity: Number(a.quantity),
+              note: typeof a.note === "string" && a.note.trim() ? a.note : null,
             }))
         : null,
       // query.graph does not populate order.total; the computed figure lives on

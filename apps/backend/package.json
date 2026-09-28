@@ -1,7 +1,7 @@
 {
   "name": "@dd/backend",
   "version": "0.1.0",
-  "description": "Desert Drive booking engine — Medusa v2 API + Admin",
+  "description": "Desert Drive booking engine \u2014 Medusa v2 API + Admin",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -24,6 +24,7 @@
     "@medusajs/framework": "2.18.0",
     "@medusajs/medusa": "2.18.0",
     "awilix": "^8.0.1",
+    "multer": "^2.0.0",
     "nodemailer": "^6.10.1",
     "pg": "^8.13.0"
   },
@@ -33,6 +34,7 @@
     "@swc/jest": "^0.2.36",
     "@types/jest": "^29.5.13",
     "@types/leaflet": "^1.9.12",
+    "@types/multer": "^2.0.0",
     "@types/node": "^20.12.11",
     "@types/nodemailer": "^8.0.2",
     "@types/pg": "^8.11.10",

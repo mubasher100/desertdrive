@@ -30,6 +30,15 @@ export type AddOn = {
   currency_code: string
   /** How many of this add-on one booking may take. */
   max: number
+  /**
+   * What the customer must supply for this add-on to be deliverable.
+   *
+   * "sign" means the words to print on the board, and optionally a picture.
+   * null means the add-on is just a quantity. The storefront renders a
+   * different control for each, and the cart refuses a "sign" add-on with
+   * nothing written on it — a blank board helps nobody.
+   */
+  collects: "sign" | null
 }
 
 /** Metadata is untyped JSON. */
@@ -120,6 +129,9 @@ export const listAddOnsStep = createStep(
         currency_code: CURRENCY,
         // A cap the owner can raise per add-on; 4 is a sane default for a car.
         max: Number.isFinite(rawMax) && rawMax > 0 ? Math.floor(rawMax) : 4,
+        // An unrecognised value is treated as no input at all, so a typo in
+        // the admin degrades to a plain add-on rather than a broken form.
+        collects: metadata.collects === "sign" ? "sign" : null,
       })
     }
 

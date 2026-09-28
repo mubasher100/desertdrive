@@ -59,6 +59,9 @@ export default function BookingSummary({
         ? m.add_ons
             .map((a) => {
               const name = (language === "ar" && a.title_ar) || a.title
+              // The sign's words are shown back before the customer pays,
+              // which is the last moment a typo is free to fix.
+              if (a.note) return `${name}: “${a.note}”`
               return a.quantity > 1 ? `${a.quantity} × ${name}` : name
             })
             .join(" · ")
@@ -135,6 +138,9 @@ export type BookingMetadata = {
     title_ar: string | null
     quantity: number
     amount: number
+    /** The words on a meet & greet board, when this add-on is one. */
+    note?: string | null
+    image_url?: string | null
   }> | null
   locale: string
 }

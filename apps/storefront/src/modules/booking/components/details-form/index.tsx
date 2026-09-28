@@ -6,7 +6,7 @@ import type { Trip } from "@lib/booking/trip"
 import { validateContact, type ContactErrors, type ContactInput } from "@lib/booking/contact"
 import { DEFAULT_DIAL_ISO, DIAL_CODES, findDial } from "@lib/data/dial-codes"
 import { createBookingCart } from "@lib/data/booking"
-import type { AddOn } from "@lib/data/add-ons"
+import type { AddOn, AddOnChoice } from "@lib/data/add-ons"
 import AddOnPicker from "@modules/booking/components/add-on-picker"
 import { useTranslations } from "@lib/i18n/use-translations"
 
@@ -27,6 +27,7 @@ export default function DetailsForm({
   testKey,
   addOns,
   language,
+  uploadsEnabled,
 }: {
   segment: string
   trip: Trip
@@ -36,14 +37,16 @@ export default function DetailsForm({
   /** Priced by the server. Empty means nothing is on sale, and none is shown. */
   addOns: AddOn[]
   language: "en" | "ar"
+  /** False when no upload bucket is configured; the picture control is hidden. */
+  uploadsEnabled: boolean
 }) {
   const t = useTranslations()
   const ids = useId()
   const [pending, startTransition] = useTransition()
   const [errors, setErrors] = useState<ContactErrors>({})
   const [message, setMessage] = useState<string | null>(null)
-  /** variant id -> quantity. Only ever a request; the server prices it. */
-  const [extras, setExtras] = useState<Record<string, number>>({})
+  /** variant id -> what was chosen. Only ever a request; the server prices it. */
+  const [extras, setExtras] = useState<Record<string, AddOnChoice>>({})
   const [values, setValues] = useState<ContactInput>({
     contact_name: "",
     contact_phone: "",
@@ -209,7 +212,13 @@ export default function DetailsForm({
         not yet committed. Rendering nothing when nothing is priced is the
         component's own job.
       */}
-      <AddOnPicker addOns={addOns} value={extras} onChange={setExtras} language={language} />
+      <AddOnPicker
+        addOns={addOns}
+        value={extras}
+        onChange={setExtras}
+        language={language}
+        uploadsEnabled={uploadsEnabled}
+      />
 
       {message && (
         <p role="alert" className="mb-6 mt-6 rounded-dd-sm bg-dd-danger-soft px-3 py-2 text-sm text-dd-danger">
