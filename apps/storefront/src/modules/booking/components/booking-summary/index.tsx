@@ -51,6 +51,19 @@ export default function BookingSummary({
         : undefined,
     ],
     [t("confirmed.contact"), [m.contact_name, m.contact_phone, m.contact_email].filter(Boolean).join(" · ")],
+    [
+      t("addons.summary"),
+      // "2 x Child seat · Meet & greet sign" — the quantity first, because
+      // that is the part the driver has to act on.
+      Array.isArray(m.add_ons) && m.add_ons.length
+        ? m.add_ons
+            .map((a) => {
+              const name = (language === "ar" && a.title_ar) || a.title
+              return a.quantity > 1 ? `${a.quantity} × ${name}` : name
+            })
+            .join(" · ")
+        : undefined,
+    ],
     [t("confirmed.notes"), m.notes ?? undefined],
     [
       t("confirmed.payment"),
@@ -108,6 +121,21 @@ export type BookingMetadata = {
   notes: string | null
   vehicle_title: string
   vehicle_title_ar: string | null
+  /**
+   * The extras, as chosen. Written by createBookingCart alongside the real
+   * line items, so the summary, the email and the job sheet can all read them
+   * from one place instead of reconstructing them from the order's lines.
+   *
+   * Optional on purpose: every booking taken before add-ons existed has no
+   * such key, and must still render.
+   */
+  add_ons: Array<{
+    handle: string
+    title: string
+    title_ar: string | null
+    quantity: number
+    amount: number
+  }> | null
   locale: string
 }
 

@@ -137,6 +137,17 @@ const BookingDetailsWidget = ({ data: initial }: DetailWidgetProps<HttpTypes.Adm
             </a>
           }
         />
+        <Row
+          label="Extras"
+          value={
+            booking.add_ons.length
+              ? booking.add_ons
+                  .map((a) => (a.quantity > 1 ? `${a.quantity} × ${a.title}` : a.title))
+                  .join(" · ")
+              : "—"
+          }
+          wide
+        />
         <Row label="Notes" value={booking.notes ?? "—"} wide />
         <Row
           label="Terms accepted"

@@ -6,6 +6,8 @@ import type { Trip } from "@lib/booking/trip"
 import { validateContact, type ContactErrors, type ContactInput } from "@lib/booking/contact"
 import { DEFAULT_DIAL_ISO, DIAL_CODES, findDial } from "@lib/data/dial-codes"
 import { createBookingCart } from "@lib/data/booking"
+import type { AddOn } from "@lib/data/add-ons"
+import AddOnPicker from "@modules/booking/components/add-on-picker"
 import { useTranslations } from "@lib/i18n/use-translations"
 
 /**
@@ -23,18 +25,25 @@ export default function DetailsForm({
   trip,
   variantId,
   testKey,
+  addOns,
+  language,
 }: {
   segment: string
   trip: Trip
   variantId: string
   /** The owner's test key, so the cart's own re-quote can find the test vehicle. */
   testKey?: string
+  /** Priced by the server. Empty means nothing is on sale, and none is shown. */
+  addOns: AddOn[]
+  language: "en" | "ar"
 }) {
   const t = useTranslations()
   const ids = useId()
   const [pending, startTransition] = useTransition()
   const [errors, setErrors] = useState<ContactErrors>({})
   const [message, setMessage] = useState<string | null>(null)
+  /** variant id -> quantity. Only ever a request; the server prices it. */
+  const [extras, setExtras] = useState<Record<string, number>>({})
   const [values, setValues] = useState<ContactInput>({
     contact_name: "",
     contact_phone: "",
@@ -65,7 +74,7 @@ export default function DetailsForm({
     }
 
     startTransition(async () => {
-      const result = await createBookingCart(segment, trip, variantId, values, testKey)
+      const result = await createBookingCart(segment, trip, variantId, values, testKey, extras)
       // On success the action redirects and never returns.
       if (result && !result.ok) {
         setErrors(result.errors as ContactErrors)
@@ -194,8 +203,16 @@ export default function DetailsForm({
         />
       </Field>
 
+      {/*
+        Extras sit after the contact fields and before the button: a customer
+        who wants none scrolls past them, and one who wants a child seat has
+        not yet committed. Rendering nothing when nothing is priced is the
+        component's own job.
+      */}
+      <AddOnPicker addOns={addOns} value={extras} onChange={setExtras} language={language} />
+
       {message && (
-        <p role="alert" className="mb-4 rounded-dd-sm bg-dd-danger-soft px-3 py-2 text-sm text-dd-danger">
+        <p role="alert" className="mb-6 mt-6 rounded-dd-sm bg-dd-danger-soft px-3 py-2 text-sm text-dd-danger">
           {message}
         </p>
       )}
@@ -203,7 +220,7 @@ export default function DetailsForm({
       <button
         type="submit"
         disabled={pending}
-        className="min-h-[52px] w-full rounded-dd bg-dd-accent px-4 text-base font-semibold text-dd-on-accent transition-colors hover:bg-dd-accent-strong disabled:opacity-60"
+        className="mt-8 min-h-[52px] w-full rounded-dd bg-dd-accent px-4 text-base font-semibold text-dd-on-accent transition-colors hover:bg-dd-accent-strong disabled:opacity-60"
       >
         {pending ? t("common.loading") + "…" : t("details.submit")}
       </button>

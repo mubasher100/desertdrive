@@ -114,9 +114,19 @@ export const FARES: Record<BandCode, Record<VehicleKey, number | null>> = {
        "toyota-rush": 340, mpv: 390, "toyota-hiace": 305, "hyundai-h1": 410, "tesla-model-3": null },
 }
 
-/** Prices for the add-on products. Same rule: `null` means do not create it. */
+/**
+ * Prices for the add-on products, in QAR. `null` means do not create it — an
+ * unpriced add-on is never offered, which is also how one is taken off sale.
+ *
+ * ⚠️ 18 QAR is the owner's "child seat additional 5$" (27 Sept 2026), converted
+ * at the peg. The exact conversion is 18.20, and the site would then display a
+ * clean $5.00 — but it would also print totals like "118.2 QAR", and the riyal
+ * is the currency actually charged. 18 displays as $4.95: within a nickel of
+ * what the owner said, never above it, and a whole riyal. Set 18.2 here if an
+ * exact $5.00 matters more than a round riyal price.
+ */
 const ADD_ON_PRICES: Record<string, number | null> = {
-  "child-seat": null,
+  "child-seat": 18,
   "extra-waiting-hour": null,
   "meet-and-greet": null,
   "extra-luggage": null,
@@ -330,12 +340,19 @@ const ADD_ONS: Array<{
   title: string
   title_ar: string
   description: string
+  description_ar: string
+  /** How many of it one booking may take. Omitted means the API's default of 4. */
+  max_quantity?: number
 }> = [
   {
     handle: "child-seat",
     title: "Child seat",
     title_ar: "مقعد أطفال",
     description: "A fitted child seat, supplied and installed by the driver.",
+    description_ar: "مقعد أطفال يوفّره السائق ويركّبه لك.",
+    // A car has a back seat. Three is already generous; the driver needs to
+    // know the real number, not a number the form happened to allow.
+    max_quantity: 3,
   },
   {
     handle: "extra-waiting-hour",
@@ -343,6 +360,7 @@ const ADD_ONS: Array<{
     title_ar: "ساعة انتظار إضافية",
     description:
       "One additional hour of driver waiting time beyond the free allowance.",
+    description_ar: "ساعة انتظار إضافية للسائق بعد المدة المجانية.",
   },
   {
     handle: "meet-and-greet",
@@ -350,12 +368,15 @@ const ADD_ONS: Array<{
     title_ar: "لافتة استقبال",
     description:
       "The driver waits in arrivals holding a name sign, rather than at the kerb.",
+    description_ar: "ينتظرك السائق في صالة الوصول حاملًا لافتة باسمك، بدلًا من الانتظار عند الرصيف.",
+    max_quantity: 1,
   },
   {
     handle: "extra-luggage",
     title: "Extra luggage",
     title_ar: "أمتعة إضافية",
     description: "One additional bag beyond the vehicle's stated capacity.",
+    description_ar: "حقيبة إضافية واحدة تتجاوز السعة المعلنة للمركبة.",
   },
 ]
 
@@ -559,7 +580,12 @@ export default async function seedFleet({ container }: ExecArgs) {
             status: ProductStatus.PUBLISHED,
             shipping_profile_id: shippingProfile.id,
             sales_channels: [{ id: salesChannel.id }],
-            metadata: { add_on: true, title_ar: addOn.title_ar },
+            metadata: {
+              add_on: true,
+              title_ar: addOn.title_ar,
+              description_ar: addOn.description_ar,
+              ...(addOn.max_quantity ? { max_quantity: addOn.max_quantity } : {}),
+            },
             options: [{ title: "Type", values: ["Standard"] }],
             variants: [
               {

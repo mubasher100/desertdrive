@@ -285,7 +285,17 @@ A vehicle is not stock on a shelf — the same Rush is sellable at 06:00 and aga
 
 ### Add-ons
 
-Separate single-variant products, added to the same cart: child seat, extra waiting hour, meet & greet sign, extra luggage.
+Separate single-variant products flagged `add_on: true` on metadata, added to the same cart: child seat, extra waiting hour, meet & greet sign, extra luggage. Chosen on the **details** step, with a stepper rather than a checkbox — "two child seats" is a different car preparation from one, and the driver finds out from that number.
+
+`GET /store/add-ons` returns the priced ones. **An add-on with no price is not returned**, which is also how one is taken off sale: clear the price in the admin and it stops being offered, with no code change and no deploy. It is why an unpriced add-on falls through silently rather than appearing at zero.
+
+The browser posts variant ids and quantities and nothing else. `priceAddOns` discards ids the server does not sell and clamps every quantity to that add-on's own `max_quantity`, so a hand-written request body buys exactly what the owner put on sale.
+
+They ride on the cart **twice, on purpose**: as real line items, which is what charges the money, and flattened onto `cart.metadata.add_ons`, which is what the job sheet, the confirmation email and the booking summary read. A driver needs "2 × Child seat" beside the flight number, not reconstructed by walking the order's lines and working out which of them were vehicles.
+
+**Not multiplied by legs.** A child seat is fitted for the trip; the customer is not buying a second one for the way home. A per-leg extra would be a flag on the add-on, not a rule in the cart.
+
+> **Only the child seat is priced** — 18 QAR, the owner's "$5" converted at the peg (it displays as $4.95; 18.2 would display exactly $5.00 but print totals like "118.2 QAR"). The other three are `null` in `seed-fleet.ts` and therefore invisible. **`seed-fleet.ts` must be run against production for the child-seat product to exist there** — deploys run migrations, not seeds.
 
 ### Booking details ride on metadata
 

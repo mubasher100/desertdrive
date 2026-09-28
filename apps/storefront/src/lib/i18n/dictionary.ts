@@ -162,6 +162,11 @@ export const dictionary = {
     "details.error.notes": "Keep notes under 500 characters.",
     "details.error.generic": "Something went wrong saving your details. Please try again.",
 
+    "addons.title": "Add extras",
+    "addons.help": "Optional. Added to your total and confirmed with your booking.",
+    "addons.add": "Add one {item}",
+    "addons.remove": "Remove one {item}",
+    "addons.summary": "Extras",
     "payment.summary": "Your booking",
     "payment.total": "Total",
     "payment.unavailable.title": "Card payment is temporarily unavailable",
@@ -407,6 +412,11 @@ export const dictionary = {
     "details.error.notes": "يرجى ألا تتجاوز الملاحظات 500 حرف.",
     "details.error.generic": "حدث خطأ أثناء حفظ بياناتك. يرجى المحاولة مجددًا.",
 
+    "addons.title": "إضافات اختيارية",
+    "addons.help": "اختيارية. تُضاف إلى إجمالي حجزك وتُؤكَّد معه.",
+    "addons.add": "أضف {item}",
+    "addons.remove": "احذف {item}",
+    "addons.summary": "الإضافات",
     "payment.summary": "حجزك",
     "payment.total": "الإجمالي",
     "payment.unavailable.title": "الدفع بالبطاقة غير متاح مؤقتًا",

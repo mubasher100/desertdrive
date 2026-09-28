@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import TripSummary from "@modules/booking/components/trip-summary"
 import DetailsForm from "@modules/booking/components/details-form"
 import { getQuote } from "@lib/data/quotes"
+import { getAddOns } from "@lib/data/add-ons"
 import { parseTrip, tripToQuery, type SearchParams, tripCoords } from "@lib/booking/trip"
 import { formatQar, formatUsd } from "@lib/util/money"
 import { getTranslations } from "@lib/i18n/get-translations"
@@ -38,12 +39,17 @@ export default async function DetailsPage({ params, searchParams }: Props) {
   if (!trip) redirect(`/${countryCode}`)
   if (!variantId) redirect(`/${countryCode}/results?${tripToQuery(trip, carry)}`)
 
-  const quote = await getQuote({
-    ...tripCoords(trip),
-    passengers: trip.passengers,
-    luggage: trip.luggage,
-    test_key: testKey ?? null,
-  })
+  // In parallel: the add-ons never depend on the quote, and the details page
+  // is already the slowest step in the funnel.
+  const [quote, addOns] = await Promise.all([
+    getQuote({
+      ...tripCoords(trip),
+      passengers: trip.passengers,
+      luggage: trip.luggage,
+      test_key: testKey ?? null,
+    }),
+    getAddOns(),
+  ])
   const vehicle = quote?.vehicles.find((v) => v.variant_id === variantId)
   if (!vehicle) redirect(`/${countryCode}/results?${tripToQuery(trip, carry)}`)
 
@@ -73,7 +79,14 @@ export default async function DetailsPage({ params, searchParams }: Props) {
 
       <h1 className="mt-8 text-2xl font-semibold text-dd-ink small:text-3xl">{t("details.title")}</h1>
 
-      <DetailsForm segment={countryCode} trip={trip} variantId={vehicle.variant_id} testKey={testKey} />
+      <DetailsForm
+        segment={countryCode}
+        trip={trip}
+        variantId={vehicle.variant_id}
+        testKey={testKey}
+        addOns={addOns}
+        language={language}
+      />
     </main>
   )
 }

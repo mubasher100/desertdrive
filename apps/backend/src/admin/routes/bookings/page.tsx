@@ -118,6 +118,17 @@ const BookingsPage = () => {
                   <Table.Cell>{booking.flight_number ?? "—"}</Table.Cell>
                   <Table.Cell>
                     {booking.passengers} · {booking.luggage}
+                    {/*
+                      The extras sit with the party size because they are the
+                      same question for the driver: what has to be IN the car
+                      before it leaves. A child seat missed here is a booking
+                      that cannot be driven on arrival.
+                    */}
+                    {booking.add_ons.map((a) => (
+                      <Badge key={a.title} size="2xsmall" color="green" className="mt-1 block w-fit">
+                        {a.quantity > 1 ? `${a.quantity} × ${a.title}` : a.title}
+                      </Badge>
+                    ))}
                   </Table.Cell>
                   <Table.Cell>
                     <Text size="small" leading="compact">

@@ -64,6 +64,20 @@ export default async function orderPlacedHandler({ event: { data }, container }:
       contact_name: m.contact_name ?? "",
       contact_phone: m.contact_phone ?? "",
       notes: m.notes ?? null,
+      /**
+       * The extras, as the storefront recorded them. Narrowed defensively:
+       * this is JSON off a database column, and an order written by an older
+       * release has no such key at all.
+       */
+      add_ons: Array.isArray(m.add_ons)
+        ? (m.add_ons as Array<Record<string, unknown>>)
+            .filter((a) => a && typeof a.title === "string" && Number(a.quantity) > 0)
+            .map((a) => ({
+              title: String(a.title),
+              title_ar: typeof a.title_ar === "string" ? a.title_ar : null,
+              quantity: Number(a.quantity),
+            }))
+        : null,
       // query.graph does not populate order.total; the computed figure lives on
       // summary.current_order_total (and is a BigNumber-compatible value).
       total: MathBN.convert(

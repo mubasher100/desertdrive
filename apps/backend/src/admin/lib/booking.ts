@@ -22,6 +22,14 @@ export type BookingMeta = {
   contact_phone: string
   contact_email: string
   notes: string | null
+  /**
+   * The extras the customer paid for. English only: this is what the driver
+   * reads off the job sheet at 4am, and the rule in CLAUDE.md is that form
+   * values the driver reads stay English even on an Arabic booking.
+   *
+   * Empty on every booking taken before add-ons existed.
+   */
+  add_ons: Array<{ title: string; quantity: number }>
   locale: string
   terms_accepted_at: string | null
 }
@@ -47,6 +55,12 @@ export function readBooking(order: Pick<HttpTypes.AdminOrder, "metadata">): Book
     contact_phone: str(m.contact_phone),
     contact_email: str(m.contact_email),
     notes: m.notes ? str(m.notes) : null,
+    // Defensive: JSON off a database column, written by a different app.
+    add_ons: Array.isArray(m.add_ons)
+      ? (m.add_ons as Array<Record<string, unknown>>)
+          .filter((a) => a && a.title != null && Number(a.quantity) > 0)
+          .map((a) => ({ title: str(a.title), quantity: Number(a.quantity) }))
+      : [],
     locale: str(m.locale) || "en",
     terms_accepted_at: m.terms_accepted_at ? str(m.terms_accepted_at) : null,
   }
