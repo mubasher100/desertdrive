@@ -90,7 +90,20 @@ export default function VehiclePicker({
                     : "border-dd-line hover:border-dd-line-strong"
               )}
             >
-              <div className="relative aspect-square w-28 shrink-0 bg-dd-paper small:aspect-[3/2] small:w-full">
+              {/*
+                The thumbnail keeps the photo's OWN 3:2 at every width.
+                A square box here cropped a third off each side, which on a
+                car photo removes the front and the back and leaves a door
+                (reported from a phone, 28 Sept 2026). `object-cover` will
+                always cut something when the box and the file disagree, so
+                the fix is to stop them disagreeing.
+
+                `self-start` matters as much as the ratio: the card is a flex
+                row, so without it the box stretches to the card's height and
+                `aspect-[3/2]` is overruled — which is how the first attempt at
+                this still cropped.
+              */}
+              <div className="relative aspect-[3/2] w-32 shrink-0 self-start bg-dd-paper small:w-full small:self-auto">
                 {photo || v.thumbnail ? (
                   <Image
                     src={photo?.src ?? v.thumbnail!}

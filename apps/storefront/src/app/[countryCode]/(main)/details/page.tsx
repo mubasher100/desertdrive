@@ -30,17 +30,21 @@ export default async function DetailsPage({ params, searchParams }: Props) {
   const sp = await searchParams
   const trip = parseTrip(sp)
   const variantId = typeof sp.variant === "string" ? sp.variant : undefined
+  // Carried from the results URL; every downstream re-quote needs it too.
+  const testKey = typeof sp.test === "string" ? sp.test : undefined
+  const carry = testKey ? { test: testKey } : undefined
 
   if (!trip) redirect(`/${countryCode}`)
-  if (!variantId) redirect(`/${countryCode}/results?${tripToQuery(trip)}`)
+  if (!variantId) redirect(`/${countryCode}/results?${tripToQuery(trip, carry)}`)
 
   const quote = await getQuote({
     ...tripCoords(trip),
     passengers: trip.passengers,
     luggage: trip.luggage,
+    test_key: testKey ?? null,
   })
   const vehicle = quote?.vehicles.find((v) => v.variant_id === variantId)
-  if (!vehicle) redirect(`/${countryCode}/results?${tripToQuery(trip)}`)
+  if (!vehicle) redirect(`/${countryCode}/results?${tripToQuery(trip, carry)}`)
 
   const t = getTranslations(countryCode)
   const language = localeOf(countryCode)
@@ -51,7 +55,7 @@ export default async function DetailsPage({ params, searchParams }: Props) {
       <TripSummary
         trip={trip}
         segment={countryCode}
-        changeHref={`/results?${tripToQuery(trip)}`}
+        changeHref={`/results?${tripToQuery(trip, carry)}`}
       />
 
       <div className="mt-4 flex items-center justify-between rounded-dd border border-dd-line bg-dd-surface px-4 py-3">
@@ -63,7 +67,7 @@ export default async function DetailsPage({ params, searchParams }: Props) {
 
       <h1 className="mt-8 text-2xl font-semibold text-dd-ink small:text-3xl">{t("details.title")}</h1>
 
-      <DetailsForm segment={countryCode} trip={trip} variantId={vehicle.variant_id} />
+      <DetailsForm segment={countryCode} trip={trip} variantId={vehicle.variant_id} testKey={testKey} />
     </main>
   )
 }

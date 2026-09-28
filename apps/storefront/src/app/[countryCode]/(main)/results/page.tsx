@@ -120,7 +120,7 @@ export default async function ResultsPage({ params, searchParams }: Props) {
             <VehiclePicker
               vehicles={quote.vehicles}
               legs={legsOf(trip)}
-              nextHref={`/details?${tripToQuery(trip)}`}
+              nextHref={`/details?${tripToQuery(trip, typeof sp.test === "string" ? { test: sp.test } : undefined)}`}
             />
           </div>
         </>

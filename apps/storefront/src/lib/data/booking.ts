@@ -88,7 +88,17 @@ export async function createBookingCart(
   segment: string,
   trip: Trip,
   variantId: string,
-  contact: ContactInput
+  contact: ContactInput,
+  /**
+   * The owner's test key, threaded from `?test=` all the way here.
+   *
+   * It has to reach THIS call, not just the results page. Every step re-quotes
+   * and checks the chosen variant is one the server would have offered — which
+   * is exactly right for a tampered variant id, and means a step that quotes
+   * without the key cannot find the test vehicle and bounces the booking back
+   * to results. That is what "the 1 QAR booking switches back to 100" was.
+   */
+  testKey?: string | null
 ): Promise<CreateBookingResult> {
   const t = createTranslator(localeOf(segment))
 
@@ -120,6 +130,7 @@ export async function createBookingCart(
     luggage: trip.luggage,
     pickup_at: pickupAtIso(trip),
     return_at: returnAtIso(trip),
+    test_key: testKey ?? null,
   })
   const vehicle = quote?.vehicles.find((v) => v.variant_id === variantId)
   // An unavailable vehicle is treated exactly like a tampered variant: back to
