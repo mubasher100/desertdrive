@@ -305,7 +305,7 @@ export const VEHICLES: Array<{
     luggage: 12,
   },
   {
-    /** Mercedes in practice (owner, 28 Sept 2026), but the class is what sells. */
+    /** A Mercedes V-Class in practice (owner, 28 Sept 2026), but the class is what sells. */
     key: "luxury-van",
     handle: "luxury-van",
     title: "Luxury van",
@@ -316,7 +316,7 @@ export const VEHICLES: Array<{
     luggage: 6,
   },
   {
-    /** BMW in practice (owner, 28 Sept 2026), but the class is what sells. */
+    /** A Mercedes S-Class in practice (owner, 28 Sept 2026 — it was a BMW until then), but the class is what sells. */
     key: "luxury-sedan",
     handle: "luxury-sedan",
     title: "Luxury sedan",

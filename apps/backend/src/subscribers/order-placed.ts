@@ -4,7 +4,7 @@ import { bookingLookupUrl } from "../lib/booking-token"
 
 /**
  * Sends the booking confirmation the moment an order exists — for both the
- * cash and the card path, since both confirm instantly.
+ * card path; cash to the driver was removed on 27 Sept 2026.
  *
  * Everything in the email comes from the order's metadata contract (see
  * CLAUDE.md, "Booking details ride on metadata"). If the notification module
@@ -85,9 +85,9 @@ export default async function orderPlacedHandler({ event: { data }, container }:
         ((order as { summary?: { current_order_total?: number | string } }).summary?.current_order_total ?? 0) as number | string
       ).toNumber(),
       currency: String(order.currency_code ?? "qar").toUpperCase(),
-      // A captured payment means the card was charged; the cash path only
-      // authorises, and is captured later in the admin when the driver is paid.
-      payment: order.payment_collections?.some((pc) => pc?.payments?.some((p) => !!p?.captured_at)) ? "card" : "cash",
+      // A captured payment means the card was charged. Anything else is still
+      // being confirmed — never "pay in cash", which no longer exists.
+      payment: order.payment_collections?.some((pc) => pc?.payments?.some((p) => !!p?.captured_at)) ? "card" : "pending",
       business: {
         name: process.env.BUSINESS_NAME || "Desert Drive Rent a Car",
         phone: process.env.BUSINESS_PHONE || "",

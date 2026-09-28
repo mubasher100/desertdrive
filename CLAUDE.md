@@ -397,7 +397,11 @@ Five steps. Build them in this order.
 
 **3 · Details** — flight number (required on arrivals, optional on departures), contact name / phone / email, pickup notes, add-ons.
 
+**Currency.** Prices are browsed in **US dollars** everywhere — home fleet, results, details, add-ons — and riyals appear only at **checkout** (the payment step's "Charged as X QAR") and on the receipt, because QAR is what the card is actually charged. The catalogue stays in QAR; USD is `qar / 3.64`, the Qatar Central Bank peg, in `lib/util/money.ts` and mirrored in the email template.
+
 **4 · Payment** — **card only**, via SkipCash. The owner removed cash to the driver on 27 Sept 2026, and it was deleted rather than hidden: a server action that still exists is one that can still be invoked.
+
+> **⚠️ Card-only is enforced at cart completion, not just in the UI.** Removing the cash button left the manual provider on the region, and Medusa's public Store API would complete a cart with it — a confirmed booking of any vehicle with **no money taken**, one curl command away. Likewise the 1 QAR test vehicle is a *published* product, and `/store/quotes` hiding it is advice, not a gate: the raw API would cart it and complete it. Both were verified exploitable against a local backend. `workflows/hooks/complete-cart.ts` hooks `completeCartWorkflow.hooks.validate` — the one step every path to an order passes — and refuses any non-SkipCash payment session, and any cart holding the test vehicle without `metadata.test_proof` (a SHA-256 of `TEST_BOOKING_KEY`, never the key itself). Logic in `lib/completion-rules.ts`, unit-tested. **Any rule that matters must live here, not in the storefront.**
 
 What stayed is the admin's *Mark cash collected*. Bookings taken before the change, and any the owner takes by phone, still settle in cash and still need it.
 

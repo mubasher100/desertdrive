@@ -52,8 +52,13 @@ export default async function ConfirmedPage({ params, searchParams }: Props) {
   const reference = `DD-${order.display_id}`
   const metadata = (order.metadata ?? {}) as Record<string, unknown>
   const vehicleTitle = order.items?.[0]?.product_title ?? order.items?.[0]?.title ?? ""
-  // Cash orders sit at "authorized" until the owner captures; card orders are captured.
-  const paymentStatus = order.payment_status === "captured" ? "card" : "cash"
+  /**
+   * Card is the only way to pay (cash was removed 27 Sept 2026), and SkipCash
+   * marks a paid card as captured. Anything else is a payment still being
+   * confirmed — NOT "pay the driver in cash", which is what this used to say
+   * for every uncaptured order, and would now tell a card customer to pay twice.
+   */
+  const paymentStatus = order.payment_status === "captured" ? "card" : "pending"
 
   return (
     <main className="mx-auto w-full max-w-content px-4 pb-12 pt-8">
