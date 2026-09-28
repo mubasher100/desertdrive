@@ -36,6 +36,13 @@ export type ListBandVehiclesInput = {
   codes: string[]
   passengers: number
   luggage: number
+  /**
+   * Surface the 1 QAR test vehicle alongside the real ones.
+   *
+   * Only ever true when the caller proved it knows TEST_BOOKING_KEY. The
+   * route decides that; this step just honours the answer.
+   */
+  include_test?: boolean
 }
 
 export type QuotedVehicle = {
@@ -129,6 +136,23 @@ export const listBandVehiclesStep = createStep(
 
       // Add-ons live in the same catalogue but are never a vehicle choice.
       if (metadata?.add_on) {
+        continue
+      }
+
+      /**
+       * The 1 QAR test vehicle, for proving a real card end to end.
+       *
+       * It is a published product with a real price, so the whole funnel —
+       * cart, SkipCash, webhook, confirmation email — exercises the same code
+       * a customer does. That is the point: a test that takes a different path
+       * proves nothing about the path that takes money.
+       *
+       * Which makes hiding it properly the whole job. A customer who is
+       * offered a 1 QAR airport transfer will book it, and be right to. It is
+       * excluded here unless the caller proved it knows TEST_BOOKING_KEY, so
+       * being unlisted is not what protects it — the secret is.
+       */
+      if (metadata?.test_only && !input.include_test) {
         continue
       }
 

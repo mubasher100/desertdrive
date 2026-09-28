@@ -56,6 +56,7 @@ type VehicleKey =
   | "large-van"
   | "luxury-van"
   | "luxury-sedan"
+  | "test-booking"
   // Retired model-named products, kept as drafts so their orders survive.
   | "toyota-rush"
   | "mpv"
@@ -103,13 +104,13 @@ type VehicleKey =
  */
 export const FARES: Record<BandCode, Record<VehicleKey, number | null>> = {
   //            ── the five classes on sale ──        ── retired, kept for their drafts ──
-  A: { sedan: null, suv: 100, "large-van": 180, "luxury-van": 200, "luxury-sedan": 300,
+  A: { "test-booking": 1, sedan: null, suv: 100, "large-van": 180, "luxury-van": 200, "luxury-sedan": 300,
        "toyota-rush": 100, mpv: 120, "toyota-hiace": 180, "hyundai-h1": 200, "tesla-model-3": 300 },
-  B: { sedan: null, suv: 105, "large-van": 210, "luxury-van": 215, "luxury-sedan": 315,
+  B: { "test-booking": 1, sedan: null, suv: 105, "large-van": 210, "luxury-van": 215, "luxury-sedan": 315,
        "toyota-rush": 105, mpv: 145, "toyota-hiace": 210, "hyundai-h1": 215, "tesla-model-3": null },
-  C: { sedan: null, suv: 240, "large-van": 265, "luxury-van": 330, "luxury-sedan": 720,
+  C: { "test-booking": 1, sedan: null, suv: 240, "large-van": 265, "luxury-van": 330, "luxury-sedan": 720,
        "toyota-rush": 240, mpv: 285, "toyota-hiace": 265, "hyundai-h1": 330, "tesla-model-3": null },
-  D: { sedan: null, suv: 340, "large-van": 305, "luxury-van": 410, "luxury-sedan": 1020,
+  D: { "test-booking": 1, sedan: null, suv: 340, "large-van": 305, "luxury-van": 410, "luxury-sedan": 1020,
        "toyota-rush": 340, mpv: 390, "toyota-hiace": 305, "hyundai-h1": 410, "tesla-model-3": null },
 }
 
@@ -229,7 +230,39 @@ export const VEHICLES: Array<{
    * Defaults to true — only say `offered: false` to take something off sale.
    */
   offered?: boolean
+  /**
+   * Hidden from customers unless the caller proves TEST_BOOKING_KEY. Written
+   * to product metadata; the quote step is what enforces it.
+   */
+  test_only?: boolean
 }> = [
+  {
+    /**
+     * A 1 QAR vehicle for proving a real card end to end.
+     *
+     * It goes through the SAME funnel a customer does — cart, SkipCash, the
+     * webhook, the confirmation email — because a test that takes a different
+     * path proves nothing about the path that takes money.
+     *
+     * ⚠️ It is PUBLISHED, and that is deliberate: a draft product cannot be
+     * bought, so a draft would not exercise checkout. What keeps it away from
+     * customers is `test_only` plus TEST_BOOKING_KEY — the quote step drops it
+     * unless the caller proved the key. Do not rely on it being unlisted; a
+     * customer offered a 1 QAR airport transfer will book it.
+     *
+     * Capacity is deliberately large so it appears whatever party size the
+     * owner tests with.
+     */
+    key: "test-booking",
+    handle: "test-booking",
+    title: "Test booking (1 QAR)",
+    title_ar: "حجز تجريبي (1 ر.ق)",
+    description: "Internal test vehicle. Not for customers.",
+    description_ar: "مركبة اختبار داخلية. ليست للعملاء.",
+    passengers: 16,
+    luggage: 20,
+    test_only: true,
+  },
   {
     key: "sedan",
     handle: "sedan",
@@ -433,6 +466,7 @@ export default async function seedFleet({ container }: ExecArgs) {
               vehicle_key: vehicle.key,
               passengers: vehicle.passengers,
               luggage: vehicle.luggage,
+              ...(vehicle.test_only ? { test_only: true } : {}),
               /**
                * How many of this car the owner actually runs. It is what the
                * availability check counts against, so a wrong number here
