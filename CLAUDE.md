@@ -365,7 +365,7 @@ Five steps. Build them in this order.
 - The non-airport end: a **type-to-search combobox**. With `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` set, Google Places suggestions (Qatar only, addresses in English for the driver) are merged **above** the curated areas, so a guest can type their hotel or street rather than finding the nearest district. With no key — or a blocked, slow or failing Maps script — the curated list is exactly what it was. Free text neither source knows offers WhatsApp with what they typed rather than an error.
 - An optional **return leg**: same vehicle, same address, opposite direction, as one booking with two legs. The fare is the one-way fare twice — there is no return discount unless the owner sets one. Both legs are held together by the availability guard, and a vehicle busy on *either* leg cannot take the booking.
 - **A map under the field, always visible, working both ways.** Searching moves the pin so the customer sees what they picked; tapping or dragging the pin sets the destination, which is the only way to express a villa on an unnamed street. Leaflet on OpenStreetMap tiles: no API key, nothing billed per view. It loads *after first paint* (`requestIdleCallback`, timeout fallback for Safari) with its height reserved, so it costs neither LCP nor layout shift — measured at 612 ms LCP, 0 CLS. The pin's coordinates price the trip and ride onto the booking, so the admin card and the confirmation email both carry a maps link the driver can navigate to. The marker is an inline SVG `divIcon`: Leaflet's default points at image files a bundler does not serve and renders broken.
-- Date, time, passengers — bounded by the **lead time**: a pickup must be at least `NEXT_PUBLIC_MIN_LEAD_MINUTES` (default **180**) away. Checked in the widget, again on the results page (a page can sit open for an hour), and finally server-side before a cart is created. A time in the past and a time inside the window get different words: one is a mistake, the other is a booking we would still like by phone.
+- Date, time, passengers — bounded by the **lead time**: a pickup must be at least `NEXT_PUBLIC_MIN_LEAD_MINUTES` (default **360** — the owner's six hours, 27 Sept 2026) away. Checked in the widget, again on the results page (a page can sit open for an hour), and finally server-side before a cart is created. A time in the past and a time inside the window get different words: one is a mistake, the other is a booking we would still like by phone.
 - Trust strip (licensed drivers, flight tracking, free waiting, fixed price)
 - Service cards, how-it-works, fleet, FAQ
 
@@ -373,11 +373,11 @@ Five steps. Build them in this order.
 
 **3 · Details** — flight number (required on arrivals, optional on departures), contact name / phone / email, pickup notes, add-ons.
 
-**4 · Payment** — the customer chooses:
-- **Card now**, via SkipCash
-- **Cash to the driver** — creates a confirmed order with a pending payment
+**4 · Payment** — **card only**, via SkipCash. The owner removed cash to the driver on 27 Sept 2026, and it was deleted rather than hidden: a server action that still exists is one that can still be invoked.
 
-Both paths confirm **instantly**. There is no ops-accept step; the owner manages capacity by hand and commits to every booking taken.
+What stayed is the admin's *Mark cash collected*. Bookings taken before the change, and any the owner takes by phone, still settle in cash and still need it.
+
+The card confirms **instantly** — there is no ops-accept step; the owner manages capacity by hand and commits to every booking taken. With no second way to pay, the provider being unavailable is a dead end rather than a degraded path, so the page says so and offers WhatsApp, where a person can take the booking.
 
 **5 · Confirmed** — full booking summary, reference `DD-{display_id}`, add-to-calendar, WhatsApp contact.
 
@@ -548,7 +548,7 @@ Traps worth not walking into:
 | `NEXT_PUBLIC_BASE_URL` | Storefront's own public URL |
 | `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Places Autocomplete. Referrer-restricted, Places API only |
 | `BOOKING_TOKEN_SECRET` | Same value as the backend's. Server-side only, never `NEXT_PUBLIC_` |
-| `NEXT_PUBLIC_MIN_LEAD_MINUTES` | Minimum notice for a pickup. Default 180 |
+| `NEXT_PUBLIC_MIN_LEAD_MINUTES` | Minimum notice for a pickup. Default 360 (the owner's six hours) |
 
 ### GitHub Actions secrets
 
@@ -706,12 +706,12 @@ Run `npm run build` in `apps/storefront`, not just `tsc`, before pushing anythin
 | 4 | Fare bands + fleet products + seed scripts | ✅ Done — all four bands priced for all four vehicles (26 Sept 2026). The line-up is Rush, MPV, H1, Hiace; the Tesla is a DRAFT until the owner adds a Luxury tier |
 | 5 | Booking funnel — search widget, results, details | ✅ Done — all five steps, both languages |
 | 6 | Google Places + server-side band resolution | ✅ Built — Places merged into the destination field behind `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`, curated list as the fallback. **Needs a key from the owner to go live**; verified against a stubbed Maps API, not against Google |
-| 7 | Checkout — SkipCash card + cash-to-driver | ✅ **Live on PRODUCTION keys** (26 Sept 2026) — signature verified against `api.skipcash.app`, webhook pointed at Medusa. Sandbox verified earlier incl. 3DS. **No real card has been run end to end yet** |
+| 7 | Checkout — SkipCash card (cash removed 27 Sept 2026) | ✅ **Live on PRODUCTION keys** (26 Sept 2026) — signature verified against `api.skipcash.app`, webhook pointed at Medusa. Sandbox verified earlier incl. 3DS. **No real card has been run end to end yet** |
 | 8 | Confirmation email + signed-token lookup | ✅ Done — **Resend** over SMTP from `bookings@desertdriverental.com`, domain verified, reply-to `info@desertdriverental.com`. A real message was delivered. ⚠️ **Outlook can never be the sender**: an app password needs basic auth, which Microsoft disabled for personal Outlook on 16 Sept 2024 and removes from M365 tenants end of Dec 2026 |
 | 9 | Admin Bookings screen | ✅ Done — `Bookings` page (job sheet by pickup time) + Booking card on every order with *Mark cash collected* |
 | 10 | Arabic / RTL | 🟡 Locale routing, dictionary, RTL, fonts done; native review pending |
 | 11 | Accessibility audit — target zero axe violations | ✅ 0 violations (axe-core, 7 pages × en/ar × 375/1280, 2026-09-21); re-run after UI changes |
-| 12 | Legal pages, SEO, custom domain | 🟡 Live on **desertdriverental.com** (25 Sept 2026) with canonicals and hreflang; CR 211743 and the registered address are in. Two `[Owner: …]` gaps remain on cancellation: the charge INSIDE the 24-hour window, and no-shows |
+| 12 | Legal pages, SEO, custom domain | 🟡 Live on **desertdriverental.com** (25 Sept 2026) with canonicals and hreflang; CR 211743 and the registered address are in. One `[Owner: …]` gap remains on cancellation: the charge INSIDE the 24-hour window. The 90-minute airport wait went in 27 Sept 2026 |
 | 13 | Later: hourly chauffeur, day tours, self-drive rental | 🔒 Later |
 
 ### Legal compliance (Qatar)
@@ -748,7 +748,7 @@ Sandbox test cards are at https://dev.skipcash.app/doc/test-cases/ — the 3DS c
 
 **Portal settings still to make once the backend is on Railway:** Webhook URL = `<MEDUSA_BACKEND_URL>/hooks/payment/skipcash_skipcash`. The Return URL is set per payment by the storefront.
 
-The cash-to-driver path is not a payment provider. It is the manual provider (`pp_system_default`) with the order marked as awaiting cash, and a way for the owner to mark it collected in the admin.
+The cash-to-driver path was removed from the funnel on 27 Sept 2026 (owner's call). It was never a payment provider — the manual provider (`pp_system_default`) with the order marked as awaiting cash. The admin's *mark it collected* action stays, for the orders taken before the change and for phone bookings.
 
 ---
 
@@ -780,7 +780,9 @@ Ask the owner. Several of these block real work:
 5. ~~Contact details~~ — phone `+974 5151 4161`, CR **211743**, registered address **Al Aqariya Tower, 10/01, Street 137, Al Mathaf, Doha**. All three live in the footer, `/contact`, the terms and the confirmation email. The Arabic address still wants a native reviewer.
 6. **Domain** — the live domain is `desertdriverental.com` (Namecheap, DNS on Cloudflare in the `officialyuvraj24@gmail.com` account). `desertdrive.qa` is unregistered and still an option: a plain `.qa` needs **no** Qatari commercial registration (only `.com.qa` does), but must be bought through a Qatar-accredited registrar or reseller.
 7. ~~SkipCash credentials~~ — **production keys are live** (26 Sept 2026), webhook pointed at Medusa. Still to do: **one real booking with a real card**, to prove the merchant account settles — the plumbing is verified, the settlement is not.
-8. **Cancellation and refund policy** — free cancellation up to **24 hours**, full refund to the card, is live (Booking.com's window, the owner's call). **Two gaps remain live** while customers tick "I have read and agree": the charge for cancelling INSIDE the window, and no-shows. Also still open in the terms: free waiting time and the hourly rate beyond it.
-9. **Minimum notice for a booking** — currently defaulted to **3 hours** (`NEXT_PUBLIC_MIN_LEAD_MINUTES`). Anything sooner is sent to WhatsApp.
+8. **Cancellation and refund policy** — free cancellation up to **24 hours**, full refund to the card, is live (Booking.com's window, the owner's call). The driver waits **90 minutes** from actual landing, after which it is a no-show — live since 27 Sept 2026. **What is still open** while customers tick "I have read and agree": the charge for cancelling INSIDE the window, the charge for a no-show, and free waiting time on a *departure* pickup plus the hourly rate beyond it.
+
+   > ⚠️ The 90 minutes came from a one-line meeting note, "no show 90 minutes", which admits two readings: how long the driver waits, or how close to pickup a cancellation counts as a no-show. It is written as the **waiting period** — the standard meaning in airport transfer, and the one that fits the words — but it is an interpretation and the owner should confirm it.
+9. **Minimum notice for a booking** — **6 hours** (`NEXT_PUBLIC_MIN_LEAD_MINUTES`, default 360), the owner's rule of 27 Sept 2026. Anything sooner is sent to WhatsApp.
 10. **How long one transfer occupies a vehicle** — defaulted to **120 minutes** either side of the pickup (`BOOKING_SLOT_MINUTES`). It decides when the same car can be sold again.
 11. ~~Production SkipCash keys and an SMTP sender~~ — both live. The site takes real money and sends real confirmation emails.

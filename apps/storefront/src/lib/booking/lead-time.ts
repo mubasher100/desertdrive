@@ -7,13 +7,17 @@
  * about a refund, so the funnel refuses it at the first step and again on the
  * server before a cart is created.
  *
- * ⚠️ The three hours below is a sensible default, not the owner's stated rule.
- * Confirm it and set `NEXT_PUBLIC_MIN_LEAD_MINUTES` rather than editing here.
- * Same-day airport work is often taken at shorter notice by phone — that path
- * stays open through WhatsApp, which is exactly what the message offers.
+ * Six hours is the OWNER'S RULE, given on 27 Sept 2026 — not a guess. It
+ * replaced a three-hour placeholder. It pairs with the short-notice surcharge
+ * in `surge.ts`: under 12 hours costs double, under 6 hours is not bookable
+ * here at all.
+ *
+ * Short-notice airport work is still taken by phone, which is exactly what the
+ * "too soon" message offers — a WhatsApp link, not a dead end. Overridable with
+ * `NEXT_PUBLIC_MIN_LEAD_MINUTES` rather than editing here.
  */
 
-export const MIN_LEAD_MINUTES = Number(process.env.NEXT_PUBLIC_MIN_LEAD_MINUTES ?? 180)
+export const MIN_LEAD_MINUTES = Number(process.env.NEXT_PUBLIC_MIN_LEAD_MINUTES ?? 360)
 
 /** Qatar is UTC+03:00 year-round — no DST, so the offset is a constant. */
 const QATAR_OFFSET_MS = 3 * 60 * 60 * 1000
