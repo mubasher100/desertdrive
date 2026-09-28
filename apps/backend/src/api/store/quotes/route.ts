@@ -19,10 +19,23 @@ export async function POST(
   req: MedusaRequest<CreateQuoteSchema>,
   res: MedusaResponse
 ) {
-  const { lat, lng, passengers, luggage, pickup_at, return_at } = req.validatedBody
+  const { lat, lng, passengers, luggage, pickup_at, return_at, test_key } = req.validatedBody
 
   const { result } = await resolveQuoteWorkflow(req.scope).run({
-    input: { lat, lng, passengers, luggage, pickup_at: pickup_at ?? null, return_at: return_at ?? null },
+    input: {
+      lat,
+      lng,
+      passengers,
+      luggage,
+      pickup_at: pickup_at ?? null,
+      return_at: return_at ?? null,
+      /**
+       * Constant-time-ish and fail-closed: an unset TEST_BOOKING_KEY means the
+       * test vehicle can never appear, however the request is shaped.
+       */
+      include_test:
+        Boolean(process.env.TEST_BOOKING_KEY) && test_key === process.env.TEST_BOOKING_KEY,
+    },
   })
 
   res.setHeader("Cache-Control", "no-store")

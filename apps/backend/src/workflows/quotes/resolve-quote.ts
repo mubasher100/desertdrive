@@ -15,6 +15,8 @@ export type ResolveQuoteInput = {
   luggage: number
   /** ISO 8601 pickup instant, when the caller has chosen one. Drives availability. */
   pickup_at?: string | null
+  /** Set by the route, and only when TEST_BOOKING_KEY was proved. */
+  include_test?: boolean
   /** The return leg's instant, on a return booking. */
   return_at?: string | null
 }
@@ -58,6 +60,7 @@ export const resolveQuoteWorkflow = createWorkflow(
         codes: [data.zone?.code, data.resolved.band.code].filter(Boolean) as string[],
         passengers: data.input.passengers,
         luggage: data.input.luggage,
+        include_test: data.input.include_test === true,
       }
     })
 

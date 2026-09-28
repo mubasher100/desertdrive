@@ -60,6 +60,13 @@ export async function getQuote(input: {
   pickup_at?: string | null
   /** The return leg's instant. A vehicle busy on either leg cannot take the booking. */
   return_at?: string | null
+  /**
+   * The owner's test key, from `?test=` on the results URL, which surfaces the
+   * 1 QAR test vehicle. Server-side only: this module is a server action, so
+   * the key never reaches the browser bundle. The backend compares it to
+   * TEST_BOOKING_KEY and silently ignores anything else.
+   */
+  test_key?: string | null
 }): Promise<Quote | null> {
   try {
     return await sdk.client.fetch<Quote>("/store/quotes", {

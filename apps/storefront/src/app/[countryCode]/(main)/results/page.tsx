@@ -46,7 +46,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  */
 export default async function ResultsPage({ params, searchParams }: Props) {
   const { countryCode } = await params
-  const trip = parseTrip(await searchParams)
+  const sp = await searchParams
+  const trip = parseTrip(sp)
 
   if (!trip) {
     redirect(`/${countryCode}`)
@@ -71,6 +72,12 @@ export default async function ResultsPage({ params, searchParams }: Props) {
         luggage: trip.luggage,
         pickup_at: pickupAtIso(trip),
         return_at: returnAtIso(trip),
+        /**
+         * `?test=<key>` surfaces the 1 QAR test vehicle, for proving a real
+         * card end to end. Read here and sent onward; the browser bundle never
+         * sees it, and the backend ignores anything that is not the key.
+         */
+        test_key: typeof sp.test === "string" ? sp.test : null,
       })
 
   /**
