@@ -23,6 +23,7 @@ export default function VehiclePicker({
   vehicles,
   nextHref,
   legs = 1,
+  units,
 }: {
   vehicles: QuoteVehicle[]
   /** Details page URL, without the variant. `&variant=` is appended. */
@@ -34,7 +35,13 @@ export default function VehiclePicker({
    * rule out.
    */
   legs?: 1 | 2
+  /**
+   * Fares the trip costs — legs, with any short-notice leg counted twice.
+   * Decided by the server; absent from an older backend, where it is legs.
+   */
+  units?: number
 }) {
+  const fares = units ?? legs
   const t = useTranslations()
   const language = useLanguage()
   const router = useRouter()
@@ -142,7 +149,7 @@ export default function VehiclePicker({
                   */}
                   <p className="shrink-0 text-end">
                     <span className="block text-lg font-semibold tabular-nums text-dd-ink">
-                      {formatUsd(v.amount * legs)}
+                      {formatUsd(v.amount * fares)}
                     </span>
                   </p>
                 </div>
@@ -152,9 +159,17 @@ export default function VehiclePicker({
                   {t("results.luggage", { count: v.luggage })}
                 </p>
 
-                {legs === 2 && (
+                {/*
+                  How the total is made up, whenever it is more than one fare.
+                  A short-notice total with no breakdown reads as an error.
+                */}
+                {fares !== legs ? (
+                  <p className="mt-0.5 text-sm text-dd-muted">
+                    {t("results.fareBreakdown", { units: fares, amount: formatUsd(v.amount) })}
+                  </p>
+                ) : legs === 2 ? (
                   <p className="mt-0.5 text-sm text-dd-muted">{t("results.legs", { amount: formatUsd(v.amount) })}</p>
-                )}
+                ) : null}
 
                 {v.available === false && (
                   <p className="mt-2 text-sm font-medium text-dd-ink-soft">
@@ -199,7 +214,7 @@ export default function VehiclePicker({
               {chosen ? (language === "ar" && chosen.title_ar ? chosen.title_ar : chosen.title) : ""}
             </p>
             <p className="text-lg font-semibold tabular-nums text-dd-ink">
-              {chosen ? formatUsd(chosen.amount * legs) : ""}
+              {chosen ? formatUsd(chosen.amount * fares) : ""}
             </p>
           </div>
           <button

@@ -283,6 +283,18 @@ A vehicle is not stock on a shelf — the same Rush is sellable at 06:00 and aga
 
 > **Both numbers above are assumptions, not the owner's stated rules.** Confirm the slot length and the real unit count per vehicle before launch.
 
+### Short-notice fare (owner's rule, 28 Sept 2026)
+
+Under **6 hours'** notice a pickup cannot be booked online. Under **12 hours** it costs **2× the fare**. Priced **per leg by that leg's own notice**: tonight's pickup with a return next week is 2 + 1 = 3 fares, not 4.
+
+It is expressed as **fare units** — the vehicle line's quantity — exactly as a return always doubled the fare. So the variant price the owner edits stays the one price, and the multiplier never becomes a second price to keep in step. `lib/fare-units.ts` holds the rule; `POST /store/quotes` returns `fare_units`, and each vehicle's `amount` is ONE fare. The results page explains it above the prices, each card shows "2 × $28.85", and the summary, email and job sheet carry `short_notice`.
+
+> **⚠️ There is a cliff at 12 hours** — 11h59m costs twice 12h01m. The owner chose it knowingly; a taper is a change to `unitsForLeg` only. Pinned by a unit test so it is not "fixed" by accident.
+
+**Enforced at cart completion**, alongside card-only: the 6-hour minimum (which previously lived only in the storefront, so the raw Store API took a booking twenty minutes out) and the fare units on the vehicle line. Judged against the cart's **creation** time with ten minutes' grace, never "now" — on the card path completion runs after SkipCash has charged, and a customer who crossed the 12-hour line on the payment page has already paid the price they were shown. `SHORT_NOTICE_ENFORCED_FROM` skips the fare check for carts from before both halves of the deploy were live; it is inert after 28 Sept 2026 22:00 UTC and can be deleted.
+
+Backend env: `MIN_LEAD_MINUTES` (360), `SURGE_WINDOW_MINUTES` (720), `SURGE_MULTIPLIER` (2). The storefront's `NEXT_PUBLIC_MIN_LEAD_MINUTES` must match the first.
+
 ### Add-ons
 
 Separate single-variant products flagged `add_on: true` on metadata, added to the same cart: child seat, extra waiting hour, meet & greet sign, extra luggage. Chosen on the **details** step, with a stepper rather than a checkbox — "two child seats" is a different car preparation from one, and the driver finds out from that number.
@@ -789,7 +801,7 @@ Do not build these without asking. Each was considered and cut:
 - **Hourly / daily chauffeur booking** — priced on duration, not distance; a second pricing axis
 - **Day tour booking** — marketing page only in v1
 - **WhatsApp or SMS dispatch** — WhatsApp Business API needs Meta approval; admin dashboard only for now
-- **Live fare calculation, Distance Matrix, surge, or traffic-aware pricing** — fares are fixed per band, full stop
+- **Live fare calculation, Distance Matrix, demand surge, or traffic-aware pricing** — fares are fixed per band. The one exception is the owner's **short-notice fare** (below): a fixed, published rule about booking notice, not a price that moves with demand
 - **Multi-stop trips and recurring transfers** — a return leg *is* now supported (owner's call, 22 Sept 2026): one booking, two legs
 - **Loyalty or a promotions engine** beyond what Medusa provides for free
 - **A currency switcher** — raised and dropped by the owner (27 Sept 2026). Displaying USD/EUR/GBP/INR while charging QAR needs a daily-cached rate feed, a picker, and an explicit "charged in QAR" line at payment; the site prices in QAR for a Qatari market and the owner decided it was not worth the surface area
@@ -811,6 +823,6 @@ Ask the owner. Several of these block real work:
 8. **Cancellation and refund policy** — free cancellation up to **24 hours**, full refund to the card, is live (Booking.com's window, the owner's call). The driver waits **90 minutes** from actual landing, after which it is a no-show — live since 27 Sept 2026. **What is still open** while customers tick "I have read and agree": the charge for cancelling INSIDE the window, the charge for a no-show, and free waiting time on a *departure* pickup plus the hourly rate beyond it.
 
    > ⚠️ The 90 minutes came from a one-line meeting note, "no show 90 minutes", which admits two readings: how long the driver waits, or how close to pickup a cancellation counts as a no-show. It is written as the **waiting period** — the standard meaning in airport transfer, and the one that fits the words — but it is an interpretation and the owner should confirm it.
-9. **Minimum notice for a booking** — **6 hours** (`NEXT_PUBLIC_MIN_LEAD_MINUTES`, default 360), the owner's rule of 27 Sept 2026. Anything sooner is sent to WhatsApp.
+9. **Minimum notice for a booking** — **6 hours** (`NEXT_PUBLIC_MIN_LEAD_MINUTES`, default 360), the owner's rule of 27 Sept 2026, now also enforced server-side. Anything sooner is sent to WhatsApp. Under **12 hours** is the 2× short-notice fare (28 Sept 2026).
 10. **How long one transfer occupies a vehicle** — defaulted to **120 minutes** either side of the pickup (`BOOKING_SLOT_MINUTES`). It decides when the same car can be sold again.
 11. ~~Production SkipCash keys and an SMTP sender~~ — both live. The site takes real money and sends real confirmation emails.

@@ -114,6 +114,12 @@ const BookingsPage = () => {
                         + return
                       </Badge>
                     )}
+                    {/* Short notice means a driver is needed soon — flag it on the sheet. */}
+                    {booking.short_notice && (
+                      <Badge size="2xsmall" color="red" className="ms-2">
+                        short notice
+                      </Badge>
+                    )}
                   </Table.Cell>
                   <Table.Cell>{booking.flight_number ?? "—"}</Table.Cell>
                   <Table.Cell>

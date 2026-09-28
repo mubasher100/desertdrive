@@ -7,6 +7,7 @@ import { listBandVehiclesStep } from "./steps/list-band-vehicles"
 import { markAvailabilityStep, type AvailableVehicle } from "./steps/mark-availability"
 import { resolveFareBandStep } from "./steps/resolve-fare-band"
 import { resolveFareZoneStep, type ResolvedZone } from "./steps/resolve-fare-zone"
+import { fareUnits, type FareUnits } from "../../lib/fare-units"
 
 export type ResolveQuoteInput = {
   lat: number
@@ -27,6 +28,12 @@ export type ResolveQuoteResult = {
   /** The drawn area the destination fell in, or null if it fell in none. */
   zone: ResolvedZone
   vehicles: AvailableVehicle[]
+  /**
+   * How many fares this trip costs: 1 per leg, and the short-notice
+   * multiplier for any leg under 12 hours away. Each vehicle's `amount` is ONE
+   * fare; the price of the trip is `amount × fare_units.units`.
+   */
+  fare_units: FareUnits
 }
 
 /**
@@ -75,8 +82,10 @@ export const resolveQuoteWorkflow = createWorkflow(
 
     const vehicles = markAvailabilityStep(availabilityQuery)
 
-    const result = transform({ resolved, zone, vehicles }, function (data) {
+    const result = transform({ resolved, zone, vehicles, input }, function (data) {
       return {
+        // Evaluated per request, against the clock at the moment of quoting.
+        fare_units: fareUnits(data.input.pickup_at, data.input.return_at, new Date()),
         distance_km: data.resolved.distance_km,
         band: {
           code: data.resolved.band.code,

@@ -43,6 +43,17 @@ export default async function TermsPage({ params }: Props) {
           </p>
           <h2>الحجز والتأكيد</h2>
           <p>يُعد حجزك مؤكدًا فور استلامك رقم الحجز. السعر المعروض عند الحجز هو السعر الذي تدفعه؛ لا رسوم إضافية على الوصول أو الازدحام.</p>
+          <h2>مهلة الحجز وأجرة الحجز العاجل</h2>
+          <p>
+            يمكن حجز الاستقبال عبر الموقع قبل <strong>6 ساعات</strong> على الأقل؛ ولأي موعد أقرب راسلنا على واتساب. ويُحتسب الاستقبال
+            المحجوز قبل أقل من <strong>12 ساعة</strong> بـ<strong>ضعف الأجرة العادية</strong>. وفي حجز الذهاب والعودة تُحتسب كل رحلة
+            بحسب مهلتها. أجرة الحجز العاجل مشمولة في السعر المعروض قبل الدفع &mdash; ولا تُضاف بعده أبدًا.
+          </p>
+          <h2>الدفع</h2>
+          <p>
+            يتم الدفع بالبطاقة عند الحجز عبر سكيب كاش. تُعرض الأسعار بالدولار الأمريكي، وتُخصم من بطاقتك بما يعادلها بالريال القطري
+            بسعر ثابت قدره 3.64 ريال للدولار، ويظهر لك قبل الدفع.
+          </p>
           <h2>وقت الانتظار</h2>
           <p>
             عند الاستقبال من المطار ينتظرك السائق حتى <strong>90 دقيقة</strong> من وقت هبوط رحلتك فعليًا، دون رسوم إضافية.
@@ -80,6 +91,18 @@ export default async function TermsPage({ params }: Props) {
           <p>
             Your booking is confirmed as soon as you receive a booking reference. The price shown when you book is the price you pay;
             there are no surcharges on arrival or for traffic.
+          </p>
+          <h2>Notice and short-notice fares</h2>
+          <p>
+            Pickups can be booked online from <strong>6 hours</strong> ahead; for anything sooner, message us on WhatsApp.
+            A pickup booked less than <strong>12 hours</strong> ahead is charged at <strong>twice the standard fare</strong>. On a
+            return booking each leg is priced by its own notice. The short-notice fare is included in the price shown before you
+            pay &mdash; it is never added afterwards.
+          </p>
+          <h2>Payment</h2>
+          <p>
+            Bookings are paid by card when you book, through SkipCash. Prices are shown in US dollars and your card is charged the
+            equivalent in Qatari riyals at the fixed rate of 3.64 riyals to the dollar, shown before you pay.
           </p>
           <h2>Waiting time</h2>
           <p>

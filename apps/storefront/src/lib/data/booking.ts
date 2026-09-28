@@ -6,7 +6,7 @@ import type { HttpTypes } from "@medusajs/types"
 import { sdk } from "@lib/config"
 import { getRegion } from "@lib/data/regions"
 import { getQuote } from "@lib/data/quotes"
-import { legsOf, pickupAtIso, returnAtIso, tripCoords, tripToQuery, type Trip } from "@lib/booking/trip"
+import { legsOf, pickupAtIso, returnAtIso, tripCoords, tripToQuery, type Trip, fareUnitsOf } from "@lib/booking/trip"
 import { areaIdOf, destinationForDriver, placeIdOf } from "@lib/booking/destination"
 import { dialFor, normalisePhone, validateContact, type ContactInput } from "@lib/booking/contact"
 import { signBookingToken, verifyBookingToken } from "@lib/booking/token"
@@ -193,6 +193,13 @@ export async function createBookingCart(
         contact_phone: phone,
         contact_email: email,
         notes: contact.notes.trim() || null,
+        /**
+         * The short-notice fare, recorded for everyone who reads the booking.
+         * The line quantity already charges it; these say WHY the total is
+         * what it is, on the summary, the email and the job sheet.
+         */
+        fare_units: fareUnitsOf(quote, trip),
+        short_notice: (quote.fare_units?.surged_legs ?? 0) > 0,
         vehicle_title: vehicle.title,
         vehicle_title_ar: vehicle.title_ar,
         /**
@@ -236,7 +243,14 @@ export async function createBookingCart(
     // Quantity is the number of legs, so the fare doubles for a return with
      // no second price to keep in step. There is no return discount unless the
      // owner sets one.
-    await sdk.store.cart.createLineItem(cart.id, { variant_id: vehicle.variant_id, quantity: legsOf(trip) })
+    /**
+     * Quantity is FARE UNITS: one per leg, and the short-notice multiplier for
+     * any leg under 12 hours away — decided by the quote the server just gave,
+     * not by this code. Falls back to legs when an older backend sends no
+     * units. The completion hook re-derives it from the pickup times and
+     * refuses a short-notice trip carried at the ordinary fare.
+     */
+    await sdk.store.cart.createLineItem(cart.id, { variant_id: vehicle.variant_id, quantity: fareUnitsOf(quote, trip) })
 
     /**
      * 2b. The extras, at the server's prices.
@@ -335,7 +349,9 @@ async function reserveVehicle(cartId: string): Promise<"ok" | "taken" | "error">
 const SKIPCASH_PROVIDER = "pp_skipcash_skipcash"
 
 /** Bump when the wording of /terms, /cancellation or /privacy changes materially. */
-const TERMS_VERSION = "2026-09-26"
+// 2026-09-28: card only, the 90-minute airport wait, USD display with the
+// 3.64 peg, and the short-notice fare. Orders record which terms were agreed.
+const TERMS_VERSION = "2026-09-28"
 
 /**
  * Records the customer's acceptance of the terms on the cart, so it is carried

@@ -23,6 +23,12 @@ import { completionProblem } from "../../lib/completion-rules"
  *     TEST_BOOKING_KEY — but a quote is advice, not a gate, and the public
  *     Store API will cart any published variant. Fails closed: with the key
  *     unset, no cart holding the test vehicle can ever complete.
+ *
+ * 3 · THE TRIP'S OWN RULES. At least 6 hours' notice, and the short-notice
+ *     fare (2× under 12 hours) actually on the vehicle line. Judged against
+ *     the cart's creation time, not now: on the card path completion runs
+ *     AFTER the charge, and a customer who sat on the payment page across the
+ *     12-hour line has already paid the price they were shown.
  */
 completeCartWorkflow.hooks.validate(async ({ cart }, { container }) => {
   // The hook container is loosely typed, so the query service is narrowed explicitly.
@@ -33,7 +39,9 @@ completeCartWorkflow.hooks.validate(async ({ cart }, { container }) => {
     entity: "cart",
     fields: [
       "id",
+      "created_at",
       "metadata",
+      "items.quantity",
       "items.product.metadata",
       "payment_collection.payment_sessions.provider_id",
     ],
@@ -42,21 +50,45 @@ completeCartWorkflow.hooks.validate(async ({ cart }, { container }) => {
 
   const row = rows?.[0] as
     | {
+        created_at?: string | Date
         metadata?: Record<string, unknown> | null
-        items?: Array<{ product?: { metadata?: Record<string, unknown> | null } | null }>
+        items?: Array<{ quantity?: number; product?: { metadata?: Record<string, unknown> | null } | null }>
         payment_collection?: { payment_sessions?: Array<{ provider_id?: string }> } | null
       }
     | undefined
+
+  // The vehicle is the line whose product declares a capacity; add-ons and
+  // anything else in the cart do not.
+  const vehicleLine = (row?.items ?? []).find(
+    (i) => i.product?.metadata?.passengers != null && !i.product?.metadata?.add_on
+  )
 
   const problem = completionProblem({
     providers: (row?.payment_collection?.payment_sessions ?? []).map((s) => s.provider_id),
     holdsTestVehicle: (row?.items ?? []).some((i) => i.product?.metadata?.test_only),
     proof: row?.metadata?.test_proof,
     key: process.env.TEST_BOOKING_KEY,
+    trip: vehicleLine
+      ? {
+          pickupAt: row?.metadata?.pickup_at,
+          returnAt: row?.metadata?.return_at,
+          quantity: Number(vehicleLine.quantity ?? 0),
+          createdAt: new Date(row?.created_at ?? Date.now()),
+        }
+      : undefined,
   })
 
   if (problem === "not-card") {
     throw new MedusaError(MedusaError.Types.NOT_ALLOWED, "Bookings must be paid by card.")
+  }
+  if (problem === "no-trip") {
+    throw new MedusaError(MedusaError.Types.INVALID_DATA, "This booking has no pickup time.")
+  }
+  if (problem === "too-soon") {
+    throw new MedusaError(MedusaError.Types.NOT_ALLOWED, "Pickups need at least 6 hours' notice to book online.")
+  }
+  if (problem === "under-priced") {
+    throw new MedusaError(MedusaError.Types.NOT_ALLOWED, "The fare for this pickup time has changed. Please search again.")
   }
   if (problem === "test-without-key") {
     throw new MedusaError(MedusaError.Types.NOT_ALLOWED, "This vehicle is not available to book.")
