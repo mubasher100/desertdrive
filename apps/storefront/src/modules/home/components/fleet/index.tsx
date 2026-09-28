@@ -3,6 +3,7 @@ import { listFleet, type FleetVehicle } from "@lib/data/fleet"
 import { getTranslations } from "@lib/i18n/get-translations"
 import { localeOf } from "@lib/util/locale"
 import { fleetImage } from "@lib/data/fleet-images"
+import { formatUsd } from "@lib/util/money"
 
 /**
  * The three vehicle classes with their "from" price. Reads the live catalogue,
@@ -93,10 +94,9 @@ function VehicleCard({
                 {t("home.fleet.fromLabel")}
               </span>
               <span className="block text-lg font-semibold tabular-nums text-dd-accent-text">
-                {vehicle.from_amount}{" "}
-                <span className="text-sm font-medium text-dd-muted">
-                  {t("common.currency")}
-                </span>
+                {/* Dollars on every browsing surface; riyals appear only at
+                    checkout, where the card is actually charged. */}
+                {formatUsd(vehicle.from_amount)}
               </span>
             </p>
           )}

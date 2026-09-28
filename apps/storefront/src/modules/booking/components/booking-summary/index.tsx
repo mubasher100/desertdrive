@@ -20,7 +20,7 @@ export default function BookingSummary({
   vehicleTitle: string
   total: number
   /** Present on the confirmation page only. */
-  paymentStatus?: "cash" | "card"
+  paymentStatus?: "pending" | "card"
 }) {
   const t = getTranslations(segment)
   const language = localeOf(segment)
@@ -72,8 +72,8 @@ export default function BookingSummary({
       t("confirmed.payment"),
       paymentStatus === "card"
         ? t("confirmed.payment.card")
-        : paymentStatus === "cash"
-          ? t("confirmed.payment.cash", { amount: formatUsd(total) })
+        : paymentStatus === "pending"
+          ? t("confirmed.payment.pending")
           : undefined,
     ],
   ]

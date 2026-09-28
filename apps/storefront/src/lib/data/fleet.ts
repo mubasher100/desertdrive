@@ -55,7 +55,19 @@ export async function listFleet(segment: string): Promise<FleetVehicle[]> {
   })
 
   return products
-    .filter((p) => !(p.metadata as Record<string, unknown> | null)?.add_on)
+    /**
+     * Neither add-ons nor the 1 QAR test vehicle are vehicle classes.
+     *
+     * ⚠️ The test_only check was missing here from the day the test vehicle
+     * was added, and the live home page listed "Test booking (1 QAR) —
+     * Internal test vehicle. Not for customers." to everyone. The quote
+     * workflow gated it correctly; this list reads the catalogue directly and
+     * never asked. Any new place that lists products needs the same filter.
+     */
+    .filter((p) => {
+      const m = p.metadata as Record<string, unknown> | null
+      return !m?.add_on && !m?.test_only
+    })
     .map((p) => {
       const metadata = p.metadata as Record<string, unknown> | null
       const passengers = readNumber(metadata, "passengers")

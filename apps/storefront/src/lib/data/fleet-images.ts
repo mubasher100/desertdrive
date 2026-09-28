@@ -32,16 +32,22 @@ export const FLEET_IMAGES: Record<
   string,
   { src: string; square: string; width: number; height: number }
 > = {
-  // The owner's own cars (28 Sept 2026) — not placeholders, nothing to credit.
+  /**
+   * The five classes on sale, as one set (28 Sept 2026): Creative Commons
+   * photos cut out of their backgrounds and set on the paper tone, so a square
+   * phone thumbnail shows the WHOLE car instead of the middle of one, and five
+   * photos from five different streets read as a single catalogue.
+   *
+   * Representative of each class, not the exact vehicle — models vary. The
+   * luxury classes are the owner's named models: a Mercedes V-Class and an
+   * S-Class. Every one is credited on /credits (a condition of CC BY-SA), and
+   * the rows there go when the owner's own photography replaces them.
+   */
   sedan: { src: "/fleet/sedan.jpg", square: "/fleet/sedan-square.jpg", width: 1200, height: 800 },
+  suv: { src: "/fleet/suv.jpg", square: "/fleet/suv-square.jpg", width: 1200, height: 800 },
   "large-van": { src: "/fleet/large-van.jpg", square: "/fleet/large-van-square.jpg", width: 1200, height: 800 },
-
-  // ⚠️ Still CC placeholders of similar vehicles, pointed at the classes that
-  // replaced the model-named products. They are credited on /credits; swap in
-  // the owner's photography and drop the matching credits row.
-  suv: { src: "/fleet/toyota-rush.jpg", square: "/fleet/toyota-rush-square.jpg", width: 1200, height: 800 },
-  "luxury-van": { src: "/fleet/hyundai-h1.jpg", square: "/fleet/hyundai-h1-square.jpg", width: 1200, height: 800 },
-  "luxury-sedan": { src: "/fleet/tesla-model-3.jpg", square: "/fleet/tesla-model-3-square.jpg", width: 1200, height: 800 },
+  "luxury-van": { src: "/fleet/luxury-van.jpg", square: "/fleet/luxury-van-square.jpg", width: 1200, height: 800 },
+  "luxury-sedan": { src: "/fleet/luxury-sedan.jpg", square: "/fleet/luxury-sedan-square.jpg", width: 1200, height: 800 },
 
   // Retired products. Drafted, so a customer never sees these, but the map
   // keeps them so an old order still renders its vehicle.

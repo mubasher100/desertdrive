@@ -4,7 +4,7 @@ import { useId } from "react"
 import { clx } from "@medusajs/ui"
 import type { AddOn, AddOnChoice } from "@lib/data/add-ons"
 import SignFields from "./sign-fields"
-import { formatQar, formatUsd } from "@lib/util/money"
+import { formatUsd } from "@lib/util/money"
 import { useTranslations } from "@lib/i18n/use-translations"
 
 /**
@@ -101,9 +101,6 @@ export default function AddOnPicker({
                 <p className="shrink-0 text-end">
                   <span className="block font-semibold tabular-nums text-dd-accent-text">
                     {formatUsd(a.amount)}
-                  </span>
-                  <span className="block text-xs tabular-nums text-dd-muted">
-                    {t("money.approx", { qar: formatQar(a.amount, t("common.currency")) })}
                   </span>
                 </p>
               </div>

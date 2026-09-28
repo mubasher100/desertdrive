@@ -6,7 +6,7 @@ import { clx } from "@medusajs/ui"
 import type { QuoteVehicle } from "@lib/data/quotes"
 import { useLanguage, useTranslations } from "@lib/i18n/use-translations"
 import { fleetImage } from "@lib/data/fleet-images"
-import { formatQar, formatUsd } from "@lib/util/money"
+import { formatUsd } from "@lib/util/money"
 
 /**
  * The vehicle choice on the results page.
@@ -143,9 +143,6 @@ export default function VehiclePicker({
                   <p className="shrink-0 text-end">
                     <span className="block text-lg font-semibold tabular-nums text-dd-ink">
                       {formatUsd(v.amount * legs)}
-                    </span>
-                    <span className="block text-xs font-medium tabular-nums text-dd-muted">
-                      {t("money.approx", { qar: formatQar(v.amount * legs, t("common.currency")) })}
                     </span>
                   </p>
                 </div>

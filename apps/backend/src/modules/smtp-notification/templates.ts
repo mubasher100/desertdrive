@@ -44,7 +44,8 @@ export type BookingEmailData = {
   }> | null
   total: number
   currency: string
-  payment: "cash" | "card"
+  /** "pending" when the card has not been captured yet. Cash was removed 27 Sept 2026. */
+  payment: "pending" | "card"
   business: { name: string; phone: string; whatsapp_url: string; email: string; address?: string; registration?: string }
 }
 
@@ -80,7 +81,7 @@ const COPY = {
     notes: "Notes",
     addOns: "Extras",
     payment: "Payment",
-    cash: (amt: string) => `Pay ${amt} in cash to your driver`,
+    pending: "Payment being confirmed — we will email you once it clears",
     card: (amt: string) => `${amt} paid by card`,
     view: "View your booking",
     viewHelp: "This link is personal to your booking. Keep this email.",
@@ -109,7 +110,7 @@ const COPY = {
     notes: "ملاحظات",
     addOns: "الإضافات",
     payment: "الدفع",
-    cash: (amt: string) => `ادفع ${amt} نقدًا لسائقك`,
+    pending: "جارٍ تأكيد الدفع — سنراسلك فور اكتماله",
     card: (amt: string) => `تم دفع ${amt} بالبطاقة`,
     view: "عرض حجزك",
     viewHelp: "هذا الرابط خاص بحجزك. احتفظ بهذه الرسالة.",
@@ -124,7 +125,18 @@ const COPY = {
 export function renderBookingConfirmation(d: BookingEmailData): { subject: string; html: string; text: string } {
   const t = COPY[d.locale]
   const rtl = d.locale === "ar"
-  const amount = `${d.total} ${d.currency}`
+  /**
+   * Dollars first, riyals as what was charged — the same presentation as the
+   * site, where prices are browsed in USD and converted only at checkout. The
+   * riyal figure is kept because it is what appears on the card statement,
+   * and a receipt that does not match the statement is a dispute waiting.
+   *
+   * QAR is pegged at 3.64 to the dollar by the Qatar Central Bank; it is a
+   * constant, not a market rate. Mirrors apps/storefront/src/lib/util/money.ts.
+   */
+  const usd = (d.total / 3.64).toFixed(2)
+  const amount =
+    d.currency.toUpperCase() === "QAR" ? `$${usd} (${d.total} QAR)` : `${d.total} ${d.currency}`
   const route = d.direction === "departure" ? t.toAirport(d.address) : t.airportTo(d.address)
 
   // The return is the mirror of the outbound, so it reads with the opposite phrase.
@@ -164,7 +176,7 @@ export function renderBookingConfirmation(d: BookingEmailData): { subject: strin
         : null,
     ],
     [t.notes, d.notes],
-    [t.payment, d.payment === "card" ? t.card(amount) : t.cash(amount)],
+    [t.payment, d.payment === "card" ? t.card(amount) : t.pending],
   ]
 
   const rowsHtml = rows

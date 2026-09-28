@@ -14,6 +14,7 @@ import { createTranslator } from "@lib/i18n/dictionary"
 import { localeOf } from "@lib/util/locale"
 import { checkLeadTime, checkLeadTimeIso, leadTimeLabel } from "@lib/booking/lead-time"
 import { priceAddOns, type AddOnChoice } from "@lib/data/add-ons"
+import { testProof } from "@lib/booking/test-proof"
 
 /**
  * The booking's own data layer. Separate from the starter's cart.ts on
@@ -220,6 +221,14 @@ export async function createBookingCart(
             }))
           : null,
         locale: segment,
+        /**
+         * Proof the owner's test key was supplied, for the backend's
+         * cart-completion check — without it a cart holding the 1 QAR test
+         * vehicle cannot become an order. A hash, never the key itself: this
+         * metadata is copied onto the order and shows in the admin forever.
+         * Absent on every ordinary booking.
+         */
+        ...(testKey ? { test_proof: testProof(testKey) } : {}),
       },
     })
 

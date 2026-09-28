@@ -5,7 +5,7 @@ import DetailsForm from "@modules/booking/components/details-form"
 import { getQuote } from "@lib/data/quotes"
 import { getAddOns } from "@lib/data/add-ons"
 import { parseTrip, tripToQuery, type SearchParams, tripCoords } from "@lib/booking/trip"
-import { formatQar, formatUsd } from "@lib/util/money"
+import { formatUsd } from "@lib/util/money"
 import { getTranslations } from "@lib/i18n/get-translations"
 import { localeOf } from "@lib/util/locale"
 
@@ -70,9 +70,6 @@ export default async function DetailsPage({ params, searchParams }: Props) {
         <p className="text-end">
           <span className="block text-lg font-semibold tabular-nums text-dd-accent-text">
             {formatUsd(vehicle.amount)}
-          </span>
-          <span className="block text-xs font-medium tabular-nums text-dd-muted">
-            {t("money.approx", { qar: formatQar(vehicle.amount, t("common.currency")) })}
           </span>
         </p>
       </div>

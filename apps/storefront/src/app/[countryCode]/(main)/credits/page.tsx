@@ -21,6 +21,8 @@ export default async function CreditsPage({ params }: Props) {
     hero: ar ? "صورة الأفق في الصفحة الرئيسية" : "Home page skyline",
     "toyota-rush": "Toyota Rush", mpv: ar ? "السيارة العائلية" : "Family MPV", "toyota-hiace": "Toyota Hiace",
     "hyundai-h1": "Hyundai H1", "tesla-model-3": "Tesla Model 3",
+    sedan: ar ? "سيدان" : "Sedan", suv: ar ? "دفع رباعي" : "SUV", "large-van": ar ? "فان كبير" : "Large van",
+    "luxury-van": ar ? "فان فاخر" : "Luxury van", "luxury-sedan": ar ? "سيدان فاخرة" : "Luxury sedan",
   }
 
   return (
@@ -33,7 +35,13 @@ export default async function CreditsPage({ params }: Props) {
           <li key={c.title}>
             <strong>{label[c.subject] ?? c.subject}</strong>: <a href={c.source} rel="noopener noreferrer">{c.title}</a> — {c.author},{" "}
             <a href={c.licenceUrl} rel="license noopener noreferrer">{c.licence}</a>
-            {ar ? " (مقتطعة ومصغّرة)" : " (cropped and resized)"}
+            {c.modified
+              ? ar
+                ? " (أُزيلت الخلفية، واقتُطعت وصُغّرت؛ الصورة المعدّلة مرخّصة بالترخيص نفسه)"
+                : " (background removed, cropped and resized; this adaptation is shared under the same licence)"
+              : ar
+                ? " (مقتطعة ومصغّرة)"
+                : " (cropped and resized)"}
           </li>
         ))}
       </ul>
