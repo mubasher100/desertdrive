@@ -41,7 +41,27 @@ import { FARE_BAND_MODULE } from "../modules/fare-band"
 // entire change. Nothing else in this file needs touching.
 // ---------------------------------------------------------------------------
 type BandCode = "A" | "B" | "C" | "D"
-type VehicleKey = "toyota-rush" | "mpv" | "toyota-hiace" | "hyundai-h1" | "tesla-model-3"
+/**
+ * Classes, not models.
+ *
+ * The owner's cars change — a Rush this month, something else next — so the
+ * catalogue names the CLASS a customer books and never the model that turns
+ * up (owner, 28 Sept 2026). This replaces an earlier line-up that used model
+ * names; those products are drafted rather than deleted so their orders and
+ * price history survive.
+ */
+type VehicleKey =
+  | "sedan"
+  | "suv"
+  | "large-van"
+  | "luxury-van"
+  | "luxury-sedan"
+  // Retired model-named products, kept as drafts so their orders survive.
+  | "toyota-rush"
+  | "mpv"
+  | "toyota-hiace"
+  | "hyundai-h1"
+  | "tesla-model-3"
 
 /**
  * The fare table. Band A is the owner's published catalogue; B, C and D are
@@ -82,10 +102,15 @@ type VehicleKey = "toyota-rush" | "mpv" | "toyota-hiace" | "hyundai-h1" | "tesla
  * database gets seeded with; it does not overwrite anything already priced.
  */
 export const FARES: Record<BandCode, Record<VehicleKey, number | null>> = {
-  A: { "toyota-rush": 100, mpv: 120, "toyota-hiace": 180, "hyundai-h1": 200, "tesla-model-3": 300 },
-  B: { "toyota-rush": 105, mpv: 145, "toyota-hiace": 210, "hyundai-h1": 215, "tesla-model-3": null },
-  C: { "toyota-rush": 240, mpv: 285, "toyota-hiace": 265, "hyundai-h1": 330, "tesla-model-3": null },
-  D: { "toyota-rush": 340, mpv: 390, "toyota-hiace": 305, "hyundai-h1": 410, "tesla-model-3": null },
+  //            ── the five classes on sale ──        ── retired, kept for their drafts ──
+  A: { sedan: null, suv: 100, "large-van": 180, "luxury-van": 200, "luxury-sedan": 300,
+       "toyota-rush": 100, mpv: 120, "toyota-hiace": 180, "hyundai-h1": 200, "tesla-model-3": 300 },
+  B: { sedan: null, suv: 105, "large-van": 210, "luxury-van": 215, "luxury-sedan": 315,
+       "toyota-rush": 105, mpv: 145, "toyota-hiace": 210, "hyundai-h1": 215, "tesla-model-3": null },
+  C: { sedan: null, suv: 240, "large-van": 265, "luxury-van": 330, "luxury-sedan": 720,
+       "toyota-rush": 240, mpv: 285, "toyota-hiace": 265, "hyundai-h1": 330, "tesla-model-3": null },
+  D: { sedan: null, suv: 340, "large-van": 305, "luxury-van": 410, "luxury-sedan": 1020,
+       "toyota-rush": 340, mpv: 390, "toyota-hiace": 305, "hyundai-h1": 410, "tesla-model-3": null },
 }
 
 /** Prices for the add-on products. Same rule: `null` means do not create it. */
@@ -206,63 +231,65 @@ export const VEHICLES: Array<{
   offered?: boolean
 }> = [
   {
-    key: "toyota-rush",
-    handle: "toyota-rush",
-    title: "Toyota Rush",
-    title_ar: "تويوتا راش",
-    description: "A compact SUV for up to 4 passengers with 3 bags. Our most affordable transfer.",
-    description_ar: "سيارة دفع رباعي مدمجة تتسع حتى 4 ركاب و3 حقائب. خيارنا الأوفر.",
+    key: "sedan",
+    handle: "sedan",
+    title: "Sedan",
+    title_ar: "سيدان",
+    description: "A comfortable saloon for up to 3 passengers with 2 bags. Our most affordable transfer.",
+    description_ar: "سيارة سيدان مريحة تتسع حتى 3 ركاب وحقيبتين. خيارنا الأوفر.",
+    passengers: 3,
+    luggage: 2,
+  },
+  {
+    key: "suv",
+    handle: "suv",
+    title: "SUV",
+    title_ar: "سيارة دفع رباعي",
+    description: "A compact SUV for up to 4 passengers with 3 bags. More room for luggage.",
+    description_ar: "سيارة دفع رباعي مدمجة تتسع حتى 4 ركاب و3 حقائب. مساحة أكبر للأمتعة.",
     passengers: 4,
     luggage: 3,
   },
   {
-    // ⚠️ Model name not given in the catalogue — listed only as "Airport
-    // Transfer" at 120 QAR. Owner to confirm the make and model.
-    key: "mpv",
-    handle: "mpv",
-    title: "Family MPV",
-    title_ar: "سيارة عائلية متعددة الاستخدامات",
-    description: "A roomy people-carrier for up to 6 passengers with 4 bags. Ideal for families.",
-    description_ar: "سيارة عائلية واسعة تتسع حتى 6 ركاب و4 حقائب. مثالية للعائلات.",
-    passengers: 6,
-    luggage: 4,
-  },
-  {
-    key: "hyundai-h1",
-    handle: "hyundai-h1",
-    title: "Hyundai H1",
-    title_ar: "هيونداي H1",
-    description: "A comfortable van for up to 7 passengers with 6 bags. Suits groups with luggage.",
-    description_ar: "فان مريح يتسع حتى 7 ركاب و6 حقائب. مناسب للمجموعات مع الأمتعة.",
-    passengers: 7,
-    luggage: 6,
-  },
-  {
-    key: "toyota-hiace",
-    handle: "toyota-hiace",
-    title: "Toyota Hiace",
-    title_ar: "تويوتا هايس",
+    key: "large-van",
+    handle: "large-van",
+    title: "Large van",
+    title_ar: "فان كبير",
     description: "Our largest vehicle: up to 12 passengers with 12 bags. Built for group arrivals.",
     description_ar: "أكبر سياراتنا: حتى 12 راكبًا و12 حقيبة. مثالية لوصول المجموعات.",
     passengers: 12,
     luggage: 12,
   },
   {
-    /**
-     * Off sale (owner, 26 Sept 2026): the line-up is Rush, MPV, H1 and Hiace.
-     * This comes back as the "Luxury" tier later, which is why it stays in the
-     * catalogue as a draft rather than being removed.
-     */
-    offered: false,
-    key: "tesla-model-3",
-    handle: "tesla-model-3",
-    title: "Tesla Model 3",
-    title_ar: "تسلا موديل 3",
-    description: "A premium electric sedan for up to 3 passengers with 2 bags. Arrive in style.",
-    description_ar: "سيارة سيدان كهربائية فاخرة تتسع حتى 3 ركاب وحقيبتين. وصول بأناقة.",
+    /** Mercedes in practice (owner, 28 Sept 2026), but the class is what sells. */
+    key: "luxury-van",
+    handle: "luxury-van",
+    title: "Luxury van",
+    title_ar: "فان فاخر",
+    description: "A premium van for up to 7 passengers with 6 bags. Space and comfort together.",
+    description_ar: "فان فاخر يتسع حتى 7 ركاب و6 حقائب. مساحة وراحة معًا.",
+    passengers: 7,
+    luggage: 6,
+  },
+  {
+    /** BMW in practice (owner, 28 Sept 2026), but the class is what sells. */
+    key: "luxury-sedan",
+    handle: "luxury-sedan",
+    title: "Luxury sedan",
+    title_ar: "سيدان فاخرة",
+    description: "A premium saloon for up to 3 passengers with 2 bags. Arrive in style.",
+    description_ar: "سيارة سيدان فاخرة تتسع حتى 3 ركاب وحقيبتين. وصول بأناقة.",
     passengers: 3,
     luggage: 2,
   },
+
+  // --- Retired: named after a model, which the fleet does not guarantee. ---
+  // Drafted rather than deleted, so their orders and price history survive.
+  { offered: false, key: "toyota-rush", handle: "toyota-rush", title: "Toyota Rush", title_ar: "تويوتا راش", description: "Retired — replaced by the SUV class.", description_ar: "متوقفة — استُبدلت بفئة الدفع الرباعي.", passengers: 4, luggage: 3 },
+  { offered: false, key: "mpv", handle: "mpv", title: "Family MPV", title_ar: "سيارة عائلية", description: "Retired — replaced by the Sedan and SUV classes.", description_ar: "متوقفة — استُبدلت بفئتي السيدان والدفع الرباعي.", passengers: 6, luggage: 4 },
+  { offered: false, key: "hyundai-h1", handle: "hyundai-h1", title: "Hyundai H1", title_ar: "هيونداي H1", description: "Retired — replaced by the Luxury van class.", description_ar: "متوقفة — استُبدلت بفئة الفان الفاخر.", passengers: 7, luggage: 6 },
+  { offered: false, key: "toyota-hiace", handle: "toyota-hiace", title: "Toyota Hiace", title_ar: "تويوتا هايس", description: "Retired — replaced by the Large van class.", description_ar: "متوقفة — استُبدلت بفئة الفان الكبير.", passengers: 12, luggage: 12 },
+  { offered: false, key: "tesla-model-3", handle: "tesla-model-3", title: "Tesla Model 3", title_ar: "تسلا موديل 3", description: "Retired — replaced by the Luxury sedan class.", description_ar: "متوقفة — استُبدلت بفئة السيدان الفاخرة.", passengers: 3, luggage: 2 },
 ]
 
 const ADD_ONS: Array<{
