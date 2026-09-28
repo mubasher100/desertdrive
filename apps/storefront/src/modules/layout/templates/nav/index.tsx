@@ -9,6 +9,15 @@ import { CONTACT } from "@lib/data/contact"
  * no menu. Three things a visitor on a phone needs: the way home, a way to
  * call a human, and the other language.
  *
+ * The company name sits CENTRED (owner, 28 Sept 2026), between the logo and
+ * the actions. It is centred against the header rather than against the space
+ * left over, so it does not drift as the phone number appears at `small` —
+ * hence the absolutely positioned middle element rather than a third flex
+ * child. `pointer-events-none` keeps it from stealing taps from the logo link
+ * underneath it on a narrow screen, and it is `aria-hidden` because the logo
+ * link already announces the brand and a screen reader should not hear the
+ * name twice.
+ *
  * Sticky, because the phone number should stay reachable from anywhere in the
  * funnel. Height is fixed (--dd-nav-height) so anchored scrolls and the sticky
  * results-page CTA can account for it.
@@ -20,7 +29,7 @@ export default async function Nav({ segment }: { segment: string }) {
     <header className="sticky inset-x-0 top-0 z-50 border-b border-dd-line bg-dd-surface">
       <nav
         aria-label="Primary"
-        className="mx-auto flex h-16 w-full max-w-content items-center justify-between px-4"
+        className="relative mx-auto flex h-16 w-full max-w-content items-center justify-between px-4"
       >
         <LocalizedClientLink
           href="/"
@@ -40,6 +49,13 @@ export default async function Nav({ segment }: { segment: string }) {
             className="h-9 w-auto small:h-10"
           />
         </LocalizedClientLink>
+
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap font-heading text-base font-semibold tracking-tight text-dd-ink small:text-lg"
+        >
+          {t("common.brand")}
+        </span>
 
         <div className="flex items-center gap-x-1 small:gap-x-4">
           <a
