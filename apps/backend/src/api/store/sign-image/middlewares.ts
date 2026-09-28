@@ -46,6 +46,12 @@ const upload = multer({
  * Without this, multer's failures surface as a bare 500 "unknown error" —
  * which is exactly how the part-count bug above stayed invisible: a broken
  * endpoint and an oversized file looked identical from outside.
+ *
+ * ⚠️ `multer` is a DECLARED dependency of this app, not one borrowed from
+ * Medusa's tree. It resolved either way on a dev machine, which is why the
+ * omission was invisible locally and only surfaced on CI's clean install —
+ * and a Medusa upgrade that moved or dropped it would have broken the build
+ * with no change of ours to blame.
  */
 const single = upload.single("file")
 
