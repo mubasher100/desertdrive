@@ -175,6 +175,24 @@ Each product has one **variant per band**. Four bands × five vehicles = 20 vari
 
 Passenger and luggage capacity live on **product metadata** and drive the results page (a booking for 5 passengers hides the Sedan).
 
+### The price list (owner's, 29 Sept 2026) — `src/data/price-book.ts`
+
+Prices are **whole US dollars**, stored as the exact riyal equivalent: the owner priced in QAR, each figure was converted at the 3.64 peg and rounded **up** to the next dollar ($17 is charged as 61.88 QAR). The storefront prints whole dollars without cents and riyals to the fils.
+
+| Area | Sedan | SUV | Large van | S-Class | V-Class |
+|---|---|---|---|---|---|
+| Downtown Doha (Msheireb, Souq Waqif, Al Sadd, Old Airport) | $17 | $22 | $42 | $179 | $207 |
+| West Bay (to Katara and the Lagoon) · band A | $22 | $28 | $50 | $207 | $234 |
+| The Pearl · Lusail Marina · Aspire Zone | $28 | $42 | $61 | $234 | $261 |
+| North Lusail · band B | $42 | $61 | $77 | $261 | $289 |
+| Education City | $42 | $61 | $77 | $289 | $316 |
+| band C (40–75 km, e.g. Al Khor) — midpoint, not the owner's | $69 | $99 | $142 | $289 | $316 |
+| Hilton Salwa · Al Ruwais · Sealine · band D | $97 | $138 | $207 | $316 | $344 |
+
+Named areas are the owner's; Lusail Marina, Aspire and the four bands take "the nearest location's pricing", per the owner. Every outline is pinned by a unit test naming the hotels it must price.
+
+> **⚠️ The book is applied ONCE, then the admin owns the prices.** `jobs/apply-price-book.ts` runs every five minutes, applies the book if the store's `metadata.price_book` differs from `PRICE_BOOK_VERSION`, and records it. After that every run is one read. Re-applying on every deploy would silently undo the owner's admin edits. **To publish a new list, edit the file AND bump the version.** By hand: `npx medusa exec ./src/scripts/apply-price-book.ts`.
+
 ### Distance bands are data, in a `fareBand` module
 
 A small custom module — `fareBand` — with one model:
@@ -813,7 +831,7 @@ Do not build these without asking. Each was considered and cut:
 
 Ask the owner. Several of these block real work:
 
-1. ~~Band prices for B, C and D~~ — set 26 Sept 2026 and live; every destination is bookable. **Two open judgements, both the owner's:** band A stays ~65% above Booking.com's equivalent (100 vs 60 QAR for the smallest car) and that gap carries into every band; and the H1 is priced above the Hiace at every band, so a 7-seater is dearer than a 12-seater. The owner was shown both and chose to keep the prices as they are.
+1. ~~Band prices~~ — superseded by the owner's area price list of 29 Sept 2026 (above). Band C is a midpoint the owner has not seen priced. ~~Band prices for B, C and D~~ — set 26 Sept 2026 and live; every destination is bookable. **Two open judgements, both the owner's:** band A stays ~65% above Booking.com's equivalent (100 vs 60 QAR for the smallest car) and that gap carries into every band; and the H1 is priced above the Hiace at every band, so a 7-seater is dearer than a 12-seater. The owner was shown both and chose to keep the prices as they are.
 2. **Hamad International coordinates** — approximately `25.273 N, 51.608 E`. **Verify precisely before committing.** Every fare in the system keys off this one point.
 3. **Fleet detail** — the 120 QAR vehicle's make/model, real passenger and luggage capacities for all five, and photography (`public/fleet/<handle>.jpg`). Also **how many of each vehicle exist** (`units` on product metadata, seeded at 1): it is what the availability guard counts, so too low turns customers away and too high double-books a driver.
 4. ~~Logo and brand colours~~ — supplied and sampled. Still wanted: an SVG or transparent original, and a mark-only version.

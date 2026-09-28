@@ -5,6 +5,7 @@ import {
   ProductStatus,
 } from "@medusajs/framework/utils"
 import { createProductsWorkflow } from "@medusajs/medusa/core-flows"
+import { BAND_TIERS, qarFromUsd } from "../data/price-book"
 import { FARE_BAND_MODULE } from "../modules/fare-band"
 
 /**
@@ -102,34 +103,54 @@ type VehicleKey =
  * Prices are the owner's to change in the admin. This table is what a FRESH
  * database gets seeded with; it does not overwrite anything already priced.
  */
+/**
+ * Retired model-named products keep the prices they had; they are drafts and
+ * a customer never sees them, but an old order still resolves its variant.
+ */
+const RETIRED_FARES: Record<BandCode, Pick<Record<VehicleKey, number | null>, "toyota-rush" | "mpv" | "toyota-hiace" | "hyundai-h1" | "tesla-model-3">> = {
+  A: { "toyota-rush": 100, mpv: 120, "toyota-hiace": 180, "hyundai-h1": 200, "tesla-model-3": 300 },
+  B: { "toyota-rush": 105, mpv: 145, "toyota-hiace": 210, "hyundai-h1": 215, "tesla-model-3": null },
+  C: { "toyota-rush": 240, mpv: 285, "toyota-hiace": 265, "hyundai-h1": 330, "tesla-model-3": null },
+  D: { "toyota-rush": 340, mpv: 390, "toyota-hiace": 305, "hyundai-h1": 410, "tesla-model-3": null },
+}
+
+/**
+ * The five classes on sale take their band prices from the price book
+ * (src/data/price-book.ts) — whole US dollars, stored as the exact riyal
+ * equivalent. One list, so a fresh database and production agree. Named
+ * areas (Downtown, West Bay, the Pearl…) are applied by the price-book job,
+ * not here: this script only seeds bands.
+ */
+const bandFares = (b: BandCode) => ({
+  "test-booking": 1,
+  sedan: qarFromUsd(BAND_TIERS[b].sedan),
+  suv: qarFromUsd(BAND_TIERS[b].suv),
+  "large-van": qarFromUsd(BAND_TIERS[b]["large-van"]),
+  "luxury-van": qarFromUsd(BAND_TIERS[b]["luxury-van"]),
+  "luxury-sedan": qarFromUsd(BAND_TIERS[b]["luxury-sedan"]),
+  ...RETIRED_FARES[b],
+})
+
 export const FARES: Record<BandCode, Record<VehicleKey, number | null>> = {
-  //            ── the five classes on sale ──        ── retired, kept for their drafts ──
-  A: { "test-booking": 1, sedan: null, suv: 100, "large-van": 180, "luxury-van": 200, "luxury-sedan": 300,
-       "toyota-rush": 100, mpv: 120, "toyota-hiace": 180, "hyundai-h1": 200, "tesla-model-3": 300 },
-  B: { "test-booking": 1, sedan: null, suv: 105, "large-van": 210, "luxury-van": 215, "luxury-sedan": 315,
-       "toyota-rush": 105, mpv: 145, "toyota-hiace": 210, "hyundai-h1": 215, "tesla-model-3": null },
-  C: { "test-booking": 1, sedan: null, suv: 240, "large-van": 265, "luxury-van": 330, "luxury-sedan": 720,
-       "toyota-rush": 240, mpv: 285, "toyota-hiace": 265, "hyundai-h1": 330, "tesla-model-3": null },
-  D: { "test-booking": 1, sedan: null, suv: 340, "large-van": 305, "luxury-van": 410, "luxury-sedan": 1020,
-       "toyota-rush": 340, mpv: 390, "toyota-hiace": 305, "hyundai-h1": 410, "tesla-model-3": null },
+  A: bandFares("A"),
+  B: bandFares("B"),
+  C: bandFares("C"),
+  D: bandFares("D"),
 }
 
 /**
  * Prices for the add-on products, in QAR. `null` means do not create it — an
  * unpriced add-on is never offered, which is also how one is taken off sale.
  *
- * ⚠️ 18 QAR is the owner's "child seat additional 5$" (27 Sept 2026), converted
- * at the peg. The exact conversion is 18.20, and the site would then display a
- * clean $5.00 — but it would also print totals like "118.2 QAR", and the riyal
- * is the currency actually charged. 18 displays as $4.95: within a nickel of
- * what the owner said, never above it, and a whole riyal. Set 18.2 here if an
- * exact $5.00 matters more than a round riyal price.
+ * Exactly $5 — the owner's figure — which is 18.20 QAR at the peg. It was 18
+ * QAR ($4.95) until the owner asked for whole-dollar prices (29 Sept 2026);
+ * riyal totals now carry fils ("80.08 QAR"), and that is expected.
  */
 const ADD_ON_PRICES: Record<string, number | null> = {
-  "child-seat": 18,
+  "child-seat": qarFromUsd(5),
   "extra-waiting-hour": null,
   // Same 18 QAR as the child seat — the owner's call, 28 Sept 2026.
-  "meet-and-greet": 18,
+  "meet-and-greet": qarFromUsd(5),
   "extra-luggage": null,
 }
 

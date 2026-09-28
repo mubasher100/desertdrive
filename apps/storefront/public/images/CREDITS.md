@@ -14,7 +14,7 @@ Adaptations of CC BY-SA 4.0 works, and shared under CC BY-SA 4.0 as that licence
 
 | Files | Source | Author | Licence |
 |---|---|---|---|
-| `fleet/sedan.jpg`, `fleet/sedan-square.jpg` | [TOYOTA CAMRY (XV70) China (146).jpg](https://commons.wikimedia.org/wiki/File:TOYOTA_CAMRY_(XV70)_China_(146).jpg) | Dinkun Chen | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| `fleet/sedan.jpg`, `fleet/sedan-square.jpg` | [TOYOTA COROLLA SEDAN (E210) China (12).jpg](https://commons.wikimedia.org/wiki/File:TOYOTA_COROLLA_SEDAN_(E210)_China_(12).jpg) | Dinkun Chen | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
 | `fleet/suv.jpg`, `fleet/suv-square.jpg` | [2018 Toyota Rush 1.5 S.jpg](https://commons.wikimedia.org/wiki/File:2018_Toyota_Rush_1.5_S.jpg) | Aaront1059 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
 | `fleet/large-van.jpg`, `fleet/large-van-square.jpg` | [Toyota Hiace Commuter Deluxe 2020 (cropped).jpg](https://commons.wikimedia.org/wiki/File:Toyota_Hiace_Commuter_Deluxe_2020_(cropped).jpg) | Captainmorlypogi1959 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
 | `fleet/luxury-van.jpg`, `fleet/luxury-van-square.jpg` | [MERCEDES BENZ V-CLASS (W447) China (13).jpg](https://commons.wikimedia.org/wiki/File:MERCEDES_BENZ_V-CLASS_(W447)_China_(13).jpg) | Dinkun Chen | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
