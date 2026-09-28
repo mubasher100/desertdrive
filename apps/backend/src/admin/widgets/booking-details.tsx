@@ -140,11 +140,32 @@ const BookingDetailsWidget = ({ data: initial }: DetailWidgetProps<HttpTypes.Adm
         <Row
           label="Extras"
           value={
-            booking.add_ons.length
-              ? booking.add_ons
-                  .map((a) => (a.quantity > 1 ? `${a.quantity} × ${a.title}` : a.title))
-                  .join(" · ")
-              : "—"
+            booking.add_ons.length ? (
+              <span className="flex flex-col gap-y-1">
+                {booking.add_ons.map((a) => (
+                  <span key={a.title}>
+                    {a.quantity > 1 ? `${a.quantity} × ${a.title}` : a.title}
+                    {/* The sign's words are the deliverable, so they are shown, quoted. */}
+                    {a.note && <> — &ldquo;{a.note}&rdquo;</>}
+                    {a.image_url && (
+                      <>
+                        {" · "}
+                        <a
+                          className="text-ui-fg-interactive hover:underline"
+                          href={a.image_url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          open picture
+                        </a>
+                      </>
+                    )}
+                  </span>
+                ))}
+              </span>
+            ) : (
+              "—"
+            )
           }
           wide
         />

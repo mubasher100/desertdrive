@@ -256,6 +256,56 @@ module.exports = defineConfig({
         ]
       : []),
 
+    /**
+     * File storage for customer uploads — today, the picture a customer wants
+     * on their meet & greet sign.
+     *
+     * ⚠️ Registered ONLY when an S3-compatible bucket is configured, and the
+     * upload route refuses when it is not. Medusa's default is `file-local`,
+     * which writes to the container's disk, and **Railway's filesystem is
+     * ephemeral**: the picture would survive until the next deploy and then
+     * vanish, leaving a booking the customer paid extra for with a sign the
+     * driver cannot print. A refused upload is recoverable; a silently lost
+     * one is discovered at 4am in an arrivals hall.
+     *
+     * Configured against Cloudflare R2, which is S3-compatible — `region` is
+     * `auto` and the endpoint is the account's r2.cloudflarestorage.com host.
+     * Any other S3 provider works by changing these variables only.
+     *
+     * `UPLOADS_S3_PUBLIC_URL` is the base the stored object is served from
+     * (an r2.dev bucket URL or a custom domain). It is what ends up on the
+     * order, so it has to be publicly readable — the owner opens it from the
+     * admin to print the sign.
+     */
+    ...(process.env.UPLOADS_S3_BUCKET && process.env.UPLOADS_S3_ACCESS_KEY
+      ? [
+          {
+            resolve: "@medusajs/medusa/file",
+            options: {
+              providers: [
+                {
+                  resolve: "@medusajs/file-s3",
+                  id: "s3",
+                  options: {
+                    file_url: process.env.UPLOADS_S3_PUBLIC_URL,
+                    bucket: process.env.UPLOADS_S3_BUCKET,
+                    endpoint: process.env.UPLOADS_S3_ENDPOINT,
+                    access_key_id: process.env.UPLOADS_S3_ACCESS_KEY,
+                    secret_access_key: process.env.UPLOADS_S3_SECRET,
+                    // R2 ignores the region but the S3 client insists on one.
+                    region: process.env.UPLOADS_S3_REGION || "auto",
+                    // Customer uploads are kept apart from anything else in
+                    // the bucket, so a lifecycle rule can expire them without
+                    // touching product imagery.
+                    prefix: process.env.UPLOADS_S3_PREFIX || "sign-images",
+                  },
+                },
+              ],
+            },
+          },
+        ]
+      : []),
+
     // Infrastructure. Empty in local dev, where Medusa's in-memory defaults apply.
     ...redisModules,
   ],

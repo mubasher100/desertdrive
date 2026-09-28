@@ -13,7 +13,7 @@ import { signBookingToken, verifyBookingToken } from "@lib/booking/token"
 import { createTranslator } from "@lib/i18n/dictionary"
 import { localeOf } from "@lib/util/locale"
 import { checkLeadTime, checkLeadTimeIso, leadTimeLabel } from "@lib/booking/lead-time"
-import { priceAddOns } from "@lib/data/add-ons"
+import { priceAddOns, type AddOnChoice } from "@lib/data/add-ons"
 
 /**
  * The booking's own data layer. Separate from the starter's cart.ts on
@@ -106,7 +106,7 @@ export async function createBookingCart(
    * clamps quantities to each add-on's own cap, so nothing here can add a line
    * the owner did not put on sale or a quantity they did not allow.
    */
-  extras?: Record<string, number>
+  extras?: Record<string, AddOnChoice>
 ): Promise<CreateBookingResult> {
   const t = createTranslator(localeOf(segment))
 
@@ -211,6 +211,12 @@ export async function createBookingCart(
               title_ar: e.addOn.title_ar,
               quantity: e.quantity,
               amount: e.addOn.amount,
+              // What the driver writes on the board, and the picture to print
+              // beside it. Both already validated server-side by priceAddOns:
+              // the note is flattened and capped, and the URL is only ever one
+              // our own upload endpoint produced.
+              note: e.note,
+              image_url: e.imageUrl,
             }))
           : null,
         locale: segment,

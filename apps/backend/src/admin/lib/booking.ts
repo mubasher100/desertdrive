@@ -29,7 +29,14 @@ export type BookingMeta = {
    *
    * Empty on every booking taken before add-ons existed.
    */
-  add_ons: Array<{ title: string; quantity: number }>
+  add_ons: Array<{
+    title: string
+    quantity: number
+    /** The words to print on a meet & greet board, when this add-on is one. */
+    note: string | null
+    /** A picture to print beside them. Always one of our own upload URLs. */
+    image_url: string | null
+  }>
   locale: string
   terms_accepted_at: string | null
 }
@@ -59,7 +66,16 @@ export function readBooking(order: Pick<HttpTypes.AdminOrder, "metadata">): Book
     add_ons: Array.isArray(m.add_ons)
       ? (m.add_ons as Array<Record<string, unknown>>)
           .filter((a) => a && a.title != null && Number(a.quantity) > 0)
-          .map((a) => ({ title: str(a.title), quantity: Number(a.quantity) }))
+          .map((a) => ({
+            title: str(a.title),
+            quantity: Number(a.quantity),
+            note: a.note ? str(a.note) : null,
+            // Rendered as a link the owner clicks, so only https is honoured.
+            image_url:
+              typeof a.image_url === "string" && a.image_url.startsWith("https://")
+                ? a.image_url
+                : null,
+          }))
       : [],
     locale: str(m.locale) || "en",
     terms_accepted_at: m.terms_accepted_at ? str(m.terms_accepted_at) : null,

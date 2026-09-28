@@ -2,7 +2,8 @@
 
 import { useId } from "react"
 import { clx } from "@medusajs/ui"
-import type { AddOn } from "@lib/data/add-ons"
+import type { AddOn, AddOnChoice } from "@lib/data/add-ons"
+import SignFields from "./sign-fields"
 import { formatQar, formatUsd } from "@lib/util/money"
 import { useTranslations } from "@lib/i18n/use-translations"
 
@@ -29,12 +30,15 @@ export default function AddOnPicker({
   value,
   onChange,
   language,
+  uploadsEnabled,
 }: {
   addOns: AddOn[]
-  /** variant id → quantity. Absent or 0 means not taken. */
-  value: Record<string, number>
-  onChange: (next: Record<string, number>) => void
+  /** variant id → what was chosen. Absent, or quantity 0, means not taken. */
+  value: Record<string, AddOnChoice>
+  onChange: (next: Record<string, AddOnChoice>) => void
   language: "en" | "ar"
+  /** False when no bucket is configured — the picture control is then hidden. */
+  uploadsEnabled: boolean
 }) {
   const t = useTranslations()
   const ids = useId()
@@ -45,8 +49,25 @@ export default function AddOnPicker({
     const clamped = Math.max(0, Math.min(next, max))
     const copy = { ...value }
     if (clamped === 0) delete copy[variantId]
-    else copy[variantId] = clamped
+    else copy[variantId] = { ...copy[variantId], quantity: clamped }
     onChange(copy)
+  }
+
+  /**
+   * Updates one collected field, keeping the rest.
+   *
+   * Typing into the sign field selects the add-on if it was not already —
+   * writing your name on a board you have not ticked is unambiguous intent,
+   * and making someone tick a box first is a step for nothing.
+   */
+  function setField(variantId: string, patch: Partial<AddOnChoice>) {
+    const current = value[variantId]
+    onChange({
+      ...value,
+      // Quantity last and explicit: spreading `current` over a default would
+      // read as though the default wins, and TS rightly calls that out.
+      [variantId]: { ...current, ...patch, quantity: current?.quantity || 1 },
+    })
   }
 
   return (
@@ -58,7 +79,8 @@ export default function AddOnPicker({
 
       <ul className="mt-4 space-y-3">
         {addOns.map((a) => {
-          const quantity = value[a.variant_id] ?? 0
+          const choice = value[a.variant_id]
+          const quantity = choice?.quantity ?? 0
           const title = language === "ar" && a.title_ar ? a.title_ar : a.title
           const description =
             language === "ar" && a.description_ar ? a.description_ar : a.description
@@ -86,6 +108,22 @@ export default function AddOnPicker({
                 </p>
               </div>
 
+              {/*
+                A sign is one board or none, so it is a checkbox. A stepper
+                that only ever reads 0 or 1 asks the customer to work out
+                which it is; a tick says it.
+              */}
+              {a.collects === "sign" ? (
+                <label className="mt-3 flex min-h-[44px] cursor-pointer items-center gap-x-3 text-sm font-medium text-dd-ink">
+                  <input
+                    type="checkbox"
+                    checked={quantity > 0}
+                    onChange={(e) => setQuantity(a.variant_id, e.target.checked ? 1 : 0, a.max)}
+                    className="h-5 w-5 shrink-0 rounded border-dd-line-strong text-dd-accent focus:ring-dd-accent"
+                  />
+                  {t("addons.include", { item: title })}
+                </label>
+              ) : (
               <div className="mt-3 flex items-center gap-x-3">
                 <Step
                   label={t("addons.remove", { item: title })}
@@ -121,6 +159,23 @@ export default function AddOnPicker({
                   </span>
                 )}
               </div>
+              )}
+
+              {/*
+                Shown once the add-on is taken. The text is what the driver
+                holds up, so it is required — `priceAddOns` drops a sign with
+                nothing written on it rather than charging for a blank board.
+              */}
+              {a.collects === "sign" && quantity > 0 && (
+                <SignFields
+                  fieldId={`${ids}-${a.variant_id}-note`}
+                  note={choice?.note ?? ""}
+                  imageUrl={choice?.image_url ?? null}
+                  onNote={(note) => setField(a.variant_id, { note })}
+                  onImage={(image_url) => setField(a.variant_id, { image_url })}
+                  uploadsEnabled={uploadsEnabled}
+                />
+              )}
             </li>
           )
         })}

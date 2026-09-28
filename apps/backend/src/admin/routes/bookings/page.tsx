@@ -126,7 +126,16 @@ const BookingsPage = () => {
                     */}
                     {booking.add_ons.map((a) => (
                       <Badge key={a.title} size="2xsmall" color="green" className="mt-1 block w-fit">
-                        {a.quantity > 1 ? `${a.quantity} × ${a.title}` : a.title}
+                        {/*
+                          The sign's words, not just "Meet & greet sign" — the
+                          text IS the deliverable, and the driver is reading
+                          this row to find out what to write on the board.
+                        */}
+                        {a.note
+                          ? `${a.title}: "${a.note}"`
+                          : a.quantity > 1
+                            ? `${a.quantity} × ${a.title}`
+                            : a.title}
                       </Badge>
                     ))}
                   </Table.Cell>

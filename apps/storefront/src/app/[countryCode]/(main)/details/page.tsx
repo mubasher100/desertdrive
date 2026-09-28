@@ -86,6 +86,7 @@ export default async function DetailsPage({ params, searchParams }: Props) {
         testKey={testKey}
         addOns={addOns}
         language={language}
+        uploadsEnabled={Boolean(process.env.NEXT_PUBLIC_UPLOADS_PUBLIC_URL)}
       />
     </main>
   )

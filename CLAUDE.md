@@ -295,7 +295,21 @@ They ride on the cart **twice, on purpose**: as real line items, which is what c
 
 **Not multiplied by legs.** A child seat is fitted for the trip; the customer is not buying a second one for the way home. A per-leg extra would be a flag on the add-on, not a rule in the cart.
 
-> **Only the child seat is priced** — 18 QAR, the owner's "$5" converted at the peg (it displays as $4.95; 18.2 would display exactly $5.00 but print totals like "118.2 QAR"). The other three are `null` in `seed-fleet.ts` and therefore invisible. **`seed-fleet.ts` must be run against production for the child-seat product to exist there** — deploys run migrations, not seeds.
+**One add-on collects input.** `meet-and-greet` carries `collects: "sign"` on its metadata, so the storefront renders a checkbox plus the words for the board and an optional picture, instead of a stepper. `priceAddOns` **drops a sign with nothing written on it rather than charging for it** — a blank board helps nobody, and the form is not the thing that enforces it.
+
+The picture goes through `POST /store/sign-image` — **the only public, unauthenticated write on the site**, and everything about it follows from that:
+
+- **the bytes decide the type**, never the client's `Content-Type` or filename (`sniffImage`)
+- three raster formats, and **never SVG** — it is XML that can carry `<script>`, and these URLs are opened by the owner while logged into the admin. Pinned by a unit test that must keep failing for SVG
+- the stored name is generated server-side; the client's filename is discarded rather than sanitised
+- 5 MB, plus a per-IP hourly cap so the bucket cannot be used as free storage
+- the storefront then keeps **only a URL our own endpoint produced** — origin equality, parsed, not `startsWith` — because that URL ends up on the order and in an email the owner clicks
+
+> **⚠️ Multer's `parts: 1` rejects a single well-formed upload** with `LIMIT_PART_COUNT`, so the endpoint returned 500 for *every* request and none of the validation below it ever ran. It is `parts: 2`; `files: 1` and `fields: 0` are what actually constrain it. And **Medusa does not support Express's 4-argument error handler** — it wraps every middleware and calls it `(req, res, next)`, so an `(err, req, res, next)` function gets the request as its `err` and dies with "next is not a function". Multer is therefore invoked by hand and its error handled in its own callback.
+
+> **Uploads are configured or refused, never degraded.** The file module is registered only when `UPLOADS_S3_*` is set, and the route refuses otherwise. Medusa's default writes to disk, and **Railway's filesystem is ephemeral** — the picture would survive until the next deploy and then vanish, leaving a booking that was paid for with a sign the driver cannot print. The storefront hides the picture control when `NEXT_PUBLIC_UPLOADS_PUBLIC_URL` is unset; the sign's text works either way.
+
+> **Only the child seat and the meet & greet sign are priced** — both 18 QAR, the owner's "$5" converted at the peg (it displays as $4.95; 18.2 would display exactly $5.00 but print totals like "118.2 QAR"). The other two are `null` in `seed-fleet.ts` and therefore invisible. **`seed-fleet.ts` must be run against production for the child-seat product to exist there** — deploys run migrations, not seeds.
 
 ### Booking details ride on metadata
 

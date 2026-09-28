@@ -35,7 +35,13 @@ export type BookingEmailData = {
    * The extras, straight off the order metadata. Optional because every
    * booking taken before add-ons existed has no such key and must still send.
    */
-  add_ons?: Array<{ title: string; title_ar?: string | null; quantity: number }> | null
+  add_ons?: Array<{
+    title: string
+    title_ar?: string | null
+    quantity: number
+    /** The words on a meet & greet board, when this add-on is one. */
+    note?: string | null
+  }> | null
   total: number
   currency: string
   payment: "cash" | "card"
@@ -149,6 +155,9 @@ export function renderBookingConfirmation(d: BookingEmailData): { subject: strin
         ? d.add_ons
             .map((a) => {
               const name = (d.locale === "ar" && a.title_ar) || a.title
+              // The sign's words are echoed back so the customer can see we
+              // got them right while there is still time to correct us.
+              if (a.note) return `${name}: “${a.note}”`
               return a.quantity > 1 ? `${a.quantity} × ${name}` : name
             })
             .join(" · ")
