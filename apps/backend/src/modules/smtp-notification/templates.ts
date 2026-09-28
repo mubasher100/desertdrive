@@ -42,6 +42,8 @@ export type BookingEmailData = {
     /** The words on a meet & greet board, when this add-on is one. */
     note?: string | null
   }> | null
+  /** True when a leg was booked under 12 hours ahead and charged the short-notice fare. */
+  short_notice?: boolean
   total: number
   currency: string
   /** "pending" when the card has not been captured yet. Cash was removed 27 Sept 2026. */
@@ -81,6 +83,8 @@ const COPY = {
     notes: "Notes",
     addOns: "Extras",
     payment: "Payment",
+    fare: "Fare",
+    shortNotice: "Includes the short-notice fare (booked less than 12 hours before pickup)",
     pending: "Payment being confirmed — we will email you once it clears",
     card: (amt: string) => `${amt} paid by card`,
     view: "View your booking",
@@ -110,6 +114,8 @@ const COPY = {
     notes: "ملاحظات",
     addOns: "الإضافات",
     payment: "الدفع",
+    fare: "الأجرة",
+    shortNotice: "يشمل أجرة الحجز العاجل (تم الحجز قبل أقل من 12 ساعة من الاستقبال)",
     pending: "جارٍ تأكيد الدفع — سنراسلك فور اكتماله",
     card: (amt: string) => `تم دفع ${amt} بالبطاقة`,
     view: "عرض حجزك",
@@ -177,6 +183,8 @@ export function renderBookingConfirmation(d: BookingEmailData): { subject: strin
     ],
     [t.notes, d.notes],
     [t.payment, d.payment === "card" ? t.card(amount) : t.pending],
+    // Says why the total is higher than an ordinary fare, on the receipt.
+    [t.fare, d.short_notice ? t.shortNotice : null],
   ]
 
   const rowsHtml = rows

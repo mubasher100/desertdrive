@@ -22,6 +22,8 @@ export type BookingMeta = {
   contact_phone: string
   contact_email: string
   notes: string | null
+  /** Booked under 12 hours ahead, at the short-notice fare. The owner needs a driver fast. */
+  short_notice: boolean
   /**
    * The extras the customer paid for. English only: this is what the driver
    * reads off the job sheet at 4am, and the rule in CLAUDE.md is that form
@@ -62,6 +64,7 @@ export function readBooking(order: Pick<HttpTypes.AdminOrder, "metadata">): Book
     contact_phone: str(m.contact_phone),
     contact_email: str(m.contact_email),
     notes: m.notes ? str(m.notes) : null,
+    short_notice: m.short_notice === true,
     // Defensive: JSON off a database column, written by a different app.
     add_ons: Array.isArray(m.add_ons)
       ? (m.add_ons as Array<Record<string, unknown>>)

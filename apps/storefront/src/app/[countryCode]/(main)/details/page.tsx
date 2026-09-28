@@ -4,7 +4,7 @@ import TripSummary from "@modules/booking/components/trip-summary"
 import DetailsForm from "@modules/booking/components/details-form"
 import { getQuote } from "@lib/data/quotes"
 import { getAddOns } from "@lib/data/add-ons"
-import { parseTrip, tripToQuery, type SearchParams, tripCoords } from "@lib/booking/trip"
+import { parseTrip, tripToQuery, type SearchParams, tripCoords, pickupAtIso, returnAtIso, legsOf } from "@lib/booking/trip"
 import { formatUsd } from "@lib/util/money"
 import { getTranslations } from "@lib/i18n/get-translations"
 import { localeOf } from "@lib/util/locale"
@@ -46,6 +46,10 @@ export default async function DetailsPage({ params, searchParams }: Props) {
       ...tripCoords(trip),
       passengers: trip.passengers,
       luggage: trip.luggage,
+      // The pickup times decide the short-notice fare, so this page must send
+      // them — without them every trip quotes as if it were a week away.
+      pickup_at: pickupAtIso(trip),
+      return_at: returnAtIso(trip),
       test_key: testKey ?? null,
     }),
     getAddOns(),
@@ -56,6 +60,12 @@ export default async function DetailsPage({ params, searchParams }: Props) {
   const t = getTranslations(countryCode)
   const language = localeOf(countryCode)
   const title = language === "ar" && vehicle.title_ar ? vehicle.title_ar : vehicle.title
+  /**
+   * Fares for this trip — legs, with any short-notice leg counted twice. It
+   * showed ONE fare here before, even on a return, while results showed the
+   * total; the two now agree, and the payment page agrees with both.
+   */
+  const fares = quote?.fare_units?.units ?? legsOf(trip)
 
   return (
     <main className="mx-auto w-full max-w-content px-4 pb-12 pt-6">
@@ -69,8 +79,15 @@ export default async function DetailsPage({ params, searchParams }: Props) {
         <p className="font-medium text-dd-ink">{title}</p>
         <p className="text-end">
           <span className="block text-lg font-semibold tabular-nums text-dd-accent-text">
-            {formatUsd(vehicle.amount)}
+            {formatUsd(vehicle.amount * fares)}
           </span>
+          {fares > 1 && (
+            <span className="block text-xs tabular-nums text-dd-muted">
+              {fares !== legsOf(trip)
+                ? t("results.fareBreakdown", { units: fares, amount: formatUsd(vehicle.amount) })
+                : t("results.legs", { amount: formatUsd(vehicle.amount) })}
+            </span>
+          )}
         </p>
       </div>
 

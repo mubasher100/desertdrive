@@ -44,6 +44,9 @@ export default function BookingSummary({
     [t("confirmed.return"), m.return_at ? `${returnRoute} · ${formatPickupIso(m.return_at, language)}` : undefined],
     [t("confirmed.flight"), m.flight_number ?? undefined],
     [t("confirmed.vehicle"), vehicle],
+    // Why the total is higher than the results page's "from" price: said on
+    // the summary the customer pays from, not left for them to work out.
+    [t("confirmed.fare"), m.short_notice ? t("confirmed.shortNotice") : undefined],
     [
       t("confirmed.passengers"),
       m.passengers !== undefined
@@ -124,6 +127,10 @@ export type BookingMetadata = {
   notes: string | null
   vehicle_title: string
   vehicle_title_ar: string | null
+  /** Fares charged: legs, with a short-notice leg counted twice. */
+  fare_units?: number
+  /** True when any leg was booked under 12 hours ahead. Absent on older bookings. */
+  short_notice?: boolean
   /**
    * The extras, as chosen. Written by createBookingCart alongside the real
    * line items, so the summary, the email and the job sheet can all read them

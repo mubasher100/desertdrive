@@ -33,6 +33,20 @@ export type Quote = {
   quotable: boolean
   /** False when the band is priced but nothing is free at this time. */
   available?: boolean
+  /**
+   * How many fares the trip costs: 1 per leg, doubled for any leg under 12
+   * hours away. Each vehicle's `amount` is ONE fare. Optional: a backend from
+   * before short-notice pricing omits it, and the caller falls back to legs.
+   */
+  fare_units?: FareUnits
+}
+
+export type FareUnits = {
+  units: number
+  legs: number
+  surged_legs: number
+  multiplier: number
+  window_hours: number
 }
 
 /**

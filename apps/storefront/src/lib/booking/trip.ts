@@ -48,6 +48,17 @@ export function legsOf(trip: Trip): 1 | 2 {
   return trip.returnDate && trip.returnTime ? 2 : 1
 }
 
+/**
+ * The vehicle line's quantity: fares, not legs. One per leg, and the
+ * short-notice multiplier for any leg under 12 hours away — as the server's
+ * quote says. Legs when the quote carries no units (an older backend), and
+ * never less than one or a fraction, because it becomes a cart quantity.
+ */
+export function fareUnitsOf(quote: { fare_units?: { units?: number } } | null | undefined, trip: Trip): number {
+  const units = quote?.fare_units?.units
+  return typeof units === "number" && Number.isInteger(units) && units >= 1 ? units : legsOf(trip)
+}
+
 export type SearchParams = Record<string, string | string[] | undefined>
 
 const first = (v: string | string[] | undefined) =>

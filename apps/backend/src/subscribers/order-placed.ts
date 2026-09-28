@@ -64,6 +64,7 @@ export default async function orderPlacedHandler({ event: { data }, container }:
       contact_name: m.contact_name ?? "",
       contact_phone: m.contact_phone ?? "",
       notes: m.notes ?? null,
+      short_notice: m.short_notice === true,
       /**
        * The extras, as the storefront recorded them. Narrowed defensively:
        * this is JSON off a database column, and an order written by an older

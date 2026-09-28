@@ -53,6 +53,9 @@ export async function POST(
     // central" when the destination fell inside a drawn area.
     zone: result.zone,
     vehicles: result.vehicles,
+    // Additive, so an older storefront simply ignores it — see the deploy
+    // race in CLAUDE.md.
+    fare_units: result.fare_units,
     quotable: result.vehicles.length > 0,
     available: result.vehicles.some((v) => v.available),
   })

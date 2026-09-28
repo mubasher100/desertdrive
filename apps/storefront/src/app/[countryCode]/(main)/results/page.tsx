@@ -116,10 +116,26 @@ export default async function ResultsPage({ params, searchParams }: Props) {
             {t("results.fixedPrice")}
           </p>
 
+          {/*
+            Said once, above the prices, before anyone compares them — a
+            doubled fare discovered on the payment page is a customer lost; one
+            explained up front, with the way to avoid it, is a choice.
+          */}
+          {quote.fare_units && quote.fare_units.surged_legs > 0 && (
+            <p role="note" className="mt-4 rounded-dd border border-dd-line bg-dd-paper px-4 py-3 text-sm text-dd-ink-soft">
+              <strong className="font-semibold text-dd-ink">{t("results.shortNotice.title")}</strong>{" "}
+              {t("results.shortNotice.body", {
+                hours: quote.fare_units.window_hours,
+                multiplier: quote.fare_units.multiplier,
+              })}
+            </p>
+          )}
+
           <div className="mt-6">
             <VehiclePicker
               vehicles={quote.vehicles}
               legs={legsOf(trip)}
+              units={quote.fare_units?.units}
               nextHref={`/details?${tripToQuery(trip, typeof sp.test === "string" ? { test: sp.test } : undefined)}`}
             />
           </div>
