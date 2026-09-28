@@ -1,6 +1,7 @@
 import { findArea, areaName } from "@lib/data/areas"
 import { getTranslations } from "@lib/i18n/get-translations"
 import { localeOf, type Language } from "@lib/util/locale"
+import { formatQar, formatUsd } from "@lib/util/money"
 
 /**
  * The booking as a definition list, from the metadata contract. Used on the
@@ -56,7 +57,7 @@ export default function BookingSummary({
       paymentStatus === "card"
         ? t("confirmed.payment.card")
         : paymentStatus === "cash"
-          ? t("confirmed.payment.cash", { amount: total })
+          ? t("confirmed.payment.cash", { amount: formatUsd(total) })
           : undefined,
     ],
   ]
@@ -76,7 +77,10 @@ export default function BookingSummary({
         <div className="grid grid-cols-[110px_1fr] gap-x-3 pt-3 text-base">
           <dt className="font-semibold text-dd-ink">{t("payment.total")}</dt>
           <dd className="font-semibold tabular-nums text-dd-ink">
-            {total} {t("common.currency")}
+            {formatUsd(total)}
+            <span className="ms-2 text-xs font-medium tabular-nums text-dd-muted">
+              {t("money.approx", { qar: formatQar(total, t("common.currency")) })}
+            </span>
           </dd>
         </div>
       </dl>

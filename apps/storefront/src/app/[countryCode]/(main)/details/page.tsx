@@ -4,6 +4,7 @@ import TripSummary from "@modules/booking/components/trip-summary"
 import DetailsForm from "@modules/booking/components/details-form"
 import { getQuote } from "@lib/data/quotes"
 import { parseTrip, tripToQuery, type SearchParams, tripCoords } from "@lib/booking/trip"
+import { formatQar, formatUsd } from "@lib/util/money"
 import { getTranslations } from "@lib/i18n/get-translations"
 import { localeOf } from "@lib/util/locale"
 
@@ -60,8 +61,13 @@ export default async function DetailsPage({ params, searchParams }: Props) {
 
       <div className="mt-4 flex items-center justify-between rounded-dd border border-dd-line bg-dd-surface px-4 py-3">
         <p className="font-medium text-dd-ink">{title}</p>
-        <p className="text-lg font-semibold tabular-nums text-dd-accent-text">
-          {vehicle.amount} <span className="text-sm font-medium text-dd-muted">{t("common.currency")}</span>
+        <p className="text-end">
+          <span className="block text-lg font-semibold tabular-nums text-dd-accent-text">
+            {formatUsd(vehicle.amount)}
+          </span>
+          <span className="block text-xs font-medium tabular-nums text-dd-muted">
+            {t("money.approx", { qar: formatQar(vehicle.amount, t("common.currency")) })}
+          </span>
         </p>
       </div>
 

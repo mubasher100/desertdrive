@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import { clx } from "@medusajs/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { confirmCashBooking, startCardPayment } from "@lib/data/booking"
+import { formatQar, formatUsd } from "@lib/util/money"
 import { useTranslations } from "@lib/i18n/use-translations"
 
 type Method = "card" | "cash"
@@ -74,7 +75,7 @@ export default function PaymentChooser({
 
       {method === "cash" && (
         <p className="mt-4 rounded-dd bg-dd-accent-soft px-4 py-3 text-sm text-dd-ink-soft">
-          {t("payment.cash.note", { amount })}
+          {t("payment.cash.note", { amount: formatUsd(amount) })}
         </p>
       )}
 
@@ -109,6 +110,20 @@ export default function PaymentChooser({
         </p>
       )}
 
+      {/*
+        The conversion, stated at the moment of paying.
+        
+        Prices are shown in dollars throughout because the customer is usually
+        abroad, but the card is charged in riyals by a Qatari gateway. Saying
+        so here — next to the button, not in a footnote — is what keeps "the
+        price shown is the price charged" true when the two are in different
+        currencies. A statement on a card that says $27.47 and a bank line
+        that says QAR 100 is a chargeback waiting to happen.
+      */}
+      <p className="mt-6 rounded-dd border border-dd-line bg-dd-paper px-4 py-3 text-sm text-dd-muted">
+        {t("money.chargedIn", { qar: formatQar(amount, t("common.currency")) })}
+      </p>
+
       <div data-sticky-cta className="sticky bottom-0 z-40 -mx-4 mt-6 border-t border-dd-line bg-dd-surface/95 px-4 py-3 backdrop-blur small:static small:mx-0 small:border-0 small:bg-transparent small:p-0">
         <button
           type="button"
@@ -119,7 +134,7 @@ export default function PaymentChooser({
           {pending
             ? t("common.loading") + "…"
             : method === "card"
-              ? t("payment.card.confirm", { amount })
+              ? t("payment.card.confirm", { amount: formatUsd(amount) })
               : t("payment.cash.confirm")}
         </button>
       </div>

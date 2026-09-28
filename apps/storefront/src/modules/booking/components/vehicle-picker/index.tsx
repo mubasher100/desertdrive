@@ -7,6 +7,7 @@ import { clx } from "@medusajs/ui"
 import type { QuoteVehicle } from "@lib/data/quotes"
 import { useLanguage, useTranslations } from "@lib/i18n/use-translations"
 import { fleetImage } from "@lib/data/fleet-images"
+import { formatQar, formatUsd } from "@lib/util/money"
 
 /**
  * The vehicle choice on the results page.
@@ -122,9 +123,20 @@ export default function VehiclePicker({
               <div className="flex min-w-0 flex-1 flex-col p-4">
                 <div className="flex items-start justify-between gap-3">
                   <h2 className="text-base font-semibold text-dd-ink small:text-lg">{title}</h2>
-                  <p className="shrink-0 text-lg font-semibold tabular-nums text-dd-ink">
-                    {v.amount * legs}{" "}
-                    <span className="text-sm font-medium text-dd-muted">{v.currency_code.toUpperCase() === "QAR" ? t("common.currency") : v.currency_code}</span>
+                  {/*
+                    Dollars lead because the customer is usually abroad and
+                    thinks in them; the riyal total sits underneath because it
+                    is what the card is actually charged, and Qatar's Consumer
+                    Protection Law wants the price shown to be the price paid.
+                    Never one without the other.
+                  */}
+                  <p className="shrink-0 text-end">
+                    <span className="block text-lg font-semibold tabular-nums text-dd-ink">
+                      {formatUsd(v.amount * legs)}
+                    </span>
+                    <span className="block text-xs font-medium tabular-nums text-dd-muted">
+                      {t("money.approx", { qar: formatQar(v.amount * legs, t("common.currency")) })}
+                    </span>
                   </p>
                 </div>
 
@@ -134,7 +146,7 @@ export default function VehiclePicker({
                 </p>
 
                 {legs === 2 && (
-                  <p className="mt-0.5 text-sm text-dd-muted">{t("results.legs", { amount: v.amount })}</p>
+                  <p className="mt-0.5 text-sm text-dd-muted">{t("results.legs", { amount: formatUsd(v.amount) })}</p>
                 )}
 
                 {v.available === false && (
@@ -180,7 +192,7 @@ export default function VehiclePicker({
               {chosen ? (language === "ar" && chosen.title_ar ? chosen.title_ar : chosen.title) : ""}
             </p>
             <p className="text-lg font-semibold tabular-nums text-dd-ink">
-              {chosen ? `${chosen.amount} ${t("common.currency")}` : ""}
+              {chosen ? formatUsd(chosen.amount * legs) : ""}
             </p>
           </div>
           <button
