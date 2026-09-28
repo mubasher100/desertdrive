@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import { useParams, useRouter } from "next/navigation"
 import { useId, useState } from "react"
 import { clx } from "@medusajs/ui"
@@ -92,27 +91,38 @@ export default function VehiclePicker({
               )}
             >
               {/*
-                The thumbnail keeps the photo's OWN 3:2 at every width.
-                A square box here cropped a third off each side, which on a
-                car photo removes the front and the back and leaves a door
-                (reported from a phone, 28 Sept 2026). `object-cover` will
-                always cut something when the box and the file disagree, so
-                the fix is to stop them disagreeing.
+                A SQUARE crop on a phone, a 3:2 above `small` — two files, not
+                one file cropped by CSS.
 
-                `self-start` matters as much as the ratio: the card is a flex
-                row, so without it the box stretches to the card's height and
-                `aspect-[3/2]` is overruled — which is how the first attempt at
-                this still cropped.
+                The card is a horizontal row on a phone and a stacked card on a
+                wide screen, so one aspect ratio cannot serve both. Cropping a
+                3:2 into a square with `object-cover` takes a third off each
+                side, which on a car removes the front and the back and leaves
+                a door (reported from a phone, 28 Sept 2026). Each crop is
+                composed around the vehicle instead, and `<picture>` fetches
+                only the one that matches — so the phone never downloads the
+                wide file it is not going to show.
+
+                A plain `<img>` rather than next/image because art direction
+                needs `<source media>`, which next/image does not expose. The
+                files are already sized and compressed for their boxes, which
+                is most of what next/image would have done here.
               */}
-              <div className="relative aspect-[3/2] w-32 shrink-0 self-start bg-dd-paper small:w-full small:self-auto">
+              <div className="relative aspect-square w-28 shrink-0 self-start overflow-hidden bg-dd-paper xsmall:w-32 small:aspect-[3/2] small:w-full small:self-auto">
                 {photo || v.thumbnail ? (
-                  <Image
-                    src={photo?.src ?? v.thumbnail!}
-                    alt={title}
-                    fill
-                    sizes="(min-width: 1024px) 380px, 112px"
-                    className={clx("object-cover", v.available === false && "opacity-40 grayscale")}
-                  />
+                  <picture>
+                    {photo?.square && <source media="(max-width: 1023px)" srcSet={photo.square} />}
+                    <img
+                      src={photo?.src ?? v.thumbnail!}
+                      alt={title}
+                      loading="lazy"
+                      decoding="async"
+                      className={clx(
+                        "absolute inset-0 h-full w-full object-cover",
+                        v.available === false && "opacity-40 grayscale"
+                      )}
+                    />
+                  </picture>
                 ) : (
                   <div aria-hidden="true" className="flex h-full items-center justify-center text-dd-grey">
                     <CarGlyph />
