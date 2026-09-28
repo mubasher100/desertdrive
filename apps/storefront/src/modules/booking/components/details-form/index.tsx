@@ -22,10 +22,13 @@ export default function DetailsForm({
   segment,
   trip,
   variantId,
+  testKey,
 }: {
   segment: string
   trip: Trip
   variantId: string
+  /** The owner's test key, so the cart's own re-quote can find the test vehicle. */
+  testKey?: string
 }) {
   const t = useTranslations()
   const ids = useId()
@@ -62,7 +65,7 @@ export default function DetailsForm({
     }
 
     startTransition(async () => {
-      const result = await createBookingCart(segment, trip, variantId, values)
+      const result = await createBookingCart(segment, trip, variantId, values, testKey)
       // On success the action redirects and never returns.
       if (result && !result.ok) {
         setErrors(result.errors as ContactErrors)
