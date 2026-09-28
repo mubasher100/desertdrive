@@ -44,9 +44,18 @@ export default async function TermsPage({ params }: Props) {
           <h2>الحجز والتأكيد</h2>
           <p>يُعد حجزك مؤكدًا فور استلامك رقم الحجز. السعر المعروض عند الحجز هو السعر الذي تدفعه؛ لا رسوم إضافية على الوصول أو الازدحام.</p>
           <h2>وقت الانتظار</h2>
-          <p className="placeholder">[المالك: مدة الانتظار المجاني عند الوصول وعند المغادرة، ورسوم الانتظار الإضافي بالساعة.]</p>
-          <h2>عدم الحضور والتأخير</h2>
-          <p className="placeholder">[المالك: ما يحدث إن لم يحضر الراكب، ومتى يُعد الحجز ملغى، وكيف تُعالج تأخيرات الرحلات الجوية.]</p>
+          <p>
+            عند الاستقبال من المطار ينتظرك السائق حتى <strong>90 دقيقة</strong> من وقت هبوط رحلتك فعليًا، دون رسوم إضافية.
+            نتابع رقم الرحلة الذي تزوّدنا به، فتأخّر الوصول لا يكلّفك التوصيلة &mdash; مدة الـ90 دقيقة تبدأ من لحظة الهبوط،
+            لا من الوقت الذي حجزته.
+          </p>
+          <p className="placeholder">[المالك: مدة الانتظار المجاني عند الاستقبال للمغادرة، ورسوم الانتظار الإضافي بالساعة.]</p>
+          <h2>عدم الحضور</h2>
+          <p>
+            إذا لم تلتقِ بالسائق خلال الـ90 دقيقة وتعذّر الوصول إليك على رقم الهاتف المدوّن في الحجز، يُعامَل الحجز على أنه
+            عدم حضور.
+          </p>
+          <p className="placeholder">[المالك: الرسوم المطبّقة عند عدم الحضور.]</p>
           <h2>الركاب والأمتعة</h2>
           <p>لكل سيارة سعة ركاب وأمتعة معلنة. يحق للسائق رفض تحميل ما يتجاوز السعة الآمنة.</p>
           <h2>الإلغاء والاسترداد</h2>
@@ -73,11 +82,18 @@ export default async function TermsPage({ params }: Props) {
             there are no surcharges on arrival or for traffic.
           </p>
           <h2>Waiting time</h2>
-          <p className="placeholder">[Owner: free waiting time on arrivals and on departures, and the hourly charge for additional waiting.]</p>
-          <h2>No-shows and delays</h2>
-          <p className="placeholder">
-            [Owner: what happens if the passenger does not appear, when a booking is treated as cancelled, and how flight delays are handled.]
+          <p>
+            On an airport pickup your driver waits up to <strong>90 minutes</strong> from the time your flight actually
+            lands, at no extra charge. We track the flight number you give us, so a delayed arrival does not cost you
+            the transfer &mdash; the 90 minutes starts when you land, not at the time you booked.
           </p>
+          <p className="placeholder">[Owner: free waiting time on a departure pickup, and the hourly charge beyond the free period.]</p>
+          <h2>No-shows</h2>
+          <p>
+            If you have not met your driver within the 90 minutes and we cannot reach you on the phone number on the
+            booking, the booking is treated as a no-show.
+          </p>
+          <p className="placeholder">[Owner: the charge that applies to a no-show.]</p>
           <h2>Passengers and luggage</h2>
           <p>Each vehicle has a stated passenger and luggage capacity. The driver may decline to carry more than can be carried safely.</p>
           <h2>Cancellation and refunds</h2>

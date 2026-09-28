@@ -219,64 +219,15 @@ export async function createBookingCart(
 }
 
 /**
- * Step 4, cash path. Confirms the booking instantly with payment pending —
- * there is no ops-accept step; the owner commits to every booking taken and
- * marks the cash collected in the admin.
+ * ⚠️ The cash-to-driver path used to live here and is deliberately gone.
  *
- * Uses Medusa's manual provider (pp_system_default). It authorises without
- * taking money; capture is the owner's "cash received" click.
+ * The owner's decision (27 Sept 2026) is card only. It was removed rather than
+ * hidden, because a server action that still exists is one that can still be
+ * invoked — the funnel not linking to it is not the same as it being closed.
+ *
+ * The admin's "Mark cash collected" action stays. Bookings taken before this,
+ * and any the owner takes by phone, still settle in cash and still need it.
  */
-export async function confirmCashBooking(segment: string, accepted: boolean): Promise<{ message: string } | never> {
-  const t = createTranslator(localeOf(segment))
-  const cart = await retrieveBookingCart()
-  if (!cart) {
-    redirect(`/${segment}`)
-  }
-
-  const pickupAt = String((cart.metadata ?? {}).pickup_at ?? "")
-  const lead = checkLeadTimeIso(pickupAt)
-  if (lead) {
-    return {
-      message:
-        lead === "past"
-          ? t("search.error.past")
-          : t("search.error.tooSoon", { lead: leadTimeLabel(localeOf(segment)) }),
-    }
-  }
-
-  let orderId: string
-  try {
-    if (!(await recordConsent(cart, accepted))) {
-      return { message: t("payment.consent.required") }
-    }
-
-    // Hold the car before the order exists. Two people confirming the same
-    // slot at the same second: one of them gets this message instead of a
-    // booking the owner cannot drive.
-    const held = await reserveVehicle(cart.id)
-    if (held !== "ok") {
-      return { message: held === "taken" ? t("payment.error.taken") : t("payment.error.generic") }
-    }
-    const { payment_collection } = await sdk.store.payment.initiatePaymentSession(cart, {
-      provider_id: "pp_system_default",
-    })
-    if (!payment_collection) {
-      throw new Error("No payment collection returned")
-    }
-
-    const result = await sdk.store.cart.complete(cart.id)
-    if (result.type !== "order") {
-      throw new Error(`Cart did not complete: ${JSON.stringify(result.error ?? result)}`)
-    }
-    orderId = result.order.id
-  } catch (e) {
-    console.error("confirmCashBooking failed", e)
-    return { message: t("payment.error.generic") }
-  }
-
-  await clearCartId()
-  redirect(`/${segment}/confirmed/${orderId}?t=${signBookingToken(orderId)}`)
-}
 
 /**
  * Holds the vehicle for this cart's pickup time.

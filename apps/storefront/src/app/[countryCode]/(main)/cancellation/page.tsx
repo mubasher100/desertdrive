@@ -43,8 +43,14 @@ export default async function CancellationPage({ params }: Props) {
           <p>
             يمكنك الإلغاء مجانًا حتى <strong>24 ساعة قبل موعد الاستقبال</strong>، وتسترد كامل المبلغ المدفوع.
           </p>
-          <h2>الإلغاء المتأخر وعدم الحضور</h2>
-          <p className="placeholder">[المالك: الرسوم المطبقة عند الإلغاء بعد المهلة أو عند عدم الحضور.]</p>
+          <h2>عدم الحضور</h2>
+          <p>
+            عند الاستقبال من المطار ينتظرك السائق حتى <strong>90 دقيقة</strong> من وقت هبوط رحلتك فعليًا، دون رسوم إضافية
+            &mdash; نتابع رقم الرحلة المدوّن في حجزك، فالتأخير لا يكلّفك التوصيلة. وإذا لم تلتقِ بالسائق خلال هذه المدة
+            وتعذّر الوصول إليك على رقم الهاتف الذي زوّدتنا به، يُعامَل الحجز على أنه عدم حضور.
+          </p>
+          <h2>الإلغاء المتأخر</h2>
+          <p className="placeholder">[المالك: الرسوم المطبقة عند الإلغاء داخل مهلة الـ24 ساعة، وعند عدم الحضور.]</p>
           <h2>الاسترداد للمدفوعات بالبطاقة</h2>
           <p>
             تُعاد المبالغ إلى البطاقة التي دفعت بها عبر سكيب كاش. نبدأ الاسترداد فور تأكيد الإلغاء، ومدة ظهوره في كشف الحساب تعود إلى بنكك.
@@ -64,8 +70,15 @@ export default async function CancellationPage({ params }: Props) {
             Cancel free of charge up to <strong>24 hours before your pickup time</strong>. You receive a full
             refund of everything you paid.
           </p>
-          <h2>Late cancellation and no-shows</h2>
-          <p className="placeholder">[Owner: the charge that applies to cancellation inside the window, and to no-shows.]</p>
+          <h2>No-shows</h2>
+          <p>
+            On an airport pickup your driver waits up to <strong>90 minutes</strong> from the time your flight actually
+            lands, at no extra charge &mdash; we track the flight number on your booking, so a delay does not cost you the
+            transfer. If you have not met your driver within that time and we cannot reach you on the phone number you
+            gave us, the booking is treated as a no-show.
+          </p>
+          <h2>Late cancellation</h2>
+          <p className="placeholder">[Owner: the charge that applies to cancellation inside the 24-hour window, and to a no-show.]</p>
           <h2>Refunds for card payments</h2>
           <p>
             Refunds go back to the card you paid with, through SkipCash. We start the refund as soon as we
