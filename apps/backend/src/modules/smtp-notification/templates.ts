@@ -140,9 +140,13 @@ export function renderBookingConfirmation(d: BookingEmailData): { subject: strin
    * QAR is pegged at 3.64 to the dollar by the Qatar Central Bank; it is a
    * constant, not a market rate. Mirrors apps/storefront/src/lib/util/money.ts.
    */
-  const usd = (d.total / 3.64).toFixed(2)
-  const amount =
-    d.currency.toUpperCase() === "QAR" ? `$${usd} (${d.total} QAR)` : `${d.total} ${d.currency}`
+  // Whole dollars print without cents and riyals print to the fils, exactly
+  // as on the site (apps/storefront/src/lib/util/money.ts).
+  const cents = Math.round((d.total / 3.64) * 100)
+  const usd = cents % 100 === 0 ? String(cents / 100) : (cents / 100).toFixed(2)
+  const fils = Math.round(d.total * 100)
+  const qar = fils % 100 === 0 ? String(fils / 100) : (fils / 100).toFixed(2)
+  const amount = d.currency.toUpperCase() === "QAR" ? `$${usd} (${qar} QAR)` : `${d.total} ${d.currency}`
   const route = d.direction === "departure" ? t.toAirport(d.address) : t.airportTo(d.address)
 
   // The return is the mirror of the outbound, so it reads with the opposite phrase.

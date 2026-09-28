@@ -22,7 +22,7 @@ export type Credit = {
 }
 
 export const CREDITS: Credit[] = [
-  { subject: "sedan", title: "TOYOTA CAMRY (XV70) China (146).jpg", author: "Dinkun Chen", licence: "CC BY-SA 4.0", licenceUrl: "https://creativecommons.org/licenses/by-sa/4.0/", source: "https://commons.wikimedia.org/wiki/File:TOYOTA_CAMRY_(XV70)_China_(146).jpg", modified: true },
+  { subject: "sedan", title: "TOYOTA COROLLA SEDAN (E210) China (12).jpg", author: "Dinkun Chen", licence: "CC BY-SA 4.0", licenceUrl: "https://creativecommons.org/licenses/by-sa/4.0/", source: "https://commons.wikimedia.org/wiki/File:TOYOTA_COROLLA_SEDAN_(E210)_China_(12).jpg", modified: true },
   { subject: "suv", title: "2018 Toyota Rush 1.5 S.jpg", author: "Aaront1059", licence: "CC BY-SA 4.0", licenceUrl: "https://creativecommons.org/licenses/by-sa/4.0/", source: "https://commons.wikimedia.org/wiki/File:2018_Toyota_Rush_1.5_S.jpg", modified: true },
   { subject: "large-van", title: "Toyota Hiace Commuter Deluxe 2020 (cropped).jpg", author: "Captainmorlypogi1959", licence: "CC BY-SA 4.0", licenceUrl: "https://creativecommons.org/licenses/by-sa/4.0/", source: "https://commons.wikimedia.org/wiki/File:Toyota_Hiace_Commuter_Deluxe_2020_(cropped).jpg", modified: true },
   { subject: "luxury-van", title: "MERCEDES BENZ V-CLASS (W447) China (13).jpg", author: "Dinkun Chen", licence: "CC BY-SA 4.0", licenceUrl: "https://creativecommons.org/licenses/by-sa/4.0/", source: "https://commons.wikimedia.org/wiki/File:MERCEDES_BENZ_V-CLASS_(W447)_China_(13).jpg", modified: true },

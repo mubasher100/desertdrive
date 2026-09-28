@@ -40,7 +40,8 @@ export const FLEET_IMAGES: Record<
    *
    * Representative of each class, not the exact vehicle — models vary. The
    * luxury classes are the owner's named models: a Mercedes V-Class and an
-   * S-Class. Every one is credited on /credits (a condition of CC BY-SA), and
+   * S-Class. The Sedan is a Toyota Corolla — the owner runs a Corolla or an
+   * MG5 (29 Sept 2026). Every one is credited on /credits (a condition of CC BY-SA), and
    * the rows there go when the owner's own photography replaces them.
    */
   sedan: { src: "/fleet/sedan.jpg", square: "/fleet/sedan-square.jpg", width: 1200, height: 800 },

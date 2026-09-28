@@ -26,19 +26,32 @@ export function usdFromQar(qar: number): number {
 }
 
 /**
- * The dollar figure a customer reads, to the cent.
+ * The dollar figure a customer reads.
  *
- * Cents rather than whole dollars on purpose: the price is SET in riyals, so
- * the dollar figure is a conversion of it. Rounding 100 QAR to "$27" understates
- * what the card is charged by nearly half a dollar, and Qatar's Consumer
- * Protection Law is explicit that the price shown is the price charged. The
- * exact figure plus the riyal total alongside it keeps that true.
+ * Whole dollars print without cents — "$17", not "$17.00". Every fare is set
+ * in whole dollars (the owner's ask, 29 Sept 2026: src/data/price-book.ts in
+ * the backend), so this is the normal case; doubled fares, returns and the $5
+ * extras all stay whole. Anything that is not whole — the 1 QAR test vehicle,
+ * a price the owner types into the admin in riyals — keeps its cents rather
+ * than being rounded, because Qatar's Consumer Protection Law wants the price
+ * shown to be the price charged.
+ *
+ * Rounded to the cent first: 61.88 / 3.64 is 16.9999999…, which is $17.
  */
 export function formatUsd(qar: number): string {
-  return `$${usdFromQar(qar).toFixed(2)}`
+  const cents = Math.round(usdFromQar(qar) * 100)
+  return cents % 100 === 0 ? `$${cents / 100}` : `$${(cents / 100).toFixed(2)}`
 }
 
-/** The riyal figure, in Western digits in both languages — see the i18n notes. */
+/**
+ * The riyal figure, in Western digits in both languages — see the i18n notes.
+ *
+ * To the fils: a $17 fare is charged as 61.88 QAR, and a sum of such figures
+ * must print as "123.76", never as floating-point noise like 123.75999999.
+ * A whole riyal amount still prints without decimals.
+ */
 export function formatQar(qar: number, currencyLabel: string): string {
-  return `${qar} ${currencyLabel}`
+  const fils = Math.round(qar * 100)
+  const text = fils % 100 === 0 ? String(fils / 100) : (fils / 100).toFixed(2)
+  return `${text} ${currencyLabel}`
 }

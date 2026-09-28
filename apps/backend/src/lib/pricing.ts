@@ -4,6 +4,7 @@ import {
   createProductVariantsWorkflow,
   setProductProductOptionsWorkflow,
   updateProductOptionsWorkflow,
+  updateProductVariantsWorkflow,
 } from "@medusajs/medusa/core-flows"
 
 type Product = {
@@ -110,4 +111,56 @@ export async function ensurePricedVariant(
   })
 
   return "created"
+}
+
+export type SetPriceResult = "created" | "updated" | "unchanged" | "no-product" | "no-option" | "failed"
+
+/**
+ * Makes one vehicle's price for one pricing code EXACTLY `amount` (QAR).
+ *
+ * ⚠️ Unlike `ensurePricedVariant`, this DOES overwrite. It exists for one
+ * caller — applying a new price book, once, when the owner has issued a new
+ * list — and must not grow others. Everywhere else the admin owns the prices;
+ * a routine that "keeps them in line" with a file would undo the owner's edits
+ * without a word.
+ */
+export async function setVariantPrice(
+  container: MedusaContainer,
+  handle: string,
+  code: string,
+  amount: number
+): Promise<SetPriceResult> {
+  const query = container.resolve(ContainerRegistrationKeys.QUERY)
+
+  const { data: products } = await query.graph({
+    entity: "product",
+    fields: ["id", "variants.id", "variants.options.value", "variants.prices.amount", "variants.prices.currency_code"],
+    filters: { handle },
+  })
+
+  const product = products?.[0] as
+    | { id: string; variants?: Array<{ id: string; options?: Array<{ value: string }>; prices?: Array<{ amount: number; currency_code: string }> }> }
+    | undefined
+
+  if (!product) return "no-product"
+
+  const variant = (product.variants ?? []).find((v) => (v.options ?? []).some((o) => o.value === code))
+
+  if (!variant) {
+    const created = await ensurePricedVariant(container, handle, code, amount)
+    return created === "exists" ? "unchanged" : created
+  }
+
+  const current = (variant.prices ?? []).find((p) => p.currency_code === "qar")?.amount
+  if (current !== undefined && Math.abs(Number(current) - amount) < 0.005) return "unchanged"
+
+  await updateProductVariantsWorkflow(container).run({
+    input: {
+      // Replaces the variant's prices with this one QAR price, which is the
+      // only currency the store sells in.
+      product_variants: [{ id: variant.id, prices: [{ amount, currency_code: "qar" }] }],
+    },
+  })
+
+  return "updated"
 }
