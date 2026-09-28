@@ -13,6 +13,7 @@ import { signBookingToken, verifyBookingToken } from "@lib/booking/token"
 import { createTranslator } from "@lib/i18n/dictionary"
 import { localeOf } from "@lib/util/locale"
 import { checkLeadTime, checkLeadTimeIso, leadTimeLabel } from "@lib/booking/lead-time"
+import { priceAddOns } from "@lib/data/add-ons"
 
 /**
  * The booking's own data layer. Separate from the starter's cart.ts on
@@ -98,7 +99,14 @@ export async function createBookingCart(
    * without the key cannot find the test vehicle and bounces the booking back
    * to results. That is what "the 1 QAR booking switches back to 100" was.
    */
-  testKey?: string | null
+  testKey?: string | null,
+  /**
+   * What the browser asked for: variant id -> quantity. A REQUEST, not an
+   * instruction — `priceAddOns` discards ids the server does not sell and
+   * clamps quantities to each add-on's own cap, so nothing here can add a line
+   * the owner did not put on sale or a quantity they did not allow.
+   */
+  extras?: Record<string, number>
 ): Promise<CreateBookingResult> {
   const t = createTranslator(localeOf(segment))
 
@@ -124,14 +132,17 @@ export async function createBookingCart(
     }
   }
 
-  const quote = await getQuote({
-    ...tripCoords(trip),
-    passengers: trip.passengers,
-    luggage: trip.luggage,
-    pickup_at: pickupAtIso(trip),
-    return_at: returnAtIso(trip),
-    test_key: testKey ?? null,
-  })
+  const [quote, chosenExtras] = await Promise.all([
+    getQuote({
+      ...tripCoords(trip),
+      passengers: trip.passengers,
+      luggage: trip.luggage,
+      pickup_at: pickupAtIso(trip),
+      return_at: returnAtIso(trip),
+      test_key: testKey ?? null,
+    }),
+    priceAddOns(extras ?? {}),
+  ])
   const vehicle = quote?.vehicles.find((v) => v.variant_id === variantId)
   // An unavailable vehicle is treated exactly like a tampered variant: back to
   // results, where the card is greyed out and the reason is on the page.
@@ -183,6 +194,25 @@ export async function createBookingCart(
         notes: contact.notes.trim() || null,
         vehicle_title: vehicle.title,
         vehicle_title_ar: vehicle.title_ar,
+        /**
+         * The extras, flattened onto the trip metadata as well as being real
+         * line items.
+         *
+         * The line items are what charges the money; this is what the job
+         * sheet and the confirmation email read. A driver needs "2 child
+         * seats" in the same place as the flight number and the address, not
+         * reconstructed by walking the order's lines and working out which of
+         * them were vehicles.
+         */
+        add_ons: chosenExtras.length
+          ? chosenExtras.map((e) => ({
+              handle: e.addOn.handle,
+              title: e.addOn.title,
+              title_ar: e.addOn.title_ar,
+              quantity: e.quantity,
+              amount: e.addOn.amount,
+            }))
+          : null,
         locale: segment,
       },
     })
@@ -192,6 +222,24 @@ export async function createBookingCart(
      // no second price to keep in step. There is no return discount unless the
      // owner sets one.
     await sdk.store.cart.createLineItem(cart.id, { variant_id: vehicle.variant_id, quantity: legsOf(trip) })
+
+    /**
+     * 2b. The extras, at the server's prices.
+     *
+     * Sequential rather than parallel on purpose: Medusa recalculates the cart
+     * on every line-item write, and firing several at once has them racing
+     * over the same totals.
+     *
+     * NOT multiplied by legs. A child seat is fitted to the car for the trip;
+     * the customer is not buying a second one for the way home. If the owner
+     * ever wants a per-leg extra, it is a flag on the add-on, not a rule here.
+     */
+    for (const extra of chosenExtras) {
+      await sdk.store.cart.createLineItem(cart.id, {
+        variant_id: extra.addOn.variant_id,
+        quantity: extra.quantity,
+      })
+    }
 
     // 3. Minimal addresses. Nothing is shipped, but Medusa's shipping-option
     //    lookup and tax calculation both key off the country.

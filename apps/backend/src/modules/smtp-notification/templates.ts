@@ -31,6 +31,11 @@ export type BookingEmailData = {
   contact_name: string
   contact_phone: string
   notes: string | null
+  /**
+   * The extras, straight off the order metadata. Optional because every
+   * booking taken before add-ons existed has no such key and must still send.
+   */
+  add_ons?: Array<{ title: string; title_ar?: string | null; quantity: number }> | null
   total: number
   currency: string
   payment: "cash" | "card"
@@ -67,6 +72,7 @@ const COPY = {
     partyValue: (p: number, l: number) => `${p} passengers · ${l} bags`,
     contact: "Contact",
     notes: "Notes",
+    addOns: "Extras",
     payment: "Payment",
     cash: (amt: string) => `Pay ${amt} in cash to your driver`,
     card: (amt: string) => `${amt} paid by card`,
@@ -95,6 +101,7 @@ const COPY = {
     partyValue: (p: number, l: number) => `${p} ركاب · ${l} حقائب`,
     contact: "التواصل",
     notes: "ملاحظات",
+    addOns: "الإضافات",
     payment: "الدفع",
     cash: (amt: string) => `ادفع ${amt} نقدًا لسائقك`,
     card: (amt: string) => `تم دفع ${amt} بالبطاقة`,
@@ -131,6 +138,22 @@ export function renderBookingConfirmation(d: BookingEmailData): { subject: strin
     [t.vehicle, d.vehicle_title],
     [t.party, t.partyValue(d.passengers, d.luggage)],
     [t.contact, `${d.contact_name} · ${d.contact_phone}`],
+    [
+      t.addOns,
+      /**
+       * The driver has to prepare the car for these, so the quantity leads.
+       * Arabic names where the customer booked in Arabic, because this row is
+       * read by the customer; the job sheet the driver reads stays English.
+       */
+      d.add_ons?.length
+        ? d.add_ons
+            .map((a) => {
+              const name = (d.locale === "ar" && a.title_ar) || a.title
+              return a.quantity > 1 ? `${a.quantity} × ${name}` : name
+            })
+            .join(" · ")
+        : null,
+    ],
     [t.notes, d.notes],
     [t.payment, d.payment === "card" ? t.card(amount) : t.cash(amount)],
   ]
