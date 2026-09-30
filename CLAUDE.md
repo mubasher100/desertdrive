@@ -692,7 +692,7 @@ Fill in as each piece goes live. **Ship on `workers.dev` first** — nothing in 
 | Admin | `https://ddbackend-production-e9d1.up.railway.app/app` ✅ live |
 | Storefront | **`https://desertdriverental.com`** ✅ live (25 Sept 2026), `www` too; `https://desertdrive.officialyuvraj24.workers.dev` stays as the pinned fallback |
 | Railway project | `trustworthy-miracle`, Singapore — services `@dd/backend` (+ Redis with a `/data` volume, `redis.railway.internal`) |
-| Cloudflare | account `officialyuvraj24@gmail.com`; R2 bucket `desertdrive-cache` ✅; Worker `desertdrive` ✅ |
+| Cloudflare | account `officialyuvraj24@gmail.com` (`715d05fd…`); R2 buckets `desertdrive-cache` ✅ (page cache) and `desertdrive-uploads` ✅ (sign pictures, public at `pub-17999bb869e748c0bc4c54eaceb7de06.r2.dev`, 30 Sept 2026); Worker `desertdrive` ✅. **The Cloudflare login on the dev machine is the Flowershop account — never create Desert Drive resources through it** |
 | Database | Supabase `desertdrive` (`nlkicwkeqadkooumeavr`), **session pooler**, Singapore ✅ migrated + seeded |
 
 Adding a new storefront origin means updating **`STORE_CORS` and `AUTH_CORS` on Railway**, not just Cloudflare.
