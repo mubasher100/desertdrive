@@ -297,7 +297,13 @@ module.exports = defineConfig({
                     // Customer uploads are kept apart from anything else in
                     // the bucket, so a lifecycle rule can expire them without
                     // touching product imagery.
-                    prefix: process.env.UPLOADS_S3_PREFIX || "sign-images",
+                    //
+                    // ⚠️ The trailing slash is required. file-s3 builds the key
+                    // as `${prefix}${name}` with nothing between, so
+                    // "sign-images" produced keys like "sign-images1790…png" —
+                    // no folder at all, and nothing a lifecycle rule could
+                    // target. Found by the first real upload, 30 Sept 2026.
+                    prefix: process.env.UPLOADS_S3_PREFIX || "sign-images/",
                   },
                 },
               ],
