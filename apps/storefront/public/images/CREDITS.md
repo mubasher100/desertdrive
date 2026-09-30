@@ -8,19 +8,9 @@ credited where the licence requires it (the site footer carries the line).
 | `hero-doha-*.jpg` | [Doha Corniche Skyline View 2](https://commons.wikimedia.org/wiki/File:Doha_Corniche_Skyline_View_2.jpg), Wikimedia Commons | Zairon | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — cropped and resized |
 
 
-## Vehicle classes (28 Sept 2026) — background removed, set on #f7f7f7, cropped and resized
+## Vehicle classes
 
-Adaptations of CC BY-SA 4.0 works, and shared under CC BY-SA 4.0 as that licence requires.
-
-| Files | Source | Author | Licence |
-|---|---|---|---|
-| `fleet/sedan.jpg`, `fleet/sedan-square.jpg` | [TOYOTA COROLLA SEDAN (E210) China (12).jpg](https://commons.wikimedia.org/wiki/File:TOYOTA_COROLLA_SEDAN_(E210)_China_(12).jpg) | Dinkun Chen | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| `fleet/suv.jpg`, `fleet/suv-square.jpg` | [2018 Toyota Rush 1.5 S.jpg](https://commons.wikimedia.org/wiki/File:2018_Toyota_Rush_1.5_S.jpg) | Aaront1059 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| `fleet/large-van.jpg`, `fleet/large-van-square.jpg` | [Toyota Hiace Commuter Deluxe 2020 (cropped).jpg](https://commons.wikimedia.org/wiki/File:Toyota_Hiace_Commuter_Deluxe_2020_(cropped).jpg) | Captainmorlypogi1959 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| `fleet/luxury-van.jpg`, `fleet/luxury-van-square.jpg` | [MERCEDES BENZ V-CLASS (W447) China (13).jpg](https://commons.wikimedia.org/wiki/File:MERCEDES_BENZ_V-CLASS_(W447)_China_(13).jpg) | Dinkun Chen | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| `fleet/luxury-sedan.jpg`, `fleet/luxury-sedan-square.jpg` | [MERCEDES-BENZ S-CLASS (W223) China (10).jpg](https://commons.wikimedia.org/wiki/File:MERCEDES-BENZ_S-CLASS_(W223)_China_(10).jpg) | Dinkun Chen | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-
-Representative of each class, not the owner's actual vehicles. The luxury classes are the owner's named models (Mercedes V-Class, S-Class).
+The owner's own images (30 Sept 2026) — nothing to credit.
 
 ## Retired vehicle photos (kept so old orders still render) until the owner's own arrive)
 
