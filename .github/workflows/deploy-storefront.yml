@@ -66,6 +66,11 @@ jobs:
           NEXT_PUBLIC_DEFAULT_REGION: qa
           NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
           BOOKING_TOKEN_SECRET: ${{ secrets.BOOKING_TOKEN_SECRET }}
+          # The public base of the R2 bucket customer sign pictures go to.
+          # Empty (the repo variable unset) hides the picture control and the
+          # sign's text still works; set it and the next deploy turns it on.
+          # Not a secret — it is printed in every page that shows a picture.
+          NEXT_PUBLIC_UPLOADS_PUBLIC_URL: ${{ vars.UPLOADS_PUBLIC_URL }}
 
       # Plain `wrangler deploy`, not `opennextjs-cloudflare deploy`: the latter
       # first pre-populates the R2 cache through a temporary helper Worker, and

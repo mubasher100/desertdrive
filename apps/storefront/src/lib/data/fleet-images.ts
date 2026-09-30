@@ -33,16 +33,14 @@ export const FLEET_IMAGES: Record<
   { src: string; square: string; width: number; height: number }
 > = {
   /**
-   * The five classes on sale, as one set (28 Sept 2026): Creative Commons
-   * photos cut out of their backgrounds and set on the paper tone, so a square
-   * phone thumbnail shows the WHOLE car instead of the middle of one, and five
-   * photos from five different streets read as a single catalogue.
+   * The five classes on sale — the owner's own images (30 Sept 2026): each car
+   * on the Corniche with the West Bay skyline behind, one consistent set. The
+   * 3:2 crop keeps the skyline; the square closes in on the car so a phone
+   * thumbnail is mostly vehicle. Sedan is an MG5, SUV a Toyota Rush, Large
+   * van a Hiace, and the luxury classes a Mercedes V-Class and S-Class.
    *
-   * Representative of each class, not the exact vehicle — models vary. The
-   * luxury classes are the owner's named models: a Mercedes V-Class and an
-   * S-Class. The Sedan is a Toyota Corolla — the owner runs a Corolla or an
-   * MG5 (29 Sept 2026). Every one is credited on /credits (a condition of CC BY-SA), and
-   * the rows there go when the owner's own photography replaces them.
+   * They replaced Creative Commons stand-ins, so there is nothing to credit;
+   * the retired rows below keep theirs on /credits.
    */
   sedan: { src: "/fleet/sedan.jpg", square: "/fleet/sedan-square.jpg", width: 1200, height: 800 },
   suv: { src: "/fleet/suv.jpg", square: "/fleet/suv-square.jpg", width: 1200, height: 800 },
