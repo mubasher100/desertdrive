@@ -55,7 +55,7 @@ export default async function DetailsPage({ params, searchParams }: Props) {
     getAddOns(),
   ])
   const vehicle = quote?.vehicles.find((v) => v.variant_id === variantId)
-  if (!vehicle) redirect(`/${countryCode}/results?${tripToQuery(trip, carry)}`)
+  if (!vehicle || vehicle.lead_ok === false) redirect(`/${countryCode}/results?${tripToQuery(trip, carry)}`)
 
   const t = getTranslations(countryCode)
   const language = localeOf(countryCode)

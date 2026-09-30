@@ -51,12 +51,12 @@ export default function VehiclePicker({
 
   // Default to the cheapest car that is actually free, not simply the first.
   const [selected, setSelected] = useState<string>(
-    vehicles.find((v) => v.available !== false)?.variant_id ?? ""
+    vehicles.find((v) => !isBlocked(v))?.variant_id ?? ""
   )
   const chosen = vehicles.find((v) => v.variant_id === selected)
 
   function onContinue() {
-    if (!chosen || chosen.available === false) return
+    if (!chosen || isBlocked(chosen)) return
     router.push(`/${segment}${nextHref}&variant=${encodeURIComponent(chosen.variant_id)}`)
   }
 
@@ -86,11 +86,11 @@ export default function VehiclePicker({
               // visits wonders what happened to it. aria-disabled rather than
               // disabled keeps it focusable, so a screen-reader user can still
               // reach it and hear why it cannot be chosen.
-              aria-disabled={v.available === false}
-              onClick={() => v.available !== false && setSelected(v.variant_id)}
+              aria-disabled={isBlocked(v)}
+              onClick={() => !isBlocked(v) && setSelected(v.variant_id)}
               className={clx(
                 "group flex w-full overflow-hidden rounded-dd-lg border-2 bg-dd-surface text-start shadow-card transition-colors small:flex-col",
-                v.available === false
+                isBlocked(v)
                   ? "cursor-not-allowed border-dd-line bg-dd-paper"
                   : isSelected
                     ? "border-dd-accent bg-dd-accent-soft/40"
@@ -126,7 +126,7 @@ export default function VehiclePicker({
                       decoding="async"
                       className={clx(
                         "absolute inset-0 h-full w-full object-cover",
-                        v.available === false && "opacity-40 grayscale"
+                        isBlocked(v) && "opacity-40 grayscale"
                       )}
                     />
                   </picture>
@@ -171,17 +171,29 @@ export default function VehiclePicker({
                   <p className="mt-0.5 text-sm text-dd-muted">{t("results.legs", { amount: formatUsd(v.amount) })}</p>
                 ) : null}
 
-                {v.available === false && (
+                {/*
+                  Two reasons a car cannot be chosen, and they need different
+                  words: "booked at this time" is about the fleet, "book 24
+                  hours ahead" is a rule the customer can meet by moving the
+                  pickup. The card stays on the page either way — a car that
+                  vanishes reads as a bug.
+                */}
+                {v.lead_ok === false ? (
+                  <p className="mt-2 text-sm font-medium text-dd-ink-soft">
+                    {t("results.leadTooSoon", { lead: leadLabel(v.min_lead_minutes ?? 1440, language) })}
+                    <span className="block font-normal text-dd-muted">{t("results.leadTooSoonHelp")}</span>
+                  </p>
+                ) : v.available === false ? (
                   <p className="mt-2 text-sm font-medium text-dd-ink-soft">
                     {t("results.unavailable")}
                     <span className="block font-normal text-dd-muted">{t("results.unavailableHelp")}</span>
                   </p>
-                )}
+                ) : null}
 
                 {/* Conditional, not `hidden`: the attribute's display:none loses
                     to the inline-flex utility class below and the row stays
                     visible under the "booked" message. */}
-                {v.available !== false && (
+                {!isBlocked(v) && (
                 <span
                   aria-hidden="true"
                   className={clx(
@@ -220,7 +232,7 @@ export default function VehiclePicker({
           <button
             type="button"
             onClick={onContinue}
-            disabled={!chosen || chosen.available === false}
+            disabled={!chosen || isBlocked(chosen)}
             className="min-h-[52px] shrink-0 rounded-dd bg-dd-accent px-6 text-base font-semibold text-dd-on-accent transition-colors hover:bg-dd-accent-strong disabled:opacity-50"
           >
             {t("common.continue")}
@@ -239,4 +251,16 @@ function CarGlyph() {
       <circle cx="16.5" cy="14.5" r="1" />
     </svg>
   )
+}
+
+/** A car cannot be chosen when it is booked at this time, or the pickup is inside its own notice. */
+function isBlocked(v: QuoteVehicle): boolean {
+  return v.available === false || v.lead_ok === false
+}
+
+/** "24 hours" / "24 ساعة" — Arabic takes the singular from 11 upwards. */
+function leadLabel(minutes: number, language: string): string {
+  const h = Math.round(minutes / 60)
+  if (language === "ar") return h >= 3 && h <= 10 ? `${h} ساعات` : `${h} ساعة`
+  return `${h} hours`
 }

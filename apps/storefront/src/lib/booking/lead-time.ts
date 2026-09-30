@@ -7,17 +7,17 @@
  * about a refund, so the funnel refuses it at the first step and again on the
  * server before a cart is created.
  *
- * Six hours is the OWNER'S RULE, given on 27 Sept 2026 — not a guess. It
- * replaced a three-hour placeholder. It pairs with the short-notice surcharge
- * in `surge.ts`: under 12 hours costs double, under 6 hours is not bookable
- * here at all.
+ * Twelve hours is the OWNER'S RULE (30 Sept 2026), up from six. The 2×
+ * short-notice fare that covered 6–12 hours went with it: nothing can be
+ * booked that close any more. The luxury classes need 24 hours — that is
+ * per vehicle, decided by the backend's quote (`lead_ok`), not here.
  *
  * Short-notice airport work is still taken by phone, which is exactly what the
  * "too soon" message offers — a WhatsApp link, not a dead end. Overridable with
  * `NEXT_PUBLIC_MIN_LEAD_MINUTES` rather than editing here.
  */
 
-export const MIN_LEAD_MINUTES = Number(process.env.NEXT_PUBLIC_MIN_LEAD_MINUTES ?? 360)
+export const MIN_LEAD_MINUTES = Number(process.env.NEXT_PUBLIC_MIN_LEAD_MINUTES ?? 720)
 
 /** Qatar is UTC+03:00 year-round — no DST, so the offset is a constant. */
 const QATAR_OFFSET_MS = 3 * 60 * 60 * 1000
@@ -95,7 +95,9 @@ export function leadTimeLabel(language: "en" | "ar"): string {
   const hours = MIN_LEAD_MINUTES / 60
   if (Number.isInteger(hours)) {
     if (language === "ar") {
-      return hours === 1 ? "ساعة واحدة" : hours === 2 ? "ساعتين" : `${hours} ساعات`
+      // Arabic counts: plural (ساعات) for 3–10, singular (ساعة) from 11 up —
+      // "12 ساعات" is wrong, "12 ساعة" is right.
+      return hours === 1 ? "ساعة واحدة" : hours === 2 ? "ساعتين" : hours <= 10 ? `${hours} ساعات` : `${hours} ساعة`
     }
     return `${hours} hour${hours === 1 ? "" : "s"}`
   }

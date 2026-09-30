@@ -43,11 +43,10 @@ export default async function TermsPage({ params }: Props) {
           </p>
           <h2>الحجز والتأكيد</h2>
           <p>يُعد حجزك مؤكدًا فور استلامك رقم الحجز. السعر المعروض عند الحجز هو السعر الذي تدفعه؛ لا رسوم إضافية على الوصول أو الازدحام.</p>
-          <h2>مهلة الحجز وأجرة الحجز العاجل</h2>
+          <h2>مهلة الحجز</h2>
           <p>
-            يمكن حجز الاستقبال عبر الموقع قبل <strong>6 ساعات</strong> على الأقل؛ ولأي موعد أقرب راسلنا على واتساب. ويُحتسب الاستقبال
-            المحجوز قبل أقل من <strong>12 ساعة</strong> بـ<strong>ضعف الأجرة العادية</strong>. وفي حجز الذهاب والعودة تُحتسب كل رحلة
-            بحسب مهلتها. أجرة الحجز العاجل مشمولة في السعر المعروض قبل الدفع &mdash; ولا تُضاف بعده أبدًا.
+            يمكن حجز الاستقبال عبر الموقع قبل <strong>12 ساعة</strong> على الأقل، وقبل <strong>24 ساعة</strong> على الأقل لسياراتنا
+            الفاخرة. ولأي موعد أقرب راسلنا على واتساب وسنخبرك إن كان ذلك ممكنًا.
           </p>
           <h2>الدفع</h2>
           <p>
@@ -92,12 +91,10 @@ export default async function TermsPage({ params }: Props) {
             Your booking is confirmed as soon as you receive a booking reference. The price shown when you book is the price you pay;
             there are no surcharges on arrival or for traffic.
           </p>
-          <h2>Notice and short-notice fares</h2>
+          <h2>Booking notice</h2>
           <p>
-            Pickups can be booked online from <strong>6 hours</strong> ahead; for anything sooner, message us on WhatsApp.
-            A pickup booked less than <strong>12 hours</strong> ahead is charged at <strong>twice the standard fare</strong>. On a
-            return booking each leg is priced by its own notice. The short-notice fare is included in the price shown before you
-            pay &mdash; it is never added afterwards.
+            Pickups can be booked online at least <strong>12 hours</strong> ahead, and at least <strong>24 hours</strong> ahead for our
+            luxury vehicles. For anything sooner, message us on WhatsApp and we will tell you whether we can do it.
           </p>
           <h2>Payment</h2>
           <p>

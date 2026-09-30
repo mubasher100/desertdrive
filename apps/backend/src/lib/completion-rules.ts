@@ -24,6 +24,8 @@ export type CompletionFacts = {
     quantity: number
     /** When the cart was created — server-set, so the one clock a client cannot move. */
     createdAt: Date
+    /** The notice this vehicle needs: 12 hours standard, 24 for the luxury classes. */
+    minLeadMinutes?: number
   }
 }
 
@@ -53,6 +55,18 @@ const GRACE_MS = 10 * 60_000
 export const SHORT_NOTICE_ENFORCED_FROM = new Date("2026-09-28T22:00:00Z")
 
 /**
+ * Carts created before this are held to the OLD 6-hour minimum.
+ *
+ * The same deploy race, for the 12- and 24-hour minimums of 30 Sept 2026: a
+ * cart made under the old rules for a pickup 6–12 hours out — or a luxury car
+ * 12–24 hours out — was sold legitimately, and refusing it at completion
+ * would land after SkipCash charged it. Carts from after this instant,
+ * comfortably past both deploys, get the new minimums. Inert afterwards.
+ */
+export const NOTICE_RULES_FROM = new Date("2026-09-30T14:00:00Z")
+const OLD_MIN_LEAD_MINUTES = 360
+
+/**
  * Why a cart may not become an order, or null if it may. Pure, so the gate
  * can be tested without standing up a cart, a payment and a region.
  */
@@ -76,7 +90,8 @@ export function completionProblem(f: CompletionFacts): CompletionProblem | null 
      * was the ONLY place it lived, so the raw Store API would take a booking
      * for twenty minutes from now.
      */
-    if (!meetsLeadTime(pickupAt, pricedAt)) return "too-soon"
+    const lead = createdAt >= NOTICE_RULES_FROM ? f.trip.minLeadMinutes : OLD_MIN_LEAD_MINUTES
+    if (!meetsLeadTime(pickupAt, pricedAt, lead)) return "too-soon"
 
     /**
      * The short-notice fare. The vehicle line must carry at least as many

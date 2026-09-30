@@ -102,7 +102,7 @@ export default async function ResultsPage({ params, searchParams }: Props) {
       {lead ? (
         <Unbookable
           t={t}
-          title={lead === "past" ? t("results.past.title") : t("results.tooSoon.title")}
+          title={lead === "past" ? t("results.past.title") : t("results.tooSoon.title", { lead: leadTimeLabel(language) })}
           body={
             lead === "past"
               ? t("results.past.body")

@@ -147,7 +147,9 @@ export async function createBookingCart(
   const vehicle = quote?.vehicles.find((v) => v.variant_id === variantId)
   // An unavailable vehicle is treated exactly like a tampered variant: back to
   // results, where the card is greyed out and the reason is on the page.
-  if (!quote || !vehicle || vehicle.available === false) {
+  // Inside its own notice (24 hours for the luxury classes) is the same as
+  // unavailable: back to results, where the card says why.
+  if (!quote || !vehicle || vehicle.available === false || vehicle.lead_ok === false) {
     redirect(`/${segment}/results?${tripToQuery(trip)}`)
   }
 
@@ -349,9 +351,10 @@ async function reserveVehicle(cartId: string): Promise<"ok" | "taken" | "error">
 const SKIPCASH_PROVIDER = "pp_skipcash_skipcash"
 
 /** Bump when the wording of /terms, /cancellation or /privacy changes materially. */
+// 2026-09-30: 12 hours' notice (24 for luxury), the short-notice fare removed.
 // 2026-09-28: card only, the 90-minute airport wait, USD display with the
 // 3.64 peg, and the short-notice fare. Orders record which terms were agreed.
-const TERMS_VERSION = "2026-09-28"
+const TERMS_VERSION = "2026-09-30"
 
 /**
  * Records the customer's acceptance of the terms on the cart, so it is carried
