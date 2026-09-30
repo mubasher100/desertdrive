@@ -7,10 +7,13 @@
  * variant price the owner edits in the admin stays the one price and the
  * multiplier never becomes a second price to keep in step.
  *
- * The owner's rules (27–28 Sept 2026):
- *   - under 6 hours' notice   → not bookable online at all (WhatsApp instead)
- *   - under 12 hours' notice  → 2× the fare
- *   - otherwise               → the fare
+ * The owner's rules, as of 30 Sept 2026:
+ *   - standard cars: under 12 hours' notice → not bookable online (WhatsApp)
+ *   - luxury cars (S-Class, V-Class): under 24 hours → not bookable online
+ *   - the 2× short-notice fare is OFF. It applied 6–12 hours out, and with a
+ *     12-hour minimum nothing can be booked that close, so the owner dropped
+ *     it (30 Sept 2026). The machinery stays: set SURGE_MULTIPLIER=2 and a
+ *     SURGE_WINDOW_MINUTES above the minimum to bring it back.
  *
  * Priced PER LEG, by that leg's own notice: a pickup tonight with the return
  * next week is 2 + 1 = 3 units, not 4. Surging a leg that is a week away
@@ -26,12 +29,34 @@ const minutes = (name: string, fallback: number) => {
   return Number.isFinite(v) && v > 0 ? v : fallback
 }
 
-/** Below this much notice a pickup cannot be booked online. */
-export const MIN_LEAD_MINUTES = () => minutes("MIN_LEAD_MINUTES", 360)
+/** Below this much notice a pickup cannot be booked online — for a standard car. */
+export const MIN_LEAD_MINUTES = () => minutes("MIN_LEAD_MINUTES", 720)
+
+/**
+ * Classes that need MORE notice than the standard minimum, in hours. The
+ * owner's rule (30 Sept 2026): the S-Class and V-Class are booked 24 hours
+ * ahead. A product's `min_lead_hours` metadata overrides this, so the owner
+ * can change a class's notice in the admin without a deploy.
+ */
+export const CLASS_MIN_LEAD_HOURS: Record<string, number> = {
+  "luxury-sedan": 24,
+  "luxury-van": 24,
+}
+
+/** The notice one vehicle needs, in minutes: its metadata, its class, or the standard. */
+export function minLeadMinutesFor(handle: string | null | undefined, metadata?: Record<string, unknown> | null): number {
+  const fromMeta = Number(metadata?.min_lead_hours)
+  if (Number.isFinite(fromMeta) && fromMeta > 0) return Math.max(fromMeta * 60, MIN_LEAD_MINUTES())
+  const byClass = handle ? CLASS_MIN_LEAD_HOURS[handle] : undefined
+  return byClass ? Math.max(byClass * 60, MIN_LEAD_MINUTES()) : MIN_LEAD_MINUTES()
+}
 /** Below this much notice a leg is charged at the short-notice multiplier. */
 export const SURGE_WINDOW_MINUTES = () => minutes("SURGE_WINDOW_MINUTES", 720)
-/** How many fares a short-notice leg costs. Whole numbers only: it is a quantity. */
-export const SURGE_MULTIPLIER = () => Math.max(1, Math.round(minutes("SURGE_MULTIPLIER", 2)))
+/**
+ * How many fares a short-notice leg costs. Whole numbers only: it is a
+ * quantity. Default 1 — OFF since 30 Sept 2026, see the header.
+ */
+export const SURGE_MULTIPLIER = () => Math.max(1, Math.round(minutes("SURGE_MULTIPLIER", 1)))
 
 /** Minutes between two instants; NaN for an unparseable pickup. */
 function noticeMinutes(pickupIso: string, from: Date): number {
@@ -79,8 +104,8 @@ export function fareUnits(
   }
 }
 
-/** Whether a pickup is far enough away to book online at all. */
-export function meetsLeadTime(pickupIso: string, from: Date): boolean {
+/** Whether a pickup is far enough away to book online — for the standard minimum, or a given one. */
+export function meetsLeadTime(pickupIso: string, from: Date, leadMinutes: number = MIN_LEAD_MINUTES()): boolean {
   const notice = noticeMinutes(pickupIso, from)
-  return Number.isFinite(notice) && notice >= MIN_LEAD_MINUTES()
+  return Number.isFinite(notice) && notice >= leadMinutes
 }

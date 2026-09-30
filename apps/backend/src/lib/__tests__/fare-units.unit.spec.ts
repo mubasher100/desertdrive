@@ -1,10 +1,24 @@
-import { fareUnits, meetsLeadTime, unitsForLeg } from "../fare-units"
-import { CARD_PROVIDER, completionProblem, SHORT_NOTICE_ENFORCED_FROM } from "../completion-rules"
+import { fareUnits, meetsLeadTime, minLeadMinutesFor, unitsForLeg } from "../fare-units"
+import { CARD_PROVIDER, completionProblem, NOTICE_RULES_FROM, SHORT_NOTICE_ENFORCED_FROM } from "../completion-rules"
+
+/**
+ * The blocks below were written for the 28 Sept rules — 6-hour minimum, 2×
+ * under 12 hours — and still run under them, set explicitly. The surcharge is
+ * OFF by default since 30 Sept, but its machinery is kept for the owner to
+ * switch back on, and these prove it still works when they do. Today's
+ * defaults are tested at the bottom of the file.
+ */
+const ENV = ["MIN_LEAD_MINUTES", "SURGE_WINDOW_MINUTES", "SURGE_MULTIPLIER"] as const
+const withOldRules = () => {
+  beforeAll(() => { process.env.MIN_LEAD_MINUTES = "360"; process.env.SURGE_WINDOW_MINUTES = "720"; process.env.SURGE_MULTIPLIER = "2" })
+  afterAll(() => { for (const k of ENV) delete process.env[k] })
+}
 
 const NOW = new Date("2026-10-01T06:00:00Z")
 const inHours = (h: number) => new Date(NOW.getTime() + h * 3_600_000).toISOString()
 
 describe("unitsForLeg — the owner's 12-hour rule", () => {
+  withOldRules()
   it("charges one fare with 12 hours' notice or more", () => {
     expect(unitsForLeg(inHours(12), NOW)).toBe(1)
     expect(unitsForLeg(inHours(48), NOW)).toBe(1)
@@ -23,6 +37,7 @@ describe("unitsForLeg — the owner's 12-hour rule", () => {
 })
 
 describe("fareUnits", () => {
+  withOldRules()
   it("is one unit for a one-way with plenty of notice", () => {
     expect(fareUnits(inHours(24), null, NOW)).toMatchObject({ units: 1, legs: 1, surged_legs: 0 })
   })
@@ -46,6 +61,7 @@ describe("fareUnits", () => {
 })
 
 describe("meetsLeadTime — the owner's 6-hour minimum", () => {
+  withOldRules()
   it("accepts six hours or more", () => {
     expect(meetsLeadTime(inHours(6), NOW)).toBe(true)
   })
@@ -59,6 +75,7 @@ describe("meetsLeadTime — the owner's 6-hour minimum", () => {
 })
 
 describe("completionProblem — the trip rules at the gate", () => {
+  withOldRules()
   const after = new Date(SHORT_NOTICE_ENFORCED_FROM.getTime() + 86_400_000)
   const at = (h: number) => new Date(after.getTime() + h * 3_600_000).toISOString()
   const base = { providers: [CARD_PROVIDER], holdsTestVehicle: false, proof: undefined, key: "k" }
@@ -95,5 +112,57 @@ describe("completionProblem — the trip rules at the gate", () => {
     const early = new Date(SHORT_NOTICE_ENFORCED_FROM.getTime() - 60_000)
     const pickup = new Date(early.getTime() + 8 * 3_600_000).toISOString()
     expect(completionProblem({ ...base, trip: { pickupAt: pickup, returnAt: null, quantity: 1, createdAt: early } })).toBeNull()
+  })
+})
+
+describe("today's rules (30 Sept 2026) — the defaults", () => {
+  beforeAll(() => { for (const k of ENV) delete process.env[k] })
+
+  it("needs 12 hours for a standard car", () => {
+    expect(minLeadMinutesFor("sedan")).toBe(720)
+    expect(meetsLeadTime(inHours(12), NOW)).toBe(true)
+    expect(meetsLeadTime(inHours(11.9), NOW)).toBe(false)
+  })
+
+  it("needs 24 hours for the S-Class and the V-Class", () => {
+    expect(minLeadMinutesFor("luxury-sedan")).toBe(1440)
+    expect(minLeadMinutesFor("luxury-van")).toBe(1440)
+    expect(meetsLeadTime(inHours(23), NOW, minLeadMinutesFor("luxury-van"))).toBe(false)
+    expect(meetsLeadTime(inHours(24), NOW, minLeadMinutesFor("luxury-van"))).toBe(true)
+  })
+
+  it("lets the owner change a class's notice in the admin, never below the standard", () => {
+    expect(minLeadMinutesFor("luxury-van", { min_lead_hours: 48 })).toBe(2880)
+    expect(minLeadMinutesFor("sedan", { min_lead_hours: 2 })).toBe(720)
+  })
+
+  it("charges no short-notice fare — the 2× is off", () => {
+    expect(fareUnits(inHours(13), null, NOW).units).toBe(1)
+    expect(unitsForLeg(inHours(1), NOW)).toBe(1)
+  })
+
+  describe("at the gate", () => {
+    const after = new Date(NOTICE_RULES_FROM.getTime() + 86_400_000)
+    const at = (h: number) => new Date(after.getTime() + h * 3_600_000).toISOString()
+    const base = { providers: [CARD_PROVIDER], holdsTestVehicle: false, proof: undefined, key: "k" }
+
+    it("refuses a standard car under 12 hours", () => {
+      expect(completionProblem({ ...base, trip: { pickupAt: at(8), returnAt: null, quantity: 1, createdAt: after, minLeadMinutes: 720 } })).toBe("too-soon")
+    })
+
+    it("refuses a luxury car under 24 hours", () => {
+      expect(completionProblem({ ...base, trip: { pickupAt: at(20), returnAt: null, quantity: 1, createdAt: after, minLeadMinutes: 1440 } })).toBe("too-soon")
+    })
+
+    it("accepts a luxury car at 24 hours", () => {
+      expect(completionProblem({ ...base, trip: { pickupAt: at(25), returnAt: null, quantity: 1, createdAt: after, minLeadMinutes: 1440 } })).toBeNull()
+    })
+
+    /** Carts sold under the old 6-hour rule before the deploy are not refused after being charged. */
+    it("holds carts from before the change to the old 6-hour minimum", () => {
+      const early = new Date(NOTICE_RULES_FROM.getTime() - 60_000)
+      const pickup = new Date(early.getTime() + 8 * 3_600_000).toISOString()
+      expect(completionProblem({ ...base, trip: { pickupAt: pickup, returnAt: null, quantity: 1, createdAt: early, minLeadMinutes: 1440 } })).toBeNull()
+    })
   })
 })

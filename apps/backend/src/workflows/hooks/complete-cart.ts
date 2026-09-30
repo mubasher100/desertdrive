@@ -2,6 +2,7 @@ import { completeCartWorkflow } from "@medusajs/medusa/core-flows"
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
 import type { RemoteQueryFunction } from "@medusajs/framework/types"
 import { completionProblem } from "../../lib/completion-rules"
+import { minLeadMinutesFor } from "../../lib/fare-units"
 
 /**
  * Two rules every order must pass, enforced at cart completion because that is
@@ -42,6 +43,7 @@ completeCartWorkflow.hooks.validate(async ({ cart }, { container }) => {
       "created_at",
       "metadata",
       "items.quantity",
+      "items.product.handle",
       "items.product.metadata",
       "payment_collection.payment_sessions.provider_id",
     ],
@@ -52,7 +54,7 @@ completeCartWorkflow.hooks.validate(async ({ cart }, { container }) => {
     | {
         created_at?: string | Date
         metadata?: Record<string, unknown> | null
-        items?: Array<{ quantity?: number; product?: { metadata?: Record<string, unknown> | null } | null }>
+        items?: Array<{ quantity?: number; product?: { handle?: string; metadata?: Record<string, unknown> | null } | null }>
         payment_collection?: { payment_sessions?: Array<{ provider_id?: string }> } | null
       }
     | undefined
@@ -74,6 +76,8 @@ completeCartWorkflow.hooks.validate(async ({ cart }, { container }) => {
           returnAt: row?.metadata?.return_at,
           quantity: Number(vehicleLine.quantity ?? 0),
           createdAt: new Date(row?.created_at ?? Date.now()),
+          // 24 hours for the luxury classes, 12 for the rest.
+          minLeadMinutes: minLeadMinutesFor(vehicleLine.product?.handle, vehicleLine.product?.metadata),
         }
       : undefined,
   })
@@ -85,7 +89,7 @@ completeCartWorkflow.hooks.validate(async ({ cart }, { container }) => {
     throw new MedusaError(MedusaError.Types.INVALID_DATA, "This booking has no pickup time.")
   }
   if (problem === "too-soon") {
-    throw new MedusaError(MedusaError.Types.NOT_ALLOWED, "Pickups need at least 6 hours' notice to book online.")
+    throw new MedusaError(MedusaError.Types.NOT_ALLOWED, "This pickup is too soon to book online for this vehicle. Please choose a later time.")
   }
   if (problem === "under-priced") {
     throw new MedusaError(MedusaError.Types.NOT_ALLOWED, "The fare for this pickup time has changed. Please search again.")

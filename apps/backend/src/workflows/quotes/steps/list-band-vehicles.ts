@@ -9,6 +9,7 @@ import type {
   RemoteQueryFunction,
 } from "@medusajs/framework/types"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import { minLeadMinutesFor } from "../../../lib/fare-units"
 
 type IQueryModule = Omit<RemoteQueryFunction, symbol>
 
@@ -59,6 +60,8 @@ export type QuotedVehicle = {
   luggage: number
   amount: number
   currency_code: string
+  /** Notice this vehicle needs, in minutes: 720 standard, 1440 for the luxury classes. */
+  min_lead_minutes: number
 }
 
 /** Product metadata is untyped JSON; capacity drives which vehicles are offered. */
@@ -223,6 +226,7 @@ export const listBandVehiclesStep = createStep(
         // Stored and returned as-is. 40 QAR is 40, never 4000.
         amount,
         currency_code: CURRENCY,
+        min_lead_minutes: minLeadMinutesFor(product.handle, metadata),
       })
     }
 

@@ -301,7 +301,13 @@ A vehicle is not stock on a shelf — the same Rush is sellable at 06:00 and aga
 
 > **Both numbers above are assumptions, not the owner's stated rules.** Confirm the slot length and the real unit count per vehicle before launch.
 
-### Short-notice fare (owner's rule, 28 Sept 2026)
+### Booking notice (owner's rules, 30 Sept 2026)
+
+**Standard cars: 12 hours. S-Class and V-Class: 24 hours.** Inside that, a pickup cannot be booked online and the customer is sent to WhatsApp. The standard minimum is checked in the widget and on results ("Minimum booking time is 12 hours before pickup"); the luxury minimum is **per vehicle**: `/store/quotes` returns each car's `min_lead_minutes` and `lead_ok`, and a luxury card inside 24 hours is greyed with "Luxury vehicles must be booked at least 24 hours in advance" while the standard cars stay bookable. `CLASS_MIN_LEAD_HOURS` in `lib/fare-units.ts` sets the 24; a product's `min_lead_hours` metadata overrides it from the admin, never below the standard. Both are enforced at cart completion; `NOTICE_RULES_FROM` holds carts from before the change to the old 6 hours.
+
+**The 2× short-notice fare below is OFF** (`SURGE_MULTIPLIER` defaults to 1). It applied 6–12 hours out, and a 12-hour minimum leaves nothing in that window, so the owner dropped it. The machinery and its tests are kept; set `SURGE_MULTIPLIER=2` and a `SURGE_WINDOW_MINUTES` above the minimum to bring it back.
+
+### Short-notice fare (owner's rule, 28 Sept 2026 — switched off 30 Sept)
 
 Under **6 hours'** notice a pickup cannot be booked online. Under **12 hours** it costs **2× the fare**. Priced **per leg by that leg's own notice**: tonight's pickup with a return next week is 2 + 1 = 3 fares, not 4.
 
@@ -311,7 +317,7 @@ It is expressed as **fare units** — the vehicle line's quantity — exactly as
 
 **Enforced at cart completion**, alongside card-only: the 6-hour minimum (which previously lived only in the storefront, so the raw Store API took a booking twenty minutes out) and the fare units on the vehicle line. Judged against the cart's **creation** time with ten minutes' grace, never "now" — on the card path completion runs after SkipCash has charged, and a customer who crossed the 12-hour line on the payment page has already paid the price they were shown. `SHORT_NOTICE_ENFORCED_FROM` skips the fare check for carts from before both halves of the deploy were live; it is inert after 28 Sept 2026 22:00 UTC and can be deleted.
 
-Backend env: `MIN_LEAD_MINUTES` (360), `SURGE_WINDOW_MINUTES` (720), `SURGE_MULTIPLIER` (2). The storefront's `NEXT_PUBLIC_MIN_LEAD_MINUTES` must match the first.
+Backend env: `MIN_LEAD_MINUTES` (720), `SURGE_WINDOW_MINUTES` (720), `SURGE_MULTIPLIER` (1 — off). The storefront's `NEXT_PUBLIC_MIN_LEAD_MINUTES` (720) must match the first.
 
 ### Add-ons
 
@@ -419,7 +425,7 @@ Five steps. Build them in this order.
 - The non-airport end: a **type-to-search combobox**. With `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` set, Google Places suggestions (Qatar only, addresses in English for the driver) are merged **above** the curated areas, so a guest can type their hotel or street rather than finding the nearest district. With no key — or a blocked, slow or failing Maps script — the curated list is exactly what it was. Free text neither source knows offers WhatsApp with what they typed rather than an error.
 - An optional **return leg**: same vehicle, same address, opposite direction, as one booking with two legs. The fare is the one-way fare twice — there is no return discount unless the owner sets one. Both legs are held together by the availability guard, and a vehicle busy on *either* leg cannot take the booking.
 - **A map under the field, always visible, working both ways.** Searching moves the pin so the customer sees what they picked; tapping or dragging the pin sets the destination, which is the only way to express a villa on an unnamed street. Leaflet on OpenStreetMap tiles: no API key, nothing billed per view. It loads *after first paint* (`requestIdleCallback`, timeout fallback for Safari) with its height reserved, so it costs neither LCP nor layout shift — measured at 612 ms LCP, 0 CLS. The pin's coordinates price the trip and ride onto the booking, so the admin card and the confirmation email both carry a maps link the driver can navigate to. The marker is an inline SVG `divIcon`: Leaflet's default points at image files a bundler does not serve and renders broken.
-- Date, time, passengers — bounded by the **lead time**: a pickup must be at least `NEXT_PUBLIC_MIN_LEAD_MINUTES` (default **360** — the owner's six hours, 27 Sept 2026) away. Checked in the widget, again on the results page (a page can sit open for an hour), and finally server-side before a cart is created. A time in the past and a time inside the window get different words: one is a mistake, the other is a booking we would still like by phone.
+- Date, time, passengers — bounded by the **lead time**: a pickup must be at least `NEXT_PUBLIC_MIN_LEAD_MINUTES` (default **720** — the owner's twelve hours, 30 Sept 2026; 24 for the luxury classes, per vehicle) away. Checked in the widget, again on the results page (a page can sit open for an hour), and finally server-side before a cart is created. A time in the past and a time inside the window get different words: one is a mistake, the other is a booking we would still like by phone.
 - Trust strip (licensed drivers, flight tracking, free waiting, fixed price)
 - Service cards, how-it-works, fleet, FAQ
 
@@ -606,7 +612,7 @@ Traps worth not walking into:
 | `NEXT_PUBLIC_BASE_URL` | Storefront's own public URL |
 | `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Places Autocomplete. Referrer-restricted, Places API only |
 | `BOOKING_TOKEN_SECRET` | Same value as the backend's. Server-side only, never `NEXT_PUBLIC_` |
-| `NEXT_PUBLIC_MIN_LEAD_MINUTES` | Minimum notice for a pickup. Default 360 (the owner's six hours) |
+| `NEXT_PUBLIC_MIN_LEAD_MINUTES` | Minimum notice for a pickup. Default 720 (the owner's twelve hours; luxury is 24, per vehicle, from the backend) |
 
 ### GitHub Actions secrets
 
@@ -841,6 +847,6 @@ Ask the owner. Several of these block real work:
 8. **Cancellation and refund policy** — free cancellation up to **24 hours**, full refund to the card, is live (Booking.com's window, the owner's call). The driver waits **90 minutes** from actual landing, after which it is a no-show — live since 27 Sept 2026. **What is still open** while customers tick "I have read and agree": the charge for cancelling INSIDE the window, the charge for a no-show, and free waiting time on a *departure* pickup plus the hourly rate beyond it.
 
    > ⚠️ The 90 minutes came from a one-line meeting note, "no show 90 minutes", which admits two readings: how long the driver waits, or how close to pickup a cancellation counts as a no-show. It is written as the **waiting period** — the standard meaning in airport transfer, and the one that fits the words — but it is an interpretation and the owner should confirm it.
-9. **Minimum notice for a booking** — **6 hours** (`NEXT_PUBLIC_MIN_LEAD_MINUTES`, default 360), the owner's rule of 27 Sept 2026, now also enforced server-side. Anything sooner is sent to WhatsApp. Under **12 hours** is the 2× short-notice fare (28 Sept 2026).
+9. **Minimum notice for a booking** — **12 hours**, **24 for the S-Class and V-Class** (owner, 30 Sept 2026), enforced in the funnel and at cart completion. Anything sooner is sent to WhatsApp. The 2× short-notice fare is off.
 10. **How long one transfer occupies a vehicle** — defaulted to **120 minutes** either side of the pickup (`BOOKING_SLOT_MINUTES`). It decides when the same car can be sold again.
 11. ~~Production SkipCash keys and an SMTP sender~~ — both live. The site takes real money and sends real confirmation emails.

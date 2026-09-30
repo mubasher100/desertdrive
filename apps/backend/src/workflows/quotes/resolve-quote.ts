@@ -7,7 +7,7 @@ import { listBandVehiclesStep } from "./steps/list-band-vehicles"
 import { markAvailabilityStep, type AvailableVehicle } from "./steps/mark-availability"
 import { resolveFareBandStep } from "./steps/resolve-fare-band"
 import { resolveFareZoneStep, type ResolvedZone } from "./steps/resolve-fare-zone"
-import { fareUnits, type FareUnits } from "../../lib/fare-units"
+import { fareUnits, meetsLeadTime, type FareUnits } from "../../lib/fare-units"
 
 export type ResolveQuoteInput = {
   lat: number
@@ -93,7 +93,21 @@ export const resolveQuoteWorkflow = createWorkflow(
           name_ar: data.resolved.band.name_ar,
         },
         zone: data.zone,
-        vehicles: data.vehicles,
+        /**
+         * `lead_ok` per vehicle: whether THIS car can be booked for the chosen
+         * pickup. False only when a pickup time was given and it is inside the
+         * car's own minimum — the luxury classes need 24 hours where the rest
+         * need 12. A card is greyed out with the reason rather than hidden,
+         * like an unavailable one. Absent pickup, nothing to judge: true.
+         */
+        vehicles: data.vehicles.map(function (v) {
+          return {
+            ...v,
+            lead_ok: data.input.pickup_at
+              ? meetsLeadTime(data.input.pickup_at, new Date(), v.min_lead_minutes)
+              : true,
+          }
+        }),
       }
     })
 

@@ -18,6 +18,14 @@ export type QuoteVehicle = {
   priced_by?: string
   /** False when every one of this vehicle is already out around the pickup time. */
   available?: boolean
+  /** The notice this vehicle needs, in minutes: 720 standard, 1440 for the luxury classes. */
+  min_lead_minutes?: number
+  /**
+   * False when the chosen pickup is inside THIS vehicle's minimum notice — the
+   * S-Class and V-Class need 24 hours. Optional: an older backend omits it,
+   * so read it as `=== false`, never `!lead_ok`.
+   */
+  lead_ok?: boolean
 }
 
 export type Quote = {
