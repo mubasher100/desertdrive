@@ -35,6 +35,12 @@ export default async function PrivacyPage({ params }: Props) {
         <>
           <h2>ما نجمعه</h2>
           <p>عند الحجز نطلب منك فقط ما يلزم لتنفيذ رحلتك: اسمك، ورقم جوالك، وبريدك الإلكتروني، ورقم رحلتك، ووجهتك، وموعد الاستقبال، وعدد الركاب والحقائب، وأي ملاحظات تضيفها. لا نطلب إنشاء حساب ولا كلمة مرور.</p>
+          <h2>سجلات الأمان</h2>
+          <p>
+            لحماية الموقع من الاحتيال والهجمات، نسجّل لكل زيارة: عنوان IP، والموقع التقريبي المستنتج منه (الدولة والمدينة ومزوّد
+            الإنترنت)، ونوع المتصفح، والصفحة التي زرتها. لا يحدد ذلك هويتك ولا عنوانك. لا تتضمن هذه السجلات وجهة رحلتك ولا أي شيء تكتبه
+            في النماذج. تحفظها Cloudflare نيابةً عنا وتُحذف تلقائيًا خلال 7 أيام كحد أقصى، ولا نستخدمها إلا لأغراض الأمان.
+          </p>
           <h2>لماذا نجمعه</h2>
           <ul>
             <li>لإرسال السائق إلى المكان والوقت الصحيحين، ولمتابعة رحلتك عند التأخير.</li>
@@ -59,6 +65,13 @@ export default async function PrivacyPage({ params }: Props) {
         <>
           <h2>What we collect</h2>
           <p>When you book, we ask only for what is needed to run your trip: your name, mobile number, email address, flight number, destination, pickup time, number of passengers and bags, and any notes you add. There is no account and no password.</p>
+          <h2>Security logs</h2>
+          <p>
+            To protect the site against fraud and attacks, we log each visit: your IP address, the approximate location it implies
+            (country, city and internet provider), your browser type, and the page you visited. This does not identify you or your
+            address. These logs do not include your trip destination or anything you type into a form. Cloudflare keeps them on our
+            behalf and deletes them automatically within 7 days, and we use them only for security.
+          </p>
           <h2>Why we collect it</h2>
           <ul>
             <li>To send a driver to the right place at the right time, and to track your flight if it is delayed.</li>
