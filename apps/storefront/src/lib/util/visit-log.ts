@@ -33,14 +33,22 @@ export async function logVisit(request: NextRequest): Promise<void> {
       cf = {}
     }
 
+    const ip = h.get("cf-connecting-ip") ?? h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null
+    const city = (cf.city as string) ?? null
+    const country = (cf.country as string) ?? h.get("cf-ipcountry") ?? null
+    const network = (cf.asOrganization as string) ?? null
+
     console.log(
       JSON.stringify({
+        // What the Logs list shows in its Message column, so a visit reads at
+        // a glance: "visit 37.211.1.20 · Doha, QA · Ooredoo → /en-qa".
+        message: `visit ${ip ?? "?"} · ${[city, country].filter(Boolean).join(", ") || "?"} · ${network ?? "?"} → ${request.nextUrl.pathname}`,
         visit: {
-          ip: h.get("cf-connecting-ip") ?? h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
-          country: (cf.country as string) ?? h.get("cf-ipcountry") ?? null,
-          city: (cf.city as string) ?? null,
+          ip,
+          country,
+          city,
           region: (cf.region as string) ?? null,
-          network: (cf.asOrganization as string) ?? null,
+          network,
           asn: (cf.asn as number) ?? null,
           path: request.nextUrl.pathname,
           method: request.method,

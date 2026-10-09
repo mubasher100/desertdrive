@@ -55,8 +55,22 @@
     { "pattern": "www.desertdriverental.com", "custom_domain": true }
   ],
 
+  /**
+   * Workers Logs — the owner's visitor log (Workers & Pages → desertdrive →
+   * Logs). Only what the code writes is kept: one "visit" line per page view
+   * (src/lib/util/visit-log.ts).
+   *
+   * ⚠️ `invocation_logs: false` is a privacy setting, not tidying. Cloudflare's
+   * automatic per-request lines record the FULL URL, and a results-page URL
+   * carries the customer's destination and its coordinates. The privacy
+   * policy promises destinations are not logged; this is what keeps that true.
+   */
   "observability": {
-    "enabled": true
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": false
+    }
   },
 
   /**
