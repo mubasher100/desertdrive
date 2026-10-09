@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { DEFAULT_SEGMENT, resolveSegment } from "@lib/util/locale"
+import { logVisit } from "@lib/util/visit-log"
 
 /**
  * Puts every request under a locale segment: `/en-qa/...` or `/ar-qa/...`.
@@ -32,6 +33,11 @@ export async function middleware(request: NextRequest) {
   if (isExempt(pathname)) {
     return NextResponse.next()
   }
+
+  // One security log line per page visit — see visit-log.ts for what is and
+  // is not recorded. After the exemption above, so images and scripts do not
+  // each add a line.
+  await logVisit(request)
 
   const [, first, ...rest] = pathname.split("/")
   const resolution = resolveSegment(first)
