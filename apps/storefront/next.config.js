@@ -31,6 +31,16 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    /**
+     * No optimizer: on Cloudflare Workers, Next's image resizing needs an
+     * IMAGES binding (Cloudflare Images) that this Worker does not have, so
+     * every `/_next/image` request logged "env.IMAGES binding is not defined"
+     * and sent the original file anyway — a Worker invocation and a log line
+     * per image, for nothing. Images are served as the static files they
+     * already are, each prepared at the size it is used (the fleet's squares
+     * and 3:2 crops; the hero's 960/1920 pair via <picture>).
+     */
+    unoptimized: true,
     remotePatterns: [
       // Local Medusa backend during development.
       { protocol: "http", hostname: "localhost" },
