@@ -1,19 +1,25 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { Calendar } from "@medusajs/icons"
-import { Badge, Container, Heading, Table, Text } from "@medusajs/ui"
-import { useQuery } from "@tanstack/react-query"
+import { Badge, Button, Container, Heading, Text, toast } from "@medusajs/ui"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { sdk } from "../../lib/client"
-import { formatPickup, readBooking, readPayment, routeLabel } from "../../lib/booking"
+import "../../lib/simplify"
+import { formatPickup, money, readBooking, readPayment, routeLabel, statusBadge } from "../../lib/booking"
 
-type Tab = "upcoming" | "past"
+type Tab = "upcoming" | "past" | "cancelled"
 
 /**
- * The job sheet: every booking ordered by pickup time, upcoming first. Medusa's
- * order list cannot filter on metadata, so the most recent orders are fetched
- * and sorted here. At this business's volume (a few bookings a day) that is
- * hundreds of rows at most; revisit with a dedicated index if it ever is not.
+ * The owner's home: every booking as a card, soonest first.
+ *
+ * Cards rather than a table, because the owner reads this on a phone — a
+ * table of seven columns is unreadable at 375 px, a card is not. Each card
+ * opens the booking, where the buttons are.
+ *
+ * Medusa's order list cannot filter on metadata, so the most recent orders
+ * are fetched and sorted here. At this business's volume (a few bookings a
+ * day) that is hundreds at most; revisit with an index if it ever is not.
  */
 const BookingsPage = () => {
   const [tab, setTab] = useState<Tab>("upcoming")
@@ -33,161 +39,126 @@ const BookingsPage = () => {
     const now = Date.now()
     const all = (data?.orders ?? [])
       .map((order) => ({ order, booking: readBooking(order), payment: readPayment(order) }))
-      .filter((r): r is typeof r & { booking: NonNullable<typeof r.booking> } => !!r.booking && r.order.status !== "canceled")
-    const upcoming = all.filter((r) => new Date(r.booking.pickup_at).getTime() >= now - 3 * 3600_000)
-    const past = all.filter((r) => new Date(r.booking.pickup_at).getTime() < now - 3 * 3600_000)
+      .filter((r): r is typeof r & { booking: NonNullable<typeof r.booking> } => !!r.booking)
+    const cancelled = all.filter((r) => r.booking.status === "cancelled" || r.order.status === "canceled")
+    const live = all.filter((r) => !cancelled.includes(r))
+    const upcoming = live.filter((r) => new Date(r.booking.pickup_at).getTime() >= now - 3 * 3600_000)
+    const past = live.filter((r) => new Date(r.booking.pickup_at).getTime() < now - 3 * 3600_000)
     upcoming.sort((a, b) => a.booking.pickup_at.localeCompare(b.booking.pickup_at))
     past.sort((a, b) => b.booking.pickup_at.localeCompare(a.booking.pickup_at))
-    return { upcoming, past }
+    cancelled.sort((a, b) => b.booking.pickup_at.localeCompare(a.booking.pickup_at))
+    return { upcoming, past, cancelled }
   }, [data])
 
+  const testEmail = useMutation({
+    mutationFn: () => sdk.client.fetch<{ sent_to: string }>("/admin/bookings/test-email", { method: "POST" }),
+    onSuccess: (r) => toast.success(`Test email sent to ${r.sent_to}`),
+    onError: (e: Error) => toast.error(e.message || "The test email did not send"),
+  })
+
   const list = rows[tab]
+  const needConfirming = rows.upcoming.filter((r) => r.booking.status === "new").length
 
   return (
     <Container className="divide-y p-0">
-      <div className="flex items-center justify-between px-6 py-4">
+      <div className="flex flex-col gap-3 px-4 py-4 small:px-6">
+        <div className="flex flex-col gap-3 xsmall:flex-row xsmall:items-start xsmall:justify-between">
         <div>
           <Heading level="h1">Bookings</Heading>
           <Text size="small" className="text-ui-fg-subtle">
-            Airport transfers by pickup time, Qatar time. Open a booking to see the full details and mark cash collected.
+            {needConfirming > 0
+              ? `${needConfirming} new booking${needConfirming === 1 ? "" : "s"} to confirm. Times are Qatar time.`
+              : "Times are Qatar time. Tap a booking to confirm, message or cancel it."}
           </Text>
         </div>
-        <div className="flex gap-x-2">
+          {/* Sends the "new booking" email with sample data, to check it arrives. */}
+          <Button
+            size="small"
+            variant="secondary"
+            className="min-h-[44px] w-full shrink-0 xsmall:w-auto"
+            isLoading={testEmail.isPending}
+            disabled={testEmail.isPending}
+            onClick={() => testEmail.mutate()}
+          >
+            Send test email
+          </Button>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
           <TabButton active={tab === "upcoming"} onClick={() => setTab("upcoming")} label={`Upcoming (${rows.upcoming.length})`} />
           <TabButton active={tab === "past"} onClick={() => setTab("past")} label={`Past (${rows.past.length})`} />
+          <TabButton active={tab === "cancelled"} onClick={() => setTab("cancelled")} label={`Cancelled (${rows.cancelled.length})`} />
         </div>
       </div>
 
       {isLoading ? (
-        <div className="px-6 py-8">
-          <Text size="small" className="text-ui-fg-subtle">
-            Loading bookings…
-          </Text>
+        <div className="px-4 py-8 small:px-6">
+          <Text size="small" className="text-ui-fg-subtle">Loading bookings…</Text>
         </div>
       ) : list.length === 0 ? (
-        <div className="px-6 py-8">
+        <div className="px-4 py-8 small:px-6">
           <Text size="small" className="text-ui-fg-subtle">
-            {tab === "upcoming" ? "No upcoming bookings." : "No past bookings."}
+            {tab === "upcoming" ? "No upcoming bookings." : tab === "past" ? "No past bookings." : "No cancelled bookings."}
           </Text>
         </div>
       ) : (
-        <Table>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>Pickup</Table.HeaderCell>
-              <Table.HeaderCell>Ref</Table.HeaderCell>
-              <Table.HeaderCell>Route</Table.HeaderCell>
-              <Table.HeaderCell>Flight</Table.HeaderCell>
-              <Table.HeaderCell>Pax · bags</Table.HeaderCell>
-              <Table.HeaderCell>Contact</Table.HeaderCell>
-              <Table.HeaderCell>Payment</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {list.map(({ order, booking, payment }) => {
-              const p = formatPickup(booking.pickup_at)
-              const currency = String(order.currency_code ?? "qar").toUpperCase()
-              return (
-                <Table.Row key={order.id} className="cursor-pointer [&_td]:align-top">
-                  <Table.Cell>
-                    <Link to={`/orders/${order.id}`} className="block">
-                      <Text size="small" weight="plus" leading="compact">
-                        {p.date}
+        <ul className="divide-y">
+          {list.map(({ order, booking, payment }) => {
+            const p = formatPickup(booking.pickup_at)
+            const badge = statusBadge(booking, payment.amount)
+            return (
+              <li key={order.id}>
+                <Link
+                  to={`/bookings/${order.id}`}
+                  className="flex flex-col gap-1.5 px-4 py-4 transition-colors hover:bg-ui-bg-base-hover focus-visible:bg-ui-bg-base-hover small:px-6"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <Text size="base" weight="plus" leading="compact">
+                        {p.date} · {p.time}
                       </Text>
-                      <Text size="small" leading="compact" className="text-ui-fg-subtle">
-                        {p.time}
+                      <Text size="small" className="text-ui-fg-subtle">
+                        DD-{order.display_id} · {String(order.metadata?.vehicle_title ?? "")}
                       </Text>
-                    </Link>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Link to={`/orders/${order.id}`} className="text-ui-fg-interactive hover:underline">
-                      DD-{order.display_id}
-                    </Link>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Badge size="2xsmall" color={booking.direction === "arrival" ? "blue" : "orange"} className="me-2">
-                      {booking.direction === "arrival" ? "From" : "To"}
+                    </div>
+                    <Badge size="2xsmall" color={badge.color} className="shrink-0">
+                      {badge.label}
                     </Badge>
-                    {routeLabel(booking)}
-                    {booking.return_at && (
-                      <Badge size="2xsmall" color="purple" className="ms-2">
-                        + return
-                      </Badge>
-                    )}
-                    {/* Short notice means a driver is needed soon — flag it on the sheet. */}
-                    {booking.short_notice && (
-                      <Badge size="2xsmall" color="red" className="ms-2">
-                        short notice
-                      </Badge>
-                    )}
-                  </Table.Cell>
-                  <Table.Cell>{booking.flight_number ?? "—"}</Table.Cell>
-                  <Table.Cell>
-                    {booking.passengers} · {booking.luggage}
-                    {/*
-                      The extras sit with the party size because they are the
-                      same question for the driver: what has to be IN the car
-                      before it leaves. A child seat missed here is a booking
-                      that cannot be driven on arrival.
-                    */}
-                    {booking.add_ons.map((a) => (
-                      <Badge key={a.title} size="2xsmall" color="green" className="mt-1 block w-fit">
-                        {/*
-                          The sign's words, not just "Meet & greet sign" — the
-                          text IS the deliverable, and the driver is reading
-                          this row to find out what to write on the board.
-                        */}
-                        {a.note
-                          ? `${a.title}: "${a.note}"`
-                          : a.quantity > 1
-                            ? `${a.quantity} × ${a.title}`
-                            : a.title}
-                      </Badge>
-                    ))}
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Text size="small" leading="compact">
-                      {booking.contact_name}
+                  </div>
+                  <Text size="small">{routeLabel(booking)}</Text>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <Text size="small" className="text-ui-fg-subtle">
+                      {booking.contact_name} · {booking.contact_phone}
                     </Text>
-                    <a className="text-ui-fg-interactive hover:underline" href={`tel:${booking.contact_phone}`}>
-                      {booking.contact_phone}
-                    </a>
-                  </Table.Cell>
-                  <Table.Cell>
-                    {payment.method === "cash" ? (
-                      <Badge size="2xsmall" color={payment.captured ? "green" : "grey"}>
-                        {payment.captured ? "Cash collected" : `Cash · ${payment.amount} ${currency}`}
-                      </Badge>
-                    ) : (
-                      <Badge size="2xsmall" color={payment.captured ? "green" : "orange"}>
-                        {payment.captured ? `Card · ${payment.amount} ${currency}` : "Card pending"}
-                      </Badge>
-                    )}
-                  </Table.Cell>
-                </Table.Row>
-              )
-            })}
-          </Table.Body>
-        </Table>
+                    <Text size="small" weight="plus">
+                      {money(payment.amount)}
+                      {payment.captured ? "" : " · not paid"}
+                    </Text>
+                  </div>
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
       )}
     </Container>
   )
 }
 
-const TabButton = ({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) => (
-  <button
-    type="button"
-    onClick={onClick}
-    aria-pressed={active}
-    className={
-      active
-        ? "rounded-md bg-ui-bg-base-pressed px-3 py-1.5 text-sm font-medium text-ui-fg-base shadow-borders-base"
-        : "rounded-md px-3 py-1.5 text-sm text-ui-fg-subtle hover:bg-ui-bg-base-hover"
-    }
-  >
-    {label}
-  </button>
-)
+function TabButton({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={
+        "min-h-[44px] rounded-md px-2 text-xs font-medium transition-colors small:text-sm " +
+        (active ? "bg-ui-button-inverted text-ui-fg-on-inverted" : "bg-ui-bg-component text-ui-fg-subtle hover:bg-ui-bg-component-hover")
+      }
+    >
+      {label}
+    </button>
+  )
+}
 
 export const config = defineRouteConfig({
   label: "Bookings",
