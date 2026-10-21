@@ -3,6 +3,7 @@ import { quoteMiddlewares } from "./store/quotes/middlewares"
 import { reservationMiddlewares } from "./store/reservations/middlewares"
 import { fareZoneMiddlewares } from "./admin/fare-zones/middlewares"
 import { signImageMiddlewares } from "./store/sign-image/middlewares"
+import { bookingAdminMiddlewares } from "./admin/bookings/middlewares"
 
 export default defineMiddlewares({
   routes: [
@@ -10,5 +11,6 @@ export default defineMiddlewares({
     ...reservationMiddlewares,
     ...fareZoneMiddlewares,
     ...signImageMiddlewares,
+    ...bookingAdminMiddlewares,
   ],
 })

@@ -270,10 +270,116 @@ export function renderBookingConfirmation(d: BookingEmailData): { subject: strin
 }
 
 /** Dispatch by template name, so the provider stays generic. */
+/**
+ * The office's copy of a new booking — to info@ — with a button that opens it
+ * in the admin, where it is confirmed. English only: it is read by the owner,
+ * not the customer. Every value that came from a customer is escaped; the
+ * only links are ones this server built.
+ */
+export type OwnerAlertData = {
+  reference: string
+  admin_url: string
+  direction: "arrival" | "departure"
+  address: string
+  lat?: number | null
+  lng?: number | null
+  pickup_at: string
+  return_at?: string | null
+  flight_number: string | null
+  vehicle_title: string
+  passengers: number
+  luggage: number
+  contact_name: string
+  contact_phone: string
+  contact_email: string
+  notes: string | null
+  add_ons?: Array<{ title: string; quantity: number; note?: string | null; image_url?: string | null }> | null
+  total: number
+  currency: string
+  paid: boolean
+  /** Customer's own WhatsApp link, built server-side from their phone number. */
+  whatsapp_customer_url?: string | null
+}
+
+export function renderOwnerBookingAlert(d: OwnerAlertData): { subject: string; html: string; text: string } {
+  const pickup = formatPickup(d.pickup_at, "en")
+  const route = d.direction === "departure" ? `${d.address} → Hamad International Airport` : `Hamad International Airport → ${d.address}`
+  const cents = Math.round((d.total / 3.64) * 100)
+  const usd = cents % 100 === 0 ? String(cents / 100) : (cents / 100).toFixed(2)
+  const fils = Math.round(d.total * 100)
+  const qar = fils % 100 === 0 ? String(fils / 100) : (fils / 100).toFixed(2)
+  const amount = d.currency.toUpperCase() === "QAR" ? `$${usd} (${qar} QAR)` : `${d.total} ${d.currency}`
+  const map = typeof d.lat === "number" && typeof d.lng === "number" ? `https://www.google.com/maps?q=${d.lat},${d.lng}` : null
+  const extras = (d.add_ons ?? [])
+    .map((a) => (a.note ? `${a.title}: “${a.note}”` : a.quantity > 1 ? `${a.quantity} × ${a.title}` : a.title))
+    .join(" · ")
+  const signPicture = (d.add_ons ?? []).find((a) => a.image_url)?.image_url ?? null
+
+  const rows: Array<[string, string | null]> = [
+    ["Pickup", pickup],
+    ["Return", d.return_at ? formatPickup(d.return_at, "en") : null],
+    ["Route", route],
+    ["Flight", d.flight_number],
+    ["Vehicle", d.vehicle_title],
+    ["Passengers", `${d.passengers} passengers · ${d.luggage} bags`],
+    ["Extras", extras || null],
+    ["Customer", d.contact_name],
+    ["Phone", d.contact_phone],
+    ["Email", d.contact_email],
+    ["Notes", d.notes],
+    ["Payment", d.paid ? `${amount} — paid by card` : `${amount} — payment not yet confirmed`],
+  ]
+  const rowsHtml = rows
+    .filter(([, v]) => !!v)
+    .map(
+      ([k, v]) => `<tr><td style="padding:8px 0;color:#5a6366;font-size:13px;width:110px;vertical-align:top">${esc(k)}</td><td style="padding:8px 0;color:#111518;font-size:14px">${esc(v)}</td></tr>`
+    )
+    .join("")
+  const button = (href: string, label: string, primary = false) =>
+    `<a href="${esc(href)}" style="display:inline-block;margin:0 8px 8px 0;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;${
+      primary ? "background:#0a4fb3;color:#ffffff" : "background:#eceeef;color:#111518"
+    }">${esc(label)}</a>`
+
+  const html = `<!doctype html><html><body style="margin:0;background:#f7f7f7;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:24px 12px"><tr><td align="center">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#ffffff;border-radius:12px;padding:24px">
+<tr><td>
+  <p style="margin:0 0 4px;color:#5a6366;font-size:13px">New booking</p>
+  <h1 style="margin:0 0 4px;color:#111518;font-size:22px">${esc(d.reference)} · ${esc(pickup)}</h1>
+  <p style="margin:0 0 20px;color:#111518;font-size:15px">${esc(d.vehicle_title)} · ${esc(d.contact_name)}</p>
+  <div>
+    ${button(d.admin_url, "Open booking to confirm", true)}
+    ${d.whatsapp_customer_url ? button(d.whatsapp_customer_url, "WhatsApp customer") : ""}
+    ${d.contact_phone ? button(`tel:${d.contact_phone}`, "Call customer") : ""}
+    ${map ? button(map, "Pickup on map") : ""}
+    ${signPicture ? button(signPicture, "Sign picture") : ""}
+  </div>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:12px;border-top:1px solid #d9dcdd">${rowsHtml}</table>
+  <p style="margin:20px 0 0;color:#5a6366;font-size:12px">Reply to this email to write to the customer.</p>
+</td></tr></table></td></tr></table></body></html>`
+
+  const text = [
+    `New booking ${d.reference}`,
+    "",
+    ...rows.filter(([, v]) => !!v).map(([k, v]) => `${k}: ${v}`),
+    "",
+    `Open booking to confirm: ${d.admin_url}`,
+    d.whatsapp_customer_url ? `WhatsApp customer: ${d.whatsapp_customer_url}` : null,
+    map ? `Pickup on map: ${map}` : null,
+    signPicture ? `Sign picture: ${signPicture}` : null,
+  ]
+    .filter((l) => l !== null)
+    .join("\n")
+
+  return { subject: `New booking ${d.reference} · ${pickup} · ${d.vehicle_title}`, html, text }
+}
+
 export function renderTemplate(template: string, data: Record<string, unknown>) {
   switch (template) {
     case "booking-confirmation":
       return renderBookingConfirmation(data as BookingEmailData)
+    case "booking-owner-alert":
+      return renderOwnerBookingAlert(data as OwnerAlertData)
     default:
       throw new Error(`Unknown email template "${template}"`)
   }

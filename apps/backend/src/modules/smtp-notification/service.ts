@@ -82,7 +82,13 @@ export default class SmtpNotificationService extends AbstractNotificationProvide
 
     const info = await this.transporter.sendMail({
       from: notification.from || this.from,
-      ...(this.replyTo ? { replyTo: this.replyTo } : {}),
+      // A notification may name its own reply-to — the owner's copy of a
+      // booking replies to the customer. Otherwise the configured address.
+      ...(typeof notification.data?.reply_to === "string" && notification.data.reply_to
+        ? { replyTo: notification.data.reply_to }
+        : this.replyTo
+          ? { replyTo: this.replyTo }
+          : {}),
       to: notification.to,
       subject,
       html,

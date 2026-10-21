@@ -41,6 +41,13 @@ export type BookingMeta = {
   }>
   locale: string
   terms_accepted_at: string | null
+  /** The owner's own state for the booking — see lib/booking-status.ts on the backend. */
+  status: "new" | "confirmed" | "cancelled"
+  confirmed_at: string | null
+  cancelled_at: string | null
+  cancel_reason: string | null
+  /** QAR recorded as refunded, after it was refunded in the SkipCash portal. */
+  refunded_total: number
 }
 
 export function readBooking(order: Pick<HttpTypes.AdminOrder, "metadata">): BookingMeta | null {
@@ -82,7 +89,40 @@ export function readBooking(order: Pick<HttpTypes.AdminOrder, "metadata">): Book
       : [],
     locale: str(m.locale) || "en",
     terms_accepted_at: m.terms_accepted_at ? str(m.terms_accepted_at) : null,
+    status: m.booking_status === "confirmed" || m.booking_status === "cancelled" ? m.booking_status : "new",
+    confirmed_at: m.confirmed_at ? str(m.confirmed_at) : null,
+    cancelled_at: m.cancelled_at ? str(m.cancelled_at) : null,
+    cancel_reason: m.cancel_reason ? str(m.cancel_reason) : null,
+    refunded_total: num(m.refunded_total) ?? 0,
   }
+}
+
+/** The badge a booking wears: its state, and "refunded" once money went back. */
+export function statusBadge(b: BookingMeta, paid: number): { label: string; color: "orange" | "green" | "red" | "purple" | "grey" } {
+  const refund = b.refunded_total > 0 ? (b.refunded_total >= paid - 0.001 ? "refunded" : "part refunded") : null
+  // Cancelled outranks refunded: "Cancelled · refunded" says both, and the
+  // owner needs to see first that the trip is off.
+  if (b.status === "cancelled") return { label: refund ? `Cancelled · ${refund}` : "Cancelled", color: "red" }
+  if (refund) return { label: refund === "refunded" ? "Refunded" : "Part refunded", color: "purple" }
+  if (b.status === "confirmed") return { label: "Confirmed", color: "green" }
+  return { label: "New — needs confirming", color: "orange" }
+}
+
+/** "$64.84 (236 QAR)" — the site's own currency rule: dollars first, riyals as charged. */
+export function money(qar: number): string {
+  const cents = Math.round((qar / 3.64) * 100)
+  const usd = cents % 100 === 0 ? String(cents / 100) : (cents / 100).toFixed(2)
+  const fils = Math.round(qar * 100)
+  const q = fils % 100 === 0 ? String(fils / 100) : (fils / 100).toFixed(2)
+  return `$${usd} (${q} QAR)`
+}
+
+/** A WhatsApp chat with the customer, opened with their booking reference already typed. */
+export function whatsappCustomerUrl(b: BookingMeta, reference: string): string | null {
+  const digits = b.contact_phone.replace(/\D/g, "")
+  if (!digits) return null
+  const first = b.contact_name.split(/\s+/)[0] || ""
+  return `https://wa.me/${digits}?text=${encodeURIComponent(`Hello ${first}, this is Desert Drive about your booking ${reference}.`)}`
 }
 
 /** Qatar has one time zone and no DST; every pickup is shown in it regardless of where the admin sits. */

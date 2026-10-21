@@ -31,10 +31,6 @@ export default async function orderPlacedHandler({ event: { data }, container }:
 
   const m = (order.metadata ?? {}) as Record<string, unknown>
   const to = String(m.contact_email ?? order.email ?? "")
-  if (!to) {
-    logger.warn(`order.placed: order ${order.id} has no email address, no confirmation sent`)
-    return
-  }
 
   const locale = String(m.locale ?? "en-qa")
   const language = locale.startsWith("ar") ? "ar" : "en"
@@ -43,11 +39,7 @@ export default async function orderPlacedHandler({ event: { data }, container }:
       ? String(m.vehicle_title_ar)
       : String(m.vehicle_title ?? order.items?.[0]?.product_title ?? order.items?.[0]?.title ?? "")
 
-  await notification.createNotifications({
-    to,
-    channel: "email",
-    template: "booking-confirmation",
-    data: {
+  const customerData = {
       reference: `DD-${order.display_id}`,
       locale: language,
       lookup_url: bookingLookupUrl(order.id, locale),
@@ -99,10 +91,80 @@ export default async function orderPlacedHandler({ event: { data }, container }:
         address: process.env.BUSINESS_ADDRESS || "",
         registration: process.env.BUSINESS_CR || "",
       },
-    },
-  })
+    }
 
-  logger.info(`order.placed: confirmation queued for DD-${order.display_id} → ${to}`)
+  /**
+   * Two emails, sent independently: a failure sending one must never stop the
+   * other. The customer's confirmation, and the office's copy.
+   */
+  if (to) {
+    try {
+      await notification.createNotifications({ to, channel: "email", template: "booking-confirmation", data: customerData })
+      logger.info(`order.placed: confirmation queued for DD-${order.display_id} → ${to}`)
+    } catch (e) {
+      logger.error(`order.placed: customer confirmation for DD-${order.display_id} failed — ${(e as Error).message}`)
+    }
+  } else {
+    logger.warn(`order.placed: order ${order.id} has no email address, no customer confirmation sent`)
+  }
+
+  /**
+   * The office's copy — to info@ unless OWNER_NOTIFY_EMAIL says otherwise —
+   * with a button that opens the booking in the admin, where the owner
+   * confirms it. Reply-to is the customer, so answering the email answers
+   * them. Always English: the office reads it, not the customer.
+   */
+  const ownerTo = process.env.OWNER_NOTIFY_EMAIL || "info@desertdriverental.com"
+  const adminBase = (process.env.MEDUSA_BACKEND_URL || "https://ddbackend-production-e9d1.up.railway.app").replace(/\/$/, "")
+  const phoneDigits = String(m.contact_phone ?? "").replace(/[^\d]/g, "")
+  try {
+    await notification.createNotifications({
+      to: ownerTo,
+      channel: "email",
+      template: "booking-owner-alert",
+      data: {
+        reference: customerData.reference,
+        admin_url: `${adminBase}/app/bookings/${order.id}`,
+        direction: customerData.direction,
+        address: customerData.address,
+        lat: customerData.lat,
+        lng: customerData.lng,
+        pickup_at: customerData.pickup_at,
+        return_at: customerData.return_at,
+        flight_number: customerData.flight_number,
+        // English for the office, whatever language the customer booked in.
+        vehicle_title: String(m.vehicle_title ?? order.items?.[0]?.product_title ?? order.items?.[0]?.title ?? ""),
+        passengers: customerData.passengers,
+        luggage: customerData.luggage,
+        contact_name: customerData.contact_name,
+        contact_phone: customerData.contact_phone,
+        contact_email: to,
+        notes: customerData.notes,
+        // The sign picture is a link only when it is one of OUR uploads —
+        // https, the storefront already refused anything else.
+        add_ons: Array.isArray(m.add_ons)
+          ? (m.add_ons as Array<Record<string, unknown>>)
+              .filter((a) => a && typeof a.title === "string" && Number(a.quantity) > 0)
+              .map((a) => ({
+                title: String(a.title),
+                quantity: Number(a.quantity),
+                note: typeof a.note === "string" && a.note.trim() ? a.note : null,
+                image_url: typeof a.image_url === "string" && a.image_url.startsWith("https://") ? a.image_url : null,
+              }))
+          : null,
+        total: customerData.total,
+        currency: customerData.currency,
+        paid: customerData.payment === "card",
+        whatsapp_customer_url: phoneDigits
+          ? `https://wa.me/${phoneDigits}?text=${encodeURIComponent(`Hello ${customerData.contact_name}, this is Desert Drive about your booking ${customerData.reference}.`)}`
+          : null,
+        reply_to: to || undefined,
+      },
+    })
+    logger.info(`order.placed: office alert queued for DD-${order.display_id} → ${ownerTo}`)
+  } catch (e) {
+    logger.error(`order.placed: office alert for DD-${order.display_id} failed — ${(e as Error).message}`)
+  }
 }
 
 export const config: SubscriberConfig = {
