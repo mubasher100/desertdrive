@@ -1,7 +1,7 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { Calendar } from "@medusajs/icons"
-import { Badge, Container, Heading, Text } from "@medusajs/ui"
-import { useQuery } from "@tanstack/react-query"
+import { Badge, Button, Container, Heading, Text, toast } from "@medusajs/ui"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { sdk } from "../../lib/client"
@@ -50,12 +50,19 @@ const BookingsPage = () => {
     return { upcoming, past, cancelled }
   }, [data])
 
+  const testEmail = useMutation({
+    mutationFn: () => sdk.client.fetch<{ sent_to: string }>("/admin/bookings/test-email", { method: "POST" }),
+    onSuccess: (r) => toast.success(`Test email sent to ${r.sent_to}`),
+    onError: (e: Error) => toast.error(e.message || "The test email did not send"),
+  })
+
   const list = rows[tab]
   const needConfirming = rows.upcoming.filter((r) => r.booking.status === "new").length
 
   return (
     <Container className="divide-y p-0">
       <div className="flex flex-col gap-3 px-4 py-4 small:px-6">
+        <div className="flex flex-col gap-3 xsmall:flex-row xsmall:items-start xsmall:justify-between">
         <div>
           <Heading level="h1">Bookings</Heading>
           <Text size="small" className="text-ui-fg-subtle">
@@ -63,6 +70,18 @@ const BookingsPage = () => {
               ? `${needConfirming} new booking${needConfirming === 1 ? "" : "s"} to confirm. Times are Qatar time.`
               : "Times are Qatar time. Tap a booking to confirm, message or cancel it."}
           </Text>
+        </div>
+          {/* Sends the "new booking" email with sample data, to check it arrives. */}
+          <Button
+            size="small"
+            variant="secondary"
+            className="min-h-[44px] w-full shrink-0 xsmall:w-auto"
+            isLoading={testEmail.isPending}
+            disabled={testEmail.isPending}
+            onClick={() => testEmail.mutate()}
+          >
+            Send test email
+          </Button>
         </div>
         <div className="grid grid-cols-3 gap-2">
           <TabButton active={tab === "upcoming"} onClick={() => setTab("upcoming")} label={`Upcoming (${rows.upcoming.length})`} />
