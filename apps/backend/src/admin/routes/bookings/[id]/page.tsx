@@ -18,7 +18,7 @@ import {
 
 /**
  * One booking, with every action the owner takes on it as a real button:
- * Confirm, WhatsApp the customer, Call, Map, Cancel, Record refund.
+ * Confirm, Message on WhatsApp, Map, Cancel, Record refund.
  *
  * Built for a phone first: the buttons stack full-width and are at least 44 px
  * tall, the details read top to bottom. This is where the "Open booking to
@@ -122,8 +122,7 @@ const BookingPage = () => {
               Confirm booking
             </BigButton>
           )}
-          {whatsapp && <BigLink href={whatsapp}>WhatsApp customer</BigLink>}
-          {booking.contact_phone && <BigLink href={`tel:${booking.contact_phone}`}>Call customer</BigLink>}
+          {whatsapp && <BigLink href={whatsapp}>Message on WhatsApp</BigLink>}
           {map && <BigLink href={map}>Pickup on map</BigLink>}
           {payment.captured && refundable > 0 && (
             <BigButton variant="secondary" onClick={() => setRefundOpen(true)}>

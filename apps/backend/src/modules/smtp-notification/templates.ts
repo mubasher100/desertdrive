@@ -349,8 +349,7 @@ export function renderOwnerBookingAlert(d: OwnerAlertData): { subject: string; h
   <p style="margin:0 0 20px;color:#111518;font-size:15px">${esc(d.vehicle_title)} · ${esc(d.contact_name)}</p>
   <div>
     ${button(d.admin_url, "Open booking to confirm", true)}
-    ${d.whatsapp_customer_url ? button(d.whatsapp_customer_url, "WhatsApp customer") : ""}
-    ${d.contact_phone ? button(`tel:${d.contact_phone}`, "Call customer") : ""}
+    ${d.whatsapp_customer_url ? button(d.whatsapp_customer_url, "Message on WhatsApp") : ""}
     ${map ? button(map, "Pickup on map") : ""}
     ${signPicture ? button(signPicture, "Sign picture") : ""}
   </div>
@@ -364,7 +363,7 @@ export function renderOwnerBookingAlert(d: OwnerAlertData): { subject: string; h
     ...rows.filter(([, v]) => !!v).map(([k, v]) => `${k}: ${v}`),
     "",
     `Open booking to confirm: ${d.admin_url}`,
-    d.whatsapp_customer_url ? `WhatsApp customer: ${d.whatsapp_customer_url}` : null,
+    d.whatsapp_customer_url ? `Message on WhatsApp: ${d.whatsapp_customer_url}` : null,
     map ? `Pickup on map: ${map}` : null,
     signPicture ? `Sign picture: ${signPicture}` : null,
   ]
