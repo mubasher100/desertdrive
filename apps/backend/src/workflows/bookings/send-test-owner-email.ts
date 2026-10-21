@@ -39,7 +39,7 @@ export const sendTestOwnerEmailWorkflow = createWorkflow("send-test-owner-email"
           total: 101.92,
           currency: "qar",
           paid: true,
-          whatsapp_customer_url: null,
+          whatsapp_customer_url: "https://wa.me/97451514161?text=Test",
         },
       },
     ]
