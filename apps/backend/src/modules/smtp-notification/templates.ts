@@ -271,8 +271,9 @@ export function renderBookingConfirmation(d: BookingEmailData): { subject: strin
 
 /** Dispatch by template name, so the provider stays generic. */
 /**
- * The office's copy of a new booking — to info@ — with a button that opens it
- * in the admin, where it is confirmed. English only: it is read by the owner,
+ * The office's copy of a new booking (OWNER_NOTIFY_EMAIL) — the cue to
+ * allocate a driver by hand. A paid booking is already confirmed; the button
+ * just opens it in the admin. English only: it is read by the owner,
  * not the customer. Every value that came from a customer is escaped; the
  * only links are ones this server built.
  */
@@ -348,7 +349,7 @@ export function renderOwnerBookingAlert(d: OwnerAlertData): { subject: string; h
   <h1 style="margin:0 0 4px;color:#111518;font-size:22px">${esc(d.reference)} · ${esc(pickup)}</h1>
   <p style="margin:0 0 20px;color:#111518;font-size:15px">${esc(d.vehicle_title)} · ${esc(d.contact_name)}</p>
   <div>
-    ${button(d.admin_url, "Open booking to confirm", true)}
+    ${button(d.admin_url, "Open booking", true)}
     ${d.whatsapp_customer_url ? button(d.whatsapp_customer_url, "Message on WhatsApp") : ""}
     ${map ? button(map, "Pickup on map") : ""}
     ${signPicture ? button(signPicture, "Sign picture") : ""}
@@ -362,7 +363,7 @@ export function renderOwnerBookingAlert(d: OwnerAlertData): { subject: string; h
     "",
     ...rows.filter(([, v]) => !!v).map(([k, v]) => `${k}: ${v}`),
     "",
-    `Open booking to confirm: ${d.admin_url}`,
+    `Open booking: ${d.admin_url}`,
     d.whatsapp_customer_url ? `Message on WhatsApp: ${d.whatsapp_customer_url}` : null,
     map ? `Pickup on map: ${map}` : null,
     signPicture ? `Sign picture: ${signPicture}` : null,

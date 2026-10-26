@@ -1,9 +1,9 @@
 import { MiddlewareRoute, validateAndTransformBody } from "@medusajs/framework"
 import { z } from "@medusajs/framework/zod"
 
-/** Confirm or Cancel. A cancel may carry a short reason for the record. */
+/** Cancel, with an optional short reason for the record. Paid bookings need no confirming. */
 export const BookingActionSchema = z.object({
-  action: z.enum(["confirm", "cancel"]),
+  action: z.enum(["cancel"]),
   reason: z.string().max(300).nullish(),
 })
 export type BookingActionSchema = z.infer<typeof BookingActionSchema>

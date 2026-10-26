@@ -3,22 +3,12 @@ import { applyBookingAction, recordRefund, refundedTotal, statusOf } from "../bo
 const NOW = new Date("2026-10-21T10:00:00Z")
 
 describe("booking buttons", () => {
-  it("treats a booking with no status as new — every order before the buttons", () => {
-    expect(statusOf({ pickup_at: "x" })).toBe("new")
+  it("treats a booking with no status as standing — paid is confirmed, there is no confirm step", () => {
+    expect(statusOf({ pickup_at: "x" })).toBe("active")
   })
 
-  it("confirms a new booking", () => {
-    const m = applyBookingAction({ pickup_at: "x" }, "confirm", "user_1", NOW)
-    expect(m).toMatchObject({ booking_status: "confirmed", confirmed_by: "user_1", pickup_at: "x" })
-  })
-
-  it("does not confirm twice, or confirm a cancelled booking", () => {
-    expect(() => applyBookingAction({ booking_status: "confirmed" }, "confirm", null, NOW)).toThrow(/already confirmed/)
-    expect(() => applyBookingAction({ booking_status: "cancelled" }, "confirm", null, NOW)).toThrow(/cancelled/)
-  })
-
-  it("cancels new or confirmed bookings, keeping the trip", () => {
-    const m = applyBookingAction({ booking_status: "confirmed", address: "Mondrian" }, "cancel", "u", NOW, "  flight cancelled ")
+  it("cancels a booking, keeping the trip", () => {
+    const m = applyBookingAction({ address: "Mondrian" }, "cancel", "u", NOW, "  flight cancelled ")
     expect(m).toMatchObject({ booking_status: "cancelled", address: "Mondrian", cancel_reason: "flight cancelled" })
     expect(() => applyBookingAction(m, "cancel", "u", NOW)).toThrow(/already cancelled/)
   })

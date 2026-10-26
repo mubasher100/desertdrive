@@ -18,11 +18,12 @@ import {
 
 /**
  * One booking, with every action the owner takes on it as a real button:
- * Confirm, Message on WhatsApp, Map, Cancel, Record refund.
+ * Message on WhatsApp, Map, Cancel, Record refund. No Confirm: a paid
+ * booking is already confirmed, and the driver is allocated by hand.
  *
  * Built for a phone first: the buttons stack full-width and are at least 44 px
- * tall, the details read top to bottom. This is where the "Open booking to
- * confirm" link in the office email lands.
+ * tall, the details read top to bottom. This is where the "Open booking"
+ * link in the office email lands.
  *
  * ⚠️ Refund RECORDS a refund, it does not send one. SkipCash refunds are made
  * in the SkipCash merchant portal — the payment provider refuses them through
@@ -51,10 +52,10 @@ const BookingPage = () => {
   }
 
   const act = useMutation({
-    mutationFn: (body: { action: "confirm" | "cancel"; reason?: string }) =>
+    mutationFn: (body: { action: "cancel"; reason?: string }) =>
       sdk.client.fetch(`/admin/bookings/${id}/action`, { method: "POST", body }),
-    onSuccess: (_d, v) => {
-      toast.success(v.action === "confirm" ? "Booking confirmed" : "Booking cancelled — the car is free again")
+    onSuccess: () => {
+      toast.success("Booking cancelled — the car is free again")
       refresh()
     },
     onError: (e: Error) => toast.error(e.message || "That did not work"),
@@ -81,7 +82,7 @@ const BookingPage = () => {
   const payment = readPayment(order)
   const reference = `DD-${order.display_id}`
   const pickup = formatPickup(booking.pickup_at)
-  const badge = statusBadge(booking, payment.amount)
+  const badge = statusBadge(booking, payment.amount, payment.captured)
   const whatsapp = whatsappCustomerUrl(booking, reference)
   const map = mapsUrl(booking)
   const refundable = Math.round((payment.amount - booking.refunded_total) * 100) / 100
@@ -117,11 +118,6 @@ const BookingPage = () => {
 
         {/* The actions. Stacked full-width on a phone, a grid on a desk. */}
         <div className="grid grid-cols-1 gap-2 xsmall:grid-cols-2 small:grid-cols-3">
-          {booking.status === "new" && (
-            <BigButton variant="primary" isLoading={act.isPending} onClick={() => act.mutate({ action: "confirm" })}>
-              Confirm booking
-            </BigButton>
-          )}
           {whatsapp && <BigLink href={whatsapp}>Message on WhatsApp</BigLink>}
           {map && <BigLink href={map}>Pickup on map</BigLink>}
           {payment.captured && refundable > 0 && (
@@ -177,7 +173,6 @@ const BookingPage = () => {
           {money(payment.amount)} · {payment.captured ? "paid by card" : "not paid yet"}
           {booking.refunded_total > 0 && ` · ${money(booking.refunded_total)} refunded`}
         </Row>
-        {booking.confirmed_at && <Row label="Confirmed">{new Date(booking.confirmed_at).toLocaleString("en-GB", { timeZone: "Asia/Qatar" })}</Row>}
         {booking.cancelled_at && <Row label="Cancelled">{new Date(booking.cancelled_at).toLocaleString("en-GB", { timeZone: "Asia/Qatar" })}</Row>}
         <div className="px-4 py-3 small:px-6">
           <Link to={`/orders/${order.id}`} className="text-ui-fg-interactive text-sm hover:underline">
