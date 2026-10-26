@@ -114,7 +114,7 @@ export default async function orderPlacedHandler({ event: { data }, container }:
    * confirms it. Reply-to is the customer, so answering the email answers
    * them. Always English: the office reads it, not the customer.
    */
-  const ownerTo = process.env.OWNER_NOTIFY_EMAIL || "info@desertdriverental.com"
+  const ownerTo = process.env.OWNER_NOTIFY_EMAIL || "desertdrivetransportation@gmail.com"
   const adminBase = (process.env.MEDUSA_BACKEND_URL || "https://ddbackend-production-e9d1.up.railway.app").replace(/\/$/, "")
   const phoneDigits = String(m.contact_phone ?? "").replace(/[^\d]/g, "")
   try {

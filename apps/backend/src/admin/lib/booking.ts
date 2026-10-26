@@ -42,8 +42,7 @@ export type BookingMeta = {
   locale: string
   terms_accepted_at: string | null
   /** The owner's own state for the booking — see lib/booking-status.ts on the backend. */
-  status: "new" | "confirmed" | "cancelled"
-  confirmed_at: string | null
+  status: "active" | "cancelled"
   cancelled_at: string | null
   cancel_reason: string | null
   /** QAR recorded as refunded, after it was refunded in the SkipCash portal. */
@@ -89,8 +88,7 @@ export function readBooking(order: Pick<HttpTypes.AdminOrder, "metadata">): Book
       : [],
     locale: str(m.locale) || "en",
     terms_accepted_at: m.terms_accepted_at ? str(m.terms_accepted_at) : null,
-    status: m.booking_status === "confirmed" || m.booking_status === "cancelled" ? m.booking_status : "new",
-    confirmed_at: m.confirmed_at ? str(m.confirmed_at) : null,
+    status: m.booking_status === "cancelled" ? "cancelled" : "active",
     cancelled_at: m.cancelled_at ? str(m.cancelled_at) : null,
     cancel_reason: m.cancel_reason ? str(m.cancel_reason) : null,
     refunded_total: num(m.refunded_total) ?? 0,
@@ -98,14 +96,15 @@ export function readBooking(order: Pick<HttpTypes.AdminOrder, "metadata">): Book
 }
 
 /** The badge a booking wears: its state, and "refunded" once money went back. */
-export function statusBadge(b: BookingMeta, paid: number): { label: string; color: "orange" | "green" | "red" | "purple" | "grey" } {
+export function statusBadge(b: BookingMeta, paid: number, captured: boolean): { label: string; color: "orange" | "green" | "red" | "purple" | "grey" } {
   const refund = b.refunded_total > 0 ? (b.refunded_total >= paid - 0.001 ? "refunded" : "part refunded") : null
   // Cancelled outranks refunded: "Cancelled · refunded" says both, and the
   // owner needs to see first that the trip is off.
   if (b.status === "cancelled") return { label: refund ? `Cancelled · ${refund}` : "Cancelled", color: "red" }
   if (refund) return { label: refund === "refunded" ? "Refunded" : "Part refunded", color: "purple" }
-  if (b.status === "confirmed") return { label: "Confirmed", color: "green" }
-  return { label: "New — needs confirming", color: "orange" }
+  // Paid is confirmed — there is no confirm step (owner, 26 Oct 2026).
+  if (captured) return { label: "Confirmed", color: "green" }
+  return { label: "Not paid", color: "orange" }
 }
 
 /** "$64.84 (236 QAR)" — the site's own currency rule: dollars first, riyals as charged. */

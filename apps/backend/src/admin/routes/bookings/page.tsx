@@ -57,7 +57,6 @@ const BookingsPage = () => {
   })
 
   const list = rows[tab]
-  const needConfirming = rows.upcoming.filter((r) => r.booking.status === "new").length
 
   return (
     <Container className="divide-y p-0">
@@ -66,9 +65,7 @@ const BookingsPage = () => {
         <div>
           <Heading level="h1">Bookings</Heading>
           <Text size="small" className="text-ui-fg-subtle">
-            {needConfirming > 0
-              ? `${needConfirming} new booking${needConfirming === 1 ? "" : "s"} to confirm. Times are Qatar time.`
-              : "Times are Qatar time. Tap a booking to confirm, message or cancel it."}
+            Paid bookings are confirmed. Times are Qatar time. Tap a booking to message the customer or cancel it.
           </Text>
         </div>
           {/* Sends the "new booking" email with sample data, to check it arrives. */}
@@ -104,7 +101,7 @@ const BookingsPage = () => {
         <ul className="divide-y">
           {list.map(({ order, booking, payment }) => {
             const p = formatPickup(booking.pickup_at)
-            const badge = statusBadge(booking, payment.amount)
+            const badge = statusBadge(booking, payment.amount, payment.captured)
             return (
               <li key={order.id}>
                 <Link

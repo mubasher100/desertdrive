@@ -1,9 +1,10 @@
 /**
  * What the owner's booking buttons do, as rules on the order's metadata.
  *
- * A booking's own state lives on `metadata.booking_status` — "new" (or absent,
- * for every order taken before these buttons existed), "confirmed",
- * "cancelled" — beside the trip it describes. Not Medusa's order status, on
+ * A booking's own state lives on `metadata.booking_status` — absent while the
+ * booking stands, "cancelled" once the owner cancels it — beside the trip it
+ * describes. There is no confirm step: a paid booking IS confirmed (owner,
+ * 26 Oct 2026); driver allocation happens by hand once the office email lands. Not Medusa's order status, on
  * purpose: Medusa's cancel refunds captured payments through the payment
  * provider, and SkipCash refunds are issued in the merchant portal, never
  * through the API (the provider refuses them). So a paid booking can never be
@@ -15,16 +16,15 @@
  * Pure, so every rule is unit-tested without an order, a cart or a database.
  */
 
-export type BookingStatus = "new" | "confirmed" | "cancelled"
-export type BookingAction = "confirm" | "cancel"
+export type BookingStatus = "active" | "cancelled"
+export type BookingAction = "cancel"
 
 export type RefundRecord = { amount: number; at: string; by: string | null; note: string | null }
 
 export class BookingRuleError extends Error {}
 
 export function statusOf(metadata: Record<string, unknown> | null | undefined): BookingStatus {
-  const s = metadata?.booking_status
-  return s === "confirmed" || s === "cancelled" ? s : "new"
+  return metadata?.booking_status === "cancelled" ? "cancelled" : "active"
 }
 
 export function refundsOf(metadata: Record<string, unknown> | null | undefined): RefundRecord[] {
@@ -38,7 +38,7 @@ export function refundedTotal(metadata: Record<string, unknown> | null | undefin
   return Math.round(refundsOf(metadata).reduce((sum, r) => sum + r.amount, 0) * 100) / 100
 }
 
-/** The metadata after Confirm or Cancel, or a BookingRuleError saying why not. */
+/** The metadata after Cancel, or a BookingRuleError saying why not. */
 export function applyBookingAction(
   metadata: Record<string, unknown> | null | undefined,
   action: BookingAction,
@@ -48,12 +48,6 @@ export function applyBookingAction(
 ): Record<string, unknown> {
   const current = statusOf(metadata)
   const base = { ...(metadata ?? {}) }
-
-  if (action === "confirm") {
-    if (current === "cancelled") throw new BookingRuleError("This booking is cancelled and cannot be confirmed.")
-    if (current === "confirmed") throw new BookingRuleError("This booking is already confirmed.")
-    return { ...base, booking_status: "confirmed", confirmed_at: now.toISOString(), confirmed_by: by }
-  }
 
   if (current === "cancelled") throw new BookingRuleError("This booking is already cancelled.")
   return {
