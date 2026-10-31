@@ -18,20 +18,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /**
- * Cancellation & refund policy — required for SkipCash onboarding, and it
- * cannot be invented (CLAUDE.md, "Needs input" #8). Structure only; every
- * number is the owner's.
+ * Cancellation & refund policy — required for SkipCash onboarding. Every
+ * window and charge here is the owner's: free cancellation to 24 hours, no
+ * refund inside it or for a no-show (31 Oct 2026).
  */
 export default async function CancellationPage({ params }: Props) {
   const { countryCode } = await params
   const t = getTranslations(countryCode)
   const ar = localeOf(countryCode) === "ar"
-  const draft = ar
-    ? "مسودة هيكلية — المهل والمبالغ بانتظار المالك. مطلوبة لتفعيل حساب سكيب كاش."
-    : "Structural draft — the windows and amounts are the owner's. Required for SkipCash merchant onboarding."
 
   return (
-    <ProsePage title={t("footer.cancellation")} draft={draft}>
+    <ProsePage title={t("footer.cancellation")}>
       {ar ? (
         <>
           <h2>كيفية الإلغاء</h2>
@@ -50,7 +47,10 @@ export default async function CancellationPage({ params }: Props) {
             وتعذّر الوصول إليك على رقم الهاتف الذي زوّدتنا به، يُعامَل الحجز على أنه عدم حضور.
           </p>
           <h2>الإلغاء المتأخر</h2>
-          <p className="placeholder">[المالك: الرسوم المطبقة عند الإلغاء داخل مهلة الـ24 ساعة، وعند عدم الحضور.]</p>
+          <p>
+            الإلغاء خلال <strong>24 ساعة</strong> من موعد الاستقبال <strong>غير قابل للاسترداد</strong>، ويُحتسب كامل المبلغ
+            المدفوع. وينطبق الأمر نفسه على عدم الحضور.
+          </p>
           <h2>الاسترداد للمدفوعات بالبطاقة</h2>
           <p>
             تُعاد المبالغ إلى البطاقة التي دفعت بها عبر سكيب كاش. نبدأ الاسترداد فور تأكيد الإلغاء، ومدة ظهوره في كشف الحساب تعود إلى بنكك.
@@ -78,7 +78,10 @@ export default async function CancellationPage({ params }: Props) {
             gave us, the booking is treated as a no-show.
           </p>
           <h2>Late cancellation</h2>
-          <p className="placeholder">[Owner: the charge that applies to cancellation inside the 24-hour window, and to a no-show.]</p>
+          <p>
+            A cancellation made <strong>less than 24 hours before your pickup time is not refunded</strong> &mdash; the
+            full amount paid is charged. The same applies to a no-show.
+          </p>
           <h2>Refunds for card payments</h2>
           <p>
             Refunds go back to the card you paid with, through SkipCash. We start the refund as soon as we

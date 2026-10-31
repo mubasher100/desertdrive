@@ -65,7 +65,7 @@ export default async function TermsPage({ params }: Props) {
             إذا لم تلتقِ بالسائق خلال الـ90 دقيقة وتعذّر الوصول إليك على رقم الهاتف المدوّن في الحجز، يُعامَل الحجز على أنه
             عدم حضور.
           </p>
-          <p className="placeholder">[المالك: الرسوم المطبّقة عند عدم الحضور.]</p>
+          <p>لا يُسترد مبلغ الحجز في حالة عدم الحضور.</p>
           <h2>الركاب والأمتعة</h2>
           <p>لكل سيارة سعة ركاب وأمتعة معلنة. يحق للسائق رفض تحميل ما يتجاوز السعة الآمنة.</p>
           <h2>الإلغاء والاسترداد</h2>
@@ -113,7 +113,7 @@ export default async function TermsPage({ params }: Props) {
             If you have not met your driver within the 90 minutes and we cannot reach you on the phone number on the
             booking, the booking is treated as a no-show.
           </p>
-          <p className="placeholder">[Owner: the charge that applies to a no-show.]</p>
+          <p>A no-show is not refunded: the full amount paid is charged.</p>
           <h2>Passengers and luggage</h2>
           <p>Each vehicle has a stated passenger and luggage capacity. The driver may decline to carry more than can be carried safely.</p>
           <h2>Cancellation and refunds</h2>
