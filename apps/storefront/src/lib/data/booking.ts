@@ -355,7 +355,7 @@ const SKIPCASH_PROVIDER = "pp_skipcash_skipcash"
 // 2026-09-30: 12 hours' notice (24 for luxury), the short-notice fare removed.
 // 2026-09-28: card only, the 90-minute airport wait, USD display with the
 // 3.64 peg, and the short-notice fare. Orders record which terms were agreed.
-const TERMS_VERSION = "2026-10-09"
+const TERMS_VERSION = "2026-10-31"
 
 /**
  * Records the customer's acceptance of the terms on the cart, so it is carried
