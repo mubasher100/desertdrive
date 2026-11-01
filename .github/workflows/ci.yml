@@ -37,8 +37,8 @@ jobs:
       - name: Lint
         run: npm run lint
         env:
-          # next.config.js is loaded by `next lint`, not just dev/build, and it
-          # demands a publishable key. CI has no storefront secrets.
+          # next.config.js demands a publishable key and CI has no storefront
+          # secrets. (Plain ESLint on Next 16 does not load it; kept harmlessly.)
           SKIP_ENV_VALIDATION: "true"
 
       - name: Typecheck

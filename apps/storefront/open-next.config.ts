@@ -35,15 +35,18 @@ import doShardedTagCache from "@opennextjs/cloudflare/overrides/tag-cache/do-sha
  * window", NOT "on the very next request". Cloudflare's tag-based purge would
  * give both, but it needs a zone on an Enterprise plan.
  *
- * ⚠️ `bypassTagCacheOnCacheHit: true` is ONLY safe because this storefront is on
- * Next 15. On Next 16+, revalidateTag is stale-while-revalidate by default and
- * this flag stops being correct — the adapter itself defaults it to false there.
- * This is the concrete reason the Next version is not negotiable.
+ * ⚠️ On Next 16 (since 1 Nov 2026) `bypassTagCacheOnCacheHit` is FALSE.
+ * revalidateTag is stale-while-revalidate there, and a regional hit that skips
+ * the tag cache can serve a page the tag cache already knows is stale. The
+ * price is a tag lookup on a regional hit, which the 30-second regional tag
+ * cache below absorbs for all but the first request in each window. The fare
+ * window itself comes from PUBLIC_REVALIDATE_SECONDS (lib/data/cookies.ts),
+ * not from tags — nothing calls revalidateTag yet.
  */
 export default defineCloudflareConfig({
   incrementalCache: withRegionalCache(r2IncrementalCache, {
     mode: "long-lived",
-    bypassTagCacheOnCacheHit: true,
+    bypassTagCacheOnCacheHit: false,
   }),
 
   tagCache: doShardedTagCache({

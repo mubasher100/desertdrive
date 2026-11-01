@@ -5,6 +5,13 @@ import { logVisit } from "@lib/util/visit-log"
 /**
  * Puts every request under a locale segment: `/en-qa/...` or `/ar-qa/...`.
  *
+ * ⚠️ Deliberately still `middleware.ts`, not Next 16's `proxy.ts`. A proxy runs
+ * on the Node.js runtime, and OpenNext's build says outright that Node
+ * middleware on Cloudflare is "experimental … not officially maintained". This
+ * file runs on every page request, so it stays on the Edge runtime OpenNext
+ * does support. Next 16 deprecates the name but still runs it; revisit when
+ * OpenNext supports proxy properly.
+ *
  * The Medusa starter's middleware fetched the region list from the backend on
  * every cold start just to decide whether a path prefix was valid. That made
  * routing itself depend on the backend being reachable — if Medusa was down or
