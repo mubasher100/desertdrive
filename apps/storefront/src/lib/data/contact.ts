@@ -4,7 +4,7 @@
  * agree.
  *
  * All owner-supplied: phone 2026-09-21, commercial registration and registered
- * address 2026-09-25. Qatar's E-Commerce Law wants the trader's name,
+ * address 2026-09-25, address changed 2026-11-01. Qatar's E-Commerce Law wants the trader's name,
  * registration and address shown before contracting and on the confirmation,
  * which is why these live in one place and are printed in the footer, on
  * /contact, in the terms and in the confirmation email.
@@ -33,11 +33,11 @@ export const CONTACT = {
    * it; every consumer of this field renders nothing rather than a fake.
    */
   address: {
-    en: "Al Aqariya Tower, 10/01, Street 137, Al Mathaf, Doha, Qatar",
+    en: "2nd Floor, Office 3, Building 64, Zone 27, Street 950, Umm Ghuwailina Street, Doha, Qatar",
     // ⚠️ Rendered from the English; needs a native reviewer like the rest of
     // the Arabic copy. Qatar has no postal codes, so none is printed — the
     // "00000" the owner supplied is a form artefact, not part of the address.
-    ar: "برج العقارية، 10/01، شارع 137، المتحف، الدوحة، قطر",
+    ar: "الطابق الثاني، مكتب 3، مبنى 64، منطقة 27، شارع 950، شارع أم غويلينة، الدوحة، قطر",
   },
 } as const
 
