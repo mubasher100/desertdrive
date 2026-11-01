@@ -85,7 +85,9 @@ export default async function orderPlacedHandler({ event: { data }, container }:
         name: process.env.BUSINESS_NAME || "Desert Drive Rent a Car",
         phone: process.env.BUSINESS_PHONE || "",
         whatsapp_url: process.env.BUSINESS_WHATSAPP_URL || "",
-        email: process.env.RESEND_FROM_EMAIL || process.env.SMTP_FROM_ADDRESS || "",
+        // The address the customer is told to write to — not the sending
+        // address, which is bookings@ and only ever sends.
+        email: process.env.BUSINESS_EMAIL || "info@desertdriverental.com",
         // Trader identity on the confirmation — required by Qatar's E-Commerce
         // Law (No. 16 of 2010). Empty values render nothing rather than a fake.
         address: process.env.BUSINESS_ADDRESS || "",
