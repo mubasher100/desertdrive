@@ -50,7 +50,7 @@ The customer flow is: pick a destination → see a fixed fare per vehicle class 
 | Booking engine + Admin | Medusa v2.18 (Node 20+) | Railway | Long-running Node process; Railway handles build, health checks, rollback |
 | Database | PostgreSQL | Supabase (Singapore, `ap-southeast-1`) | Managed Postgres with a dashboard and backups |
 | Cache / events / workflows / locks | Redis | Railway | Private-network Redis beside the backend; no public egress |
-| Storefront | **Next.js 15** (App Router) | Cloudflare Workers via `@opennextjs/cloudflare` | Edge delivery, cheap, global |
+| Storefront | **Next.js 16** (App Router) | Cloudflare Workers via `@opennextjs/cloudflare` | Edge delivery, cheap, global |
 | Destination lookup | Google Maps Platform — Places Autocomplete (New) | — | Address entry only. **Never** used to calculate a fare |
 | Payments | SkipCash | — | Qatar Central Bank licensed; required for QAR card payments |
 | Email | Resend, via Medusa's notification module | — | Booking confirmations and the signed lookup link |
@@ -526,7 +526,7 @@ Baseline configuration:
 ```ts
 incrementalCache: withRegionalCache(r2IncrementalCache, {
   mode: "long-lived",
-  bypassTagCacheOnCacheHit: true,
+  bypassTagCacheOnCacheHit: false,   // Next 16 — see below
 }),
 tagCache: doShardedTagCache({
   baseShardSize: 4,
@@ -538,11 +538,19 @@ enableCacheInterception: true,
 
 **The tag cache is not optional and it is not free.** OpenNext's `tagCache` defaults to `"dummy"`, which silently discards every tag — you can post to a revalidation endpoint forever and invalidate nothing. But adding a real one puts a Durable Object round trip on every request.
 
-The resolution is `bypassTagCacheOnCacheHit: true`. A regionally cached page is served without asking whether it is still valid; when the entry expires, the next request goes to R2, and *that* path consults the tag cache. The guarantee is **"an admin fare change is live within the cache window"**, not "on the next request". Cloudflare's tag-based purge would give both, but it needs a zone on an Enterprise plan.
+On Next 15 the resolution was `bypassTagCacheOnCacheHit: true`: serve a regional hit without asking the tag cache. **On Next 16 it is `false`** (see below), and the cost is absorbed instead by the 30-second regional tag cache. The guarantee is **"an admin fare change is live within the cache window"** — `PUBLIC_REVALIDATE_SECONDS`, five minutes, in `lib/data/cookies.ts`, because nothing calls `revalidateTag` yet — not "on the next request". Cloudflare's tag-based purge would give both, but it needs a zone on an Enterprise plan.
 
 Two settings that look harmless and are not:
 - `regionalCacheTtlSec` on the tag cache defaults to **5s**. At this site's traffic most requests arrive further apart than that, so the lookup expires before it is ever reused and every request pays the round trip anyway. 30s is the trade.
-- **`bypassTagCacheOnCacheHit` must stay `false` on Next 16+,** where `revalidateTag` is stale-while-revalidate by default. It is only safe here because the storefront is on **Next 15** — which is exactly why the cloner template's Next 16 output must not become the app.
+- **`bypassTagCacheOnCacheHit` must stay `false` on Next 16+,** where `revalidateTag` is stale-while-revalidate by default: a regional hit that skips the tag cache can serve a page the tag cache already knows is stale.
+
+> **The storefront moved to Next 16 on 1 Nov 2026 because it had to.** OpenNext refuses to build a Next major more than two years after its release (`checkNextVersionSupport` in `@opennextjs/aws`): for 15 that date was **21 Oct 2026**, after which every storefront deploy failed with *"Next.js version 15.5.24 is not supported by the Next.js team"* while the code was unchanged. Merged work sat undeployed until the upgrade. Next 16's date is **21 Oct 2027** — plan the move to 17 before then. (`--dangerouslyUseUnsupportedNextVersion` skips the check, at the price of running a framework with no security fixes.)
+>
+> **`src/middleware.ts` is deliberately not `proxy.ts`.** Next 16 renamed middleware to proxy and runs it on Node.js, and OpenNext's build warns that Node middleware on Cloudflare is *"experimental … not officially maintained"*. Every page request goes through this file, so it stays on the Edge runtime; the build prints a deprecation notice for it, which is expected.
+>
+> **Next 16 removed `next lint`.** Lint is plain ESLint 9 with `eslint.config.mjs` (flat config from `eslint-config-next`). Its new `react-hooks/set-state-in-effect` rule is a warning, not an error, on purpose — see the config.
+>
+> **Testing the built Worker locally cannot reach a local backend.** `global_fetch_strictly_public` in `wrangler.jsonc` blocks fetches to private addresses, so under `wrangler dev` every quote fails and results says "We can't price this trip online yet" — and `MEDUSA_BACKEND_URL` in `vars` points at production anyway. Check routing on the Worker; check the booking flow with `next start` against the local backend.
 
 > ## 🚫 Never cache a quote or a cart.
 >
@@ -559,7 +567,7 @@ Two settings that look harmless and are not:
 [`ai-website-cloner-template`](https://github.com/JCodesMore/ai-website-cloner-template) is a design-extraction tool for this project, and **nothing else**.
 
 - **Run it in a throwaway sibling directory.** Never inside this repo, never as a workspace.
-- **It emits Next.js 16 + Tailwind v4 + shadcn/ui.** This storefront is **Next 15 + Tailwind 3** on the Medusa starter. Do not merge its app skeleton — see the `bypassTagCacheOnCacheHit` note above for why the Next version is not negotiable, and note that adopting its skeleton means rewriting the cart, checkout and order plumbing the Medusa starter provides.
+- **It emits Next.js 16 + Tailwind v4 + shadcn/ui.** This storefront is **Next 16 + Tailwind 3** on the Medusa starter. Do not merge its app skeleton — adopting it means rewriting the cart, checkout and order plumbing the Medusa starter provides.
 - **Harvest `docs/research/`** — extracted design tokens, measured CSS values, layout and component specs — and hand-build those components into the starter with Desert Drive's own tokens.
 - Reference target is the Booking.com airport-taxi funnel. **Take structure, not identity.**
 
@@ -745,7 +753,7 @@ A wrong port does not fail at boot. It surfaces later as intermittent `prepared 
 
 **The storefront cannot build without a running backend.** `next build` statically generates pages that fetch the Store API and dies with `ECONNREFUSED` otherwise. Consequences: `npm run build` at the repo root fails unless the backend is up (use `npm run build --workspace=@dd/backend` when you only need the backend), and CI lints and typechecks the storefront instead of building it. The real build happens in the deploy workflow, pointed at the live Railway backend.
 
-**`SKIP_ENV_VALIDATION=true` bypasses the storefront's env check.** `next.config.js` demands a publishable key, and it is loaded by `next lint` too — not just `dev`/`build`. Lint sets this flag; nothing else should.
+**`SKIP_ENV_VALIDATION=true` bypasses the storefront's env check.** `next.config.js` demands a publishable key. CI's lint and typecheck steps set it, because CI has no storefront secrets; nothing else should. (On Next 15 `next lint` loaded next.config.js; ESLint on 16 does not, so the flag is now belt and braces there.)
 
 **Turbo runs in strict env mode.** Environment variables are not passed through to tasks unless declared in `turbo.json` (`globalPassThroughEnv`, or a task's `env` array). A var that works in your shell but is empty inside a turbo task is a missing declaration, not a shell problem.
 

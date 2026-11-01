@@ -3,11 +3,10 @@ const checkEnvVariables = require("./check-env-variables")
 checkEnvVariables()
 
 /**
- * Desert Drive runs on Cloudflare Workers via @opennextjs/cloudflare, and is
- * deliberately held on Next 15. Do not upgrade to Next 16 without reading the
- * `bypassTagCacheOnCacheHit` note in the root CLAUDE.md first — on 16,
- * revalidateTag becomes stale-while-revalidate by default and that flag stops
- * being safe.
+ * Desert Drive runs on Cloudflare Workers via @opennextjs/cloudflare, on
+ * Next 16 since 1 Nov 2026 — OpenNext refuses a Next major once its two years
+ * of security support end, which for 15 was 21 Oct 2026. On 16
+ * `bypassTagCacheOnCacheHit` must stay false: see open-next.config.ts.
  */
 
 /** @type {import('next').NextConfig} */
@@ -19,14 +18,11 @@ const nextConfig = {
     },
   },
   /**
-   * Both of these are inherited from the Medusa starter and both are traps:
-   * a green `next build` proves nothing about types or lint. `npm run typecheck`
-   * (tsc --noEmit) and `npm run lint` are what actually gate correctness, and CI
-   * runs them separately for that reason.
+   * Inherited from the Medusa starter, and a trap: a green `next build` proves
+   * nothing about types. `npm run typecheck` (tsc --noEmit) and `npm run lint`
+   * are what actually gate correctness, and CI runs them separately for that
+   * reason. (Next 16 no longer lints during the build at all.)
    */
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
