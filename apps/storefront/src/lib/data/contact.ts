@@ -19,7 +19,8 @@ export const CONTACT = {
   whatsapp: {
     e164: "+97451514161",
   },
-  email: "bookings@desertdriverental.com",
+  /** The address customers write to (owner, 1 Nov 2026). Mail is SENT from bookings@; replies come here. */
+  email: "info@desertdriverental.com",
   /** Qatari commercial registration number, for the footer. Owner-supplied, 25 Sept 2026. */
   cr: "CR 211743",
   /** Legal entity name as it should appear in the footer and on receipts. */
