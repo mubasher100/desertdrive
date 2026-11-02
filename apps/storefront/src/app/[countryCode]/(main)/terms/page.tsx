@@ -19,21 +19,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 /**
  * Terms & conditions. A launch blocker: SkipCash merchant onboarding and the
- * card schemes expect this to be public. The STRUCTURE is here; the terms
- * themselves are the owner's and are marked as placeholders — inventing them
- * would be worse than leaving them visibly blank.
+ * card schemes expect this to be public. Every term is the owner's. The last
+ * placeholders — departure waiting time, and liability — were removed at the
+ * owner's request (2 Nov 2026), leaving governing law only.
  */
 export default async function TermsPage({ params }: Props) {
   const { countryCode } = await params
   const t = getTranslations(countryCode)
   const ar = localeOf(countryCode) === "ar"
 
-  const draft = ar
-    ? "مسودة هيكلية — النص النهائي بانتظار المالك. لا تُعتبر هذه الصفحة شروطًا نافذة حتى تُستبدل الفقرات الموضوعة بين قوسين."
-    : "Structural draft — final wording is the owner's. This page is not binding until the bracketed placeholders are replaced."
-
   return (
-    <ProsePage title={t("footer.terms")} draft={draft}>
+    <ProsePage title={t("footer.terms")}>
       {ar ? (
         <>
           <h2>الخدمة</h2>
@@ -59,7 +55,6 @@ export default async function TermsPage({ params }: Props) {
             نتابع رقم الرحلة الذي تزوّدنا به، فتأخّر الوصول لا يكلّفك التوصيلة &mdash; مدة الـ90 دقيقة تبدأ من لحظة الهبوط،
             لا من الوقت الذي حجزته.
           </p>
-          <p className="placeholder">[المالك: مدة الانتظار المجاني عند الاستقبال للمغادرة، ورسوم الانتظار الإضافي بالساعة.]</p>
           <h2>عدم الحضور</h2>
           <p>
             إذا لم تلتقِ بالسائق خلال الـ90 دقيقة وتعذّر الوصول إليك على رقم الهاتف المدوّن في الحجز، يُعامَل الحجز على أنه
@@ -72,8 +67,8 @@ export default async function TermsPage({ params }: Props) {
           <p>
             راجع <a href={`/${countryCode}/cancellation`}>سياسة الإلغاء والاسترداد</a>.
           </p>
-          <h2>المسؤولية</h2>
-          <p className="placeholder">[المالك / المستشار القانوني: حدود المسؤولية، والتأمين، والقانون الواجب التطبيق (قانون دولة قطر).]</p>
+          <h2>القانون الواجب التطبيق</h2>
+          <p>تخضع هذه الشروط لقوانين دولة قطر.</p>
           <h2>التواصل</h2>
           <p>
             <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> · {CONTACT.phone.display}
@@ -107,7 +102,6 @@ export default async function TermsPage({ params }: Props) {
             lands, at no extra charge. We track the flight number you give us, so a delayed arrival does not cost you
             the transfer &mdash; the 90 minutes starts when you land, not at the time you booked.
           </p>
-          <p className="placeholder">[Owner: free waiting time on a departure pickup, and the hourly charge beyond the free period.]</p>
           <h2>No-shows</h2>
           <p>
             If you have not met your driver within the 90 minutes and we cannot reach you on the phone number on the
@@ -120,8 +114,8 @@ export default async function TermsPage({ params }: Props) {
           <p>
             See the <a href={`/${countryCode}/cancellation`}>cancellation and refund policy</a>.
           </p>
-          <h2>Liability</h2>
-          <p className="placeholder">[Owner / legal adviser: limits of liability, insurance, and governing law (the laws of the State of Qatar).]</p>
+          <h2>Governing law</h2>
+          <p>These terms are governed by the laws of the State of Qatar.</p>
           <h2>Contact</h2>
           <p>
             <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> · {CONTACT.phone.display}

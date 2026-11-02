@@ -20,7 +20,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 /**
  * Cancellation & refund policy — required for SkipCash onboarding. Every
  * window and charge here is the owner's: free cancellation to 24 hours, no
- * refund inside it or for a no-show (31 Oct 2026).
+ * refund inside it or for a no-show (31 Oct 2026); a full refund when force
+ * majeure stops the trip (2 Nov 2026).
  */
 export default async function CancellationPage({ params }: Props) {
   const { countryCode } = await params
@@ -55,6 +56,11 @@ export default async function CancellationPage({ params }: Props) {
           <p>
             تُعاد المبالغ إلى البطاقة التي دفعت بها عبر سكيب كاش. نبدأ الاسترداد فور تأكيد الإلغاء، ومدة ظهوره في كشف الحساب تعود إلى بنكك.
           </p>
+          <h2>الظروف القاهرة</h2>
+          <p>
+            إذا تعذّر تنفيذ رحلتك بسبب ظروف خارجة عن إرادة الجميع، مثل سوء الأحوال الجوية، أو إغلاق المطار أو الطرق، أو قرار من
+            الجهات الرسمية (القوة القاهرة)، نُعيد لك <strong>كامل المبلغ المدفوع</strong>، ولا يترتب على أي من الطرفين أي التزام آخر.
+          </p>
           <h2>الإلغاء من طرفنا</h2>
           <p>إذا تعذّر علينا تنفيذ رحلتك، نُعيد لك كامل المبلغ المدفوع ونبلغك في أقرب وقت.</p>
         </>
@@ -86,6 +92,12 @@ export default async function CancellationPage({ params }: Props) {
           <p>
             Refunds go back to the card you paid with, through SkipCash. We start the refund as soon as we
             confirm the cancellation; how quickly it appears on your statement is up to your bank.
+          </p>
+          <h2>Force majeure</h2>
+          <p>
+            If your transfer cannot go ahead because of events beyond anyone&rsquo;s control &mdash; such as severe weather, the
+            closure of the airport or roads, or an order of the authorities &mdash; you receive a <strong>full refund of
+            everything you paid</strong>, and neither of us owes the other anything further.
           </p>
           <h2>If we cancel</h2>
           <p>If we cannot provide your transfer, you receive a full refund of anything paid and we tell you as early as we can.</p>

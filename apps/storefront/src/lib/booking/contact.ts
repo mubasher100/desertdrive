@@ -20,6 +20,11 @@ export type ContactInput = {
   contact_email: string
   flight_number: string
   notes: string
+  /**
+   * Opted in to offers on WhatsApp at `contact_phone` (owner, 2 Nov 2026).
+   * Optional, unticked by default, and never required to book.
+   */
+  whatsapp_offers?: boolean
 }
 
 export type ContactErrors = Partial<Record<keyof ContactInput, string>>

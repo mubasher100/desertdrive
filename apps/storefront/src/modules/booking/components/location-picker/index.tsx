@@ -92,6 +92,13 @@ export default function LocationPicker({
   // The input shows the chosen destination until the customer types again.
   const display = open ? query : selectedLabel
 
+  /**
+   * The list appears only once something is typed (owner, 2 Nov 2026). Tapping
+   * into the field used to drop the whole list of areas over the form, which
+   * on a phone read as a menu to pick from rather than a box to search in.
+   */
+  const showList = open && query.trim() !== ""
+
   const areaMatches = useMemo(() => {
     const q = normalise(query)
     if (!q) return sorted
@@ -315,7 +322,7 @@ export default function LocationPicker({
       return
     }
     if (e.key === "Enter") {
-      if (open && options[cursor]) {
+      if (showList && options[cursor]) {
         e.preventDefault()
         chooseAt(cursor)
       }
@@ -329,11 +336,11 @@ export default function LocationPicker({
       }
       return
     }
-    if (e.key === "Home" && open) {
+    if (e.key === "Home" && showList) {
       e.preventDefault()
       setCursor(0)
     }
-    if (e.key === "End" && open) {
+    if (e.key === "End" && showList) {
       e.preventDefault()
       setCursor(Math.max(0, options.length - 1))
     }
@@ -352,10 +359,10 @@ export default function LocationPicker({
         autoCorrect="off"
         autoCapitalize="none"
         spellCheck={false}
-        aria-expanded={open}
+        aria-expanded={showList}
         aria-controls={listId}
         aria-autocomplete="list"
-        aria-activedescendant={open && options[cursor] ? optionId(uid, cursor) : undefined}
+        aria-activedescendant={showList && options[cursor] ? optionId(uid, cursor) : undefined}
         aria-invalid={invalid || undefined}
         aria-label={label}
         placeholder={t("search.destination.placeholder")}
@@ -368,31 +375,15 @@ export default function LocationPicker({
         onFocus={() => setOpen(true)}
         onKeyDown={onKeyDown}
         className={clx(
-          "min-h-touch w-full rounded-dd border bg-dd-surface px-3 pe-9 text-base text-dd-ink",
+          "min-h-touch w-full rounded-dd border bg-dd-surface px-3 text-base text-dd-ink",
           "placeholder:text-dd-muted focus:outline-none focus:ring-2 focus:ring-dd-focus focus:ring-offset-1 focus:ring-offset-dd-focus-gap",
           invalid ? "border-dd-danger" : "border-dd-line-strong"
         )}
       />
 
-      {/* Chevron doubles as the "open the whole list" affordance. */}
-      <button
-        type="button"
-        tabIndex={-1}
-        aria-hidden="true"
-        onClick={() => {
-          setOpen((o) => !o)
-          inputRef.current?.focus()
-        }}
-        className="absolute inset-y-0 end-0 flex w-9 items-center justify-center text-dd-grey"
-      >
-        <svg viewBox="0 0 20 20" className={clx("h-4 w-4 transition-transform", open && "rotate-180")} fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M5 7.5 10 12.5 15 7.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-
       {/* Announced to screen readers on every keystroke, not rendered visually. */}
       <p className="sr-only" role="status" aria-live="polite">
-        {open ? t("search.destination.results", { count: options.length }) : ""}
+        {showList ? t("search.destination.results", { count: options.length }) : ""}
       </p>
 
       <ul
@@ -400,7 +391,7 @@ export default function LocationPicker({
         id={listId}
         role="listbox"
         aria-label={label}
-        hidden={!open}
+        hidden={!showList}
         className="absolute z-50 mt-1 max-h-72 w-full overflow-y-auto rounded-dd border border-dd-line-strong bg-dd-surface py-1 shadow-float"
       >
         {options.map((opt, i) => {

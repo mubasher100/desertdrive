@@ -27,7 +27,6 @@ export default function DetailsForm({
   testKey,
   addOns,
   language,
-  uploadsEnabled,
 }: {
   segment: string
   trip: Trip
@@ -37,8 +36,6 @@ export default function DetailsForm({
   /** Priced by the server. Empty means nothing is on sale, and none is shown. */
   addOns: AddOn[]
   language: "en" | "ar"
-  /** False when no upload bucket is configured; the picture control is hidden. */
-  uploadsEnabled: boolean
 }) {
   const t = useTranslations()
   const ids = useId()
@@ -54,6 +51,7 @@ export default function DetailsForm({
     contact_email: "",
     flight_number: "",
     notes: "",
+    whatsapp_offers: false,
   })
 
   const flightRequired = trip.direction === "arrival"
@@ -171,6 +169,23 @@ export default function DetailsForm({
         </p>
       </Field>
 
+      {/*
+        Marketing consent: optional, unticked by default, and about THIS
+        number — which is why it sits under the field rather than with the
+        terms on the payment step. Opted-in numbers are downloaded by the
+        owner from the admin; /privacy says so.
+      */}
+      <label className="-mt-2 mb-4 flex min-h-touch cursor-pointer items-center gap-x-3 text-sm text-dd-ink-soft">
+        <input
+          type="checkbox"
+          name="whatsapp_offers"
+          checked={values.whatsapp_offers === true}
+          onChange={(e) => setValues((v) => ({ ...v, whatsapp_offers: e.target.checked }))}
+          className="h-5 w-5 shrink-0 rounded border-dd-line-strong text-dd-accent focus:ring-dd-accent"
+        />
+        <span>{t("details.whatsappOffers")}</span>
+      </label>
+
       <Field
         id={`${ids}-contact_email`}
         label={t("details.email")}
@@ -217,7 +232,6 @@ export default function DetailsForm({
         value={extras}
         onChange={setExtras}
         language={language}
-        uploadsEnabled={uploadsEnabled}
       />
 
       {message && (

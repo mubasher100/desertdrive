@@ -10,10 +10,14 @@ import syncVehicleStatus from "./sync-vehicle-status"
 
 const CLASSES: VehicleClass[] = ["sedan", "suv", "large-van", "luxury-sedan", "luxury-van"]
 
-/** The $5 extras. Their single variant's option value is "Standard". */
+/**
+ * The extras. Their single variant's option value is "Standard". The meet &
+ * greet sign is free since 2 Nov 2026 (scripts/data-patches.ts made that
+ * change in production; this keeps a fresh environment in step).
+ */
 const ADD_ONS: Array<[handle: string, usd: number]> = [
   ["child-seat", 5],
-  ["meet-and-greet", 5],
+  ["meet-and-greet", 0],
 ]
 
 type FareZoneService = {
@@ -73,7 +77,7 @@ export async function applyPriceBook(container: MedusaContainer) {
     }
   }
 
-  // 4 · The extras, at exactly $5.
+  // 4 · The extras.
   for (const [handle, usd] of ADD_ONS) {
     tally[await setVariantPrice(container, handle, "Standard", qarFromUsd(usd))]++
   }
