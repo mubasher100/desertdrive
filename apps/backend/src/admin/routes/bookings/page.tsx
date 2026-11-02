@@ -56,6 +56,29 @@ const BookingsPage = () => {
     onError: (e: Error) => toast.error(e.message || "The test email did not send"),
   })
 
+  /**
+   * Customers who ticked "Send me offers on WhatsApp", as a spreadsheet. A
+   * download rather than a list on screen: what the owner does with it is
+   * import it into WhatsApp Business or a broadcast tool.
+   */
+  const optIns = useMutation({
+    mutationFn: () => sdk.client.fetch<{ count: number; csv: string }>("/admin/bookings/whatsapp-optins"),
+    onSuccess: (r) => {
+      if (!r.count) {
+        toast.info("No customer has opted in to WhatsApp offers yet")
+        return
+      }
+      const url = URL.createObjectURL(new Blob([r.csv], { type: "text/csv;charset=utf-8" }))
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `whatsapp-offers-${new Date().toISOString().slice(0, 10)}.csv`
+      a.click()
+      URL.revokeObjectURL(url)
+      toast.success(`Downloaded ${r.count} WhatsApp ${r.count === 1 ? "contact" : "contacts"}`)
+    },
+    onError: (e: Error) => toast.error(e.message || "The list did not download"),
+  })
+
   const list = rows[tab]
 
   return (
@@ -68,6 +91,17 @@ const BookingsPage = () => {
             Paid bookings are confirmed. Times are Qatar time. Tap a booking to message the customer or cancel it.
           </Text>
         </div>
+          <div className="flex flex-col gap-2 xsmall:flex-row">
+          <Button
+            size="small"
+            variant="secondary"
+            className="min-h-[44px] w-full shrink-0 xsmall:w-auto"
+            isLoading={optIns.isPending}
+            disabled={optIns.isPending}
+            onClick={() => optIns.mutate()}
+          >
+            Download WhatsApp offers list
+          </Button>
           {/* Sends the "new booking" email with sample data, to check it arrives. */}
           <Button
             size="small"
@@ -79,6 +113,7 @@ const BookingsPage = () => {
           >
             Send test email
           </Button>
+          </div>
         </div>
         <div className="grid grid-cols-3 gap-2">
           <TabButton active={tab === "upcoming"} onClick={() => setTab("upcoming")} label={`Upcoming (${rows.upcoming.length})`} />

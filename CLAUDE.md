@@ -331,9 +331,11 @@ They ride on the cart **twice, on purpose**: as real line items, which is what c
 
 **Not multiplied by legs.** A child seat is fitted for the trip; the customer is not buying a second one for the way home. A per-leg extra would be a flag on the add-on, not a rule in the cart.
 
-**One add-on collects input.** `meet-and-greet` carries `collects: "sign"` on its metadata, so the storefront renders a checkbox plus the words for the board and an optional picture, instead of a stepper. `priceAddOns` **drops a sign with nothing written on it rather than charging for it** — a blank board helps nobody, and the form is not the thing that enforces it.
+**One add-on collects input.** `meet-and-greet` carries `collects: "sign"` on its metadata, so the storefront renders a checkbox plus the words for the board, instead of a stepper. **It is free** (owner, 2 Nov 2026) — priced at 0, not unpriced, because an unpriced add-on is off sale; the picker prints "Free". `priceAddOns` **drops a sign with nothing written on it rather than charging for it** — a blank board helps nobody, and the form is not the thing that enforces it.
 
-The picture goes through `POST /store/sign-image` — **the only public, unauthenticated write on the site**, and everything about it follows from that:
+> **The sign picture was removed from the storefront on 2 Nov 2026** (owner). The form, its strings and the storefront's `/api/sign-image` relay are gone; the backend's `POST /store/sign-image` below is still deployed and still guarded, but nothing calls it. Remove it too unless the picture is coming back.
+
+The picture went through `POST /store/sign-image` — **the only public, unauthenticated write on the site**, and everything about it follows from that:
 
 - **the bytes decide the type**, never the client's `Content-Type` or filename (`sniffImage`)
 - three raster formats, and **never SVG** — it is XML that can carry `<script>`, and these URLs are opened by the owner while logged into the admin. Pinned by a unit test that must keep failing for SVG
@@ -345,7 +347,9 @@ The picture goes through `POST /store/sign-image` — **the only public, unauthe
 
 > **Uploads are configured or refused, never degraded.** The file module is registered only when `UPLOADS_S3_*` is set, and the route refuses otherwise. Medusa's default writes to disk, and **Railway's filesystem is ephemeral** — the picture would survive until the next deploy and then vanish, leaving a booking that was paid for with a sign the driver cannot print. The storefront hides the picture control when `NEXT_PUBLIC_UPLOADS_PUBLIC_URL` is unset; the sign's text works either way.
 
-> **Only the child seat and the meet & greet sign are priced** — both 18 QAR, the owner's "$5" converted at the peg (it displays as $4.95; 18.2 would display exactly $5.00 but print totals like "118.2 QAR"). The other two are `null` in `seed-fleet.ts` and therefore invisible. **`seed-fleet.ts` must be run against production for the child-seat product to exist there** — deploys run migrations, not seeds.
+> **Only the child seat ($5, 18.20 QAR) and the meet & greet sign (free, 0) are on sale.** The other two are `null` in `seed-fleet.ts` and therefore invisible.
+>
+> **A one-off change to production data goes in `scripts/data-patches.ts`,** applied once by `jobs/apply-data-patches.ts` and recorded in the store's `metadata.data_patches`. That is how the sign became free in production. Not by bumping `PRICE_BOOK_VERSION`: that re-applies the WHOLE book and silently undoes every fare the owner has edited on the Prices page. **`seed-fleet.ts` must be run against production for the child-seat product to exist there** — deploys run migrations, not seeds.
 
 ### Booking details ride on metadata
 
@@ -422,7 +426,7 @@ Five steps. Build them in this order.
 
 **1 · Home** — the search widget is *in* the hero, not below it:
 - Direction toggle: **From the airport** / **To the airport**
-- The non-airport end: a **type-to-search combobox**. With `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` set, Google Places suggestions (Qatar only, addresses in English for the driver) are merged **above** the curated areas, so a guest can type their hotel or street rather than finding the nearest district. With no key — or a blocked, slow or failing Maps script — the curated list is exactly what it was. Free text neither source knows offers WhatsApp with what they typed rather than an error.
+- The non-airport end: a **type-to-search combobox**. **The list appears only once something is typed** (owner, 2 Nov 2026) — tapping in used to drop every area over the form, which read as a menu rather than a search box. With `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` set, Google Places suggestions (Qatar only, addresses in English for the driver) are merged **above** the curated areas, so a guest can type their hotel or street rather than finding the nearest district. With no key — or a blocked, slow or failing Maps script — the curated list is exactly what it was. Free text neither source knows offers WhatsApp with what they typed rather than an error.
 - An optional **return leg**: same vehicle, same address, opposite direction, as one booking with two legs. The fare is the one-way fare twice — there is no return discount unless the owner sets one. Both legs are held together by the availability guard, and a vehicle busy on *either* leg cannot take the booking.
 - **A map under the field, always visible, working both ways.** Searching moves the pin so the customer sees what they picked; tapping or dragging the pin sets the destination, which is the only way to express a villa on an unnamed street. Leaflet on OpenStreetMap tiles: no API key, nothing billed per view. It loads *after first paint* (`requestIdleCallback`, timeout fallback for Safari) with its height reserved, so it costs neither LCP nor layout shift — measured at 612 ms LCP, 0 CLS. The pin's coordinates price the trip and ride onto the booking, so the admin card and the confirmation email both carry a maps link the driver can navigate to. The marker is an inline SVG `divIcon`: Leaflet's default points at image files a bundler does not serve and renders broken.
 - Date, time, passengers — bounded by the **lead time**: a pickup must be at least `NEXT_PUBLIC_MIN_LEAD_MINUTES` (default **720** — the owner's twelve hours, 30 Sept 2026; 24 for the luxury classes, per vehicle) away. Checked in the widget, again on the results page (a page can sit open for an hour), and finally server-side before a cart is created. A time in the past and a time inside the window get different words: one is a mistake, the other is a booking we would still like by phone.
@@ -454,6 +458,7 @@ The admin is cut down to **Bookings and Prices** (`admin/lib/simplify.ts` hides 
 - **Cancel / Record refund** are buttons on the booking page and write `booking_status`, `cancelled_*`, `refunds[]` and `refunded_total` onto order metadata (`lib/booking-status.ts`, `workflows/bookings/update-booking.ts`). Cancel also deletes the booking slot, which puts the car back on sale. **This is not Medusa's order cancel on purpose**: that would ask the SkipCash provider to refund, and the provider refuses refunds through the API. A refund is sent from the SkipCash portal and *recorded* here, capped at what was paid.
 - **Prices** (`/admin/price-table`) is every area and band × every car in whole US dollars, converted ×3.64 to the stored riyals server-side. It writes the same variant prices the price book does.
 - There is **no login lockout** — the owner's explicit call.
+- **Download WhatsApp offers list** (Bookings page) — a CSV of everyone who ticked *Send me offers on WhatsApp* under the phone number on the details step (owner, 2 Nov 2026): one row per number, latest opt-in wins, cells made formula-safe (`lib/whatsapp-optins.ts`). The tick is optional and unticked by default, and is stored as `whatsapp_offers` + `whatsapp_offers_at` on the booking; `/privacy` describes it and how to opt out.
 
 ### Booking lookup without an account
 
@@ -793,7 +798,7 @@ Run `npm run build` in `apps/storefront`, not just `tsc`, before pushing anythin
 | 9 | Admin Bookings screen | ✅ Done — simplified to Bookings + Prices (21 Oct 2026): cancel / record refund / WhatsApp buttons, office email per booking (paid = confirmed), mobile-first. *Mark cash collected* stays on the order card |
 | 10 | Arabic / RTL | 🟡 Locale routing, dictionary, RTL, fonts done; native review pending |
 | 11 | Accessibility audit — target zero axe violations | ✅ 0 violations (axe-core, 7 pages × en/ar × 375/1280, 2026-09-21); re-run after UI changes |
-| 12 | Legal pages, SEO, custom domain | 🟡 Live on **desertdriverental.com** (25 Sept 2026) with canonicals and hreflang; CR 211743 and the registered address are in. Cancellation is complete: no refund inside 24 hours or for a no-show (owner, 31 Oct 2026). The 90-minute airport wait went in 27 Sept 2026. The Terms still carry placeholders for departure waiting time and liability/governing law |
+| 12 | Legal pages, SEO, custom domain | 🟡 Live on **desertdriverental.com** (25 Sept 2026) with canonicals and hreflang; CR 211743 and the registered address are in. Cancellation is complete: no refund inside 24 hours or for a no-show (owner, 31 Oct 2026). The 90-minute airport wait went in 27 Sept 2026. Force majeure = full refund (2 Nov 2026). The Terms have no placeholders left: departure waiting time and liability were removed at the owner's request (2 Nov 2026), leaving "governed by the laws of the State of Qatar" |
 | 13 | Later: hourly chauffeur, day tours, self-drive rental | 🔒 Later |
 
 ### Legal compliance (Qatar)
@@ -803,12 +808,12 @@ What the site does to meet the laws that actually apply to it — Qatar has no C
 | Law | Requirement | Where it is met |
 |---|---|---|
 | E-Commerce Law No. 16 of 2010 | Terms available and accepted before the contract; trader name, registration and address shown before contracting and on the confirmation | Consent checkbox on `/payment` (`payment-chooser`), recorded as `terms_accepted_at` + `terms_version` on the order; footer, `/contact` and the email footer print name · CR · address from `CONTACT` / `BUSINESS_*` |
-| Personal Data Privacy Protection Law No. 13 of 2016 | Consent to processing; purpose, recipients and retention disclosed; access/erasure route | Same checkbox covers the privacy policy; `/privacy` is written from what the system actually does; erasure by email |
+| Personal Data Privacy Protection Law No. 13 of 2016 | Consent to processing; purpose, recipients and retention disclosed; access/erasure route | Same checkbox covers the privacy policy; `/privacy` is written from what the system actually does; erasure by email. ⚠️ The list of recipients ("Who processes it": driver, SkipCash, hosting outside Qatar) was replaced by the MOCI licence line at the owner's request (2 Nov 2026) — the law expects recipients and cross-border transfer to be disclosed, so have a lawyer look at that before relying on it. WhatsApp marketing is opt-in, separately, with a timestamp |
 | Civil Code (capacity at 18) | Contract with an adult | The consent line includes "I confirm I am 18 or older" |
 | Consumer Protection Law No. 8 of 2008 | Price shown is the price charged; no hidden fees | Results page says so explicitly; tax region is 0% |
 | Copyright Law No. 7 of 2002 | Licensed imagery | CC-licensed photos credited on `/credits` until the owner's own photography replaces them |
 
-Fonts are self-hosted by `next/font` (no request to Google at runtime — verified: the live page references only its own origin and `wa.me`). No analytics, session replay or tracking cookies exist; the one cookie is the two-hour booking cart. Bump `TERMS_VERSION` in `src/lib/data/booking.ts` when the legal pages change materially.
+Fonts are self-hosted by `next/font` (no request to Google at runtime — verified: the live page references only its own origin and `wa.me`). No analytics, session replay or tracking cookies exist; the one cookie is the two-hour booking cart. **There is no per-visit log** either: the security log (`visit-log.ts`) was removed with its privacy paragraph on 2 Nov 2026 — add one back and the policy must say so again. Bump `TERMS_VERSION` in `src/lib/data/booking.ts` when the legal pages change materially.
 
 ### SkipCash notes
 
@@ -862,7 +867,7 @@ Ask the owner. Several of these block real work:
 5. ~~Contact details~~ — phone `+974 5151 4161`, CR **211743**, registered address **2nd Floor, Office 3, Building 64, Zone 27, Street 950, Umm Ghuwailina Street, Doha** (changed 1 Nov 2026; the email footer reads `BUSINESS_ADDRESS` on Railway, which must be changed with it). All three live in the footer, `/contact`, the terms and the confirmation email. The Arabic address still wants a native reviewer.
 6. **Domain** — the live domain is `desertdriverental.com` (Namecheap, DNS on Cloudflare in the `officialyuvraj24@gmail.com` account). `desertdrive.qa` is unregistered and still an option: a plain `.qa` needs **no** Qatari commercial registration (only `.com.qa` does), but must be bought through a Qatar-accredited registrar or reseller.
 7. ~~SkipCash credentials~~ — **production keys are live** (26 Sept 2026), webhook pointed at Medusa. Still to do: **one real booking with a real card**, to prove the merchant account settles — the plumbing is verified, the settlement is not.
-8. **Cancellation and refund policy** — free cancellation up to **24 hours**, full refund to the card, is live (Booking.com's window, the owner's call). The driver waits **90 minutes** from actual landing, after which it is a no-show — live since 27 Sept 2026. **Inside 24 hours, and a no-show: no refund** (owner, 31 Oct 2026; `TERMS_VERSION` 2026-10-31). **Still open:** free waiting time on a *departure* pickup plus the hourly rate beyond it.
+8. **Cancellation and refund policy** — free cancellation up to **24 hours**, full refund to the card, is live (Booking.com's window, the owner's call). The driver waits **90 minutes** from actual landing, after which it is a no-show — live since 27 Sept 2026. **Inside 24 hours, and a no-show: no refund** (owner, 31 Oct 2026). **Force majeure: full refund** (owner, 2 Nov 2026; `TERMS_VERSION` 2026-11-02). Departure waiting time was dropped from the Terms rather than decided.
 
    > ⚠️ The 90 minutes came from a one-line meeting note, "no show 90 minutes", which admits two readings: how long the driver waits, or how close to pickup a cancellation counts as a no-show. It is written as the **waiting period** — the standard meaning in airport transfer, and the one that fits the words — but it is an interpretation and the owner should confirm it.
 9. **Minimum notice for a booking** — **12 hours**, **24 for the S-Class and V-Class** (owner, 30 Sept 2026), enforced in the funnel and at cart completion. Anything sooner is sent to WhatsApp. The 2× short-notice fare is off.

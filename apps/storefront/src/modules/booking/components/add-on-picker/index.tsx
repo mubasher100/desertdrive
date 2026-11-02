@@ -30,15 +30,12 @@ export default function AddOnPicker({
   value,
   onChange,
   language,
-  uploadsEnabled,
 }: {
   addOns: AddOn[]
   /** variant id → what was chosen. Absent, or quantity 0, means not taken. */
   value: Record<string, AddOnChoice>
   onChange: (next: Record<string, AddOnChoice>) => void
   language: "en" | "ar"
-  /** False when no bucket is configured — the picture control is then hidden. */
-  uploadsEnabled: boolean
 }) {
   const t = useTranslations()
   const ids = useId()
@@ -100,7 +97,8 @@ export default function AddOnPicker({
                 </div>
                 <p className="shrink-0 text-end">
                   <span className="block font-semibold tabular-nums text-dd-accent-text">
-                    {formatUsd(a.amount)}
+                    {/* The meet & greet sign is offered at 0 (owner, 2 Nov 2026): "Free", not "$0". */}
+                    {a.amount === 0 ? t("addons.free") : formatUsd(a.amount)}
                   </span>
                 </p>
               </div>
@@ -167,10 +165,7 @@ export default function AddOnPicker({
                 <SignFields
                   fieldId={`${ids}-${a.variant_id}-note`}
                   note={choice?.note ?? ""}
-                  imageUrl={choice?.image_url ?? null}
                   onNote={(note) => setField(a.variant_id, { note })}
-                  onImage={(image_url) => setField(a.variant_id, { image_url })}
-                  uploadsEnabled={uploadsEnabled}
                 />
               )}
             </li>

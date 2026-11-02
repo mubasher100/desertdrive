@@ -149,8 +149,9 @@ export const FARES: Record<BandCode, Record<VehicleKey, number | null>> = {
 const ADD_ON_PRICES: Record<string, number | null> = {
   "child-seat": qarFromUsd(5),
   "extra-waiting-hour": null,
-  // Same 18 QAR as the child seat — the owner's call, 28 Sept 2026.
-  "meet-and-greet": qarFromUsd(5),
+  // Free — the owner's call, 2 Nov 2026 (it was $5). 0, not null: null would
+  // take it off sale.
+  "meet-and-greet": 0,
   "extra-luggage": null,
 }
 
@@ -368,8 +369,8 @@ const ADD_ONS: Array<{
   /**
    * What the customer has to tell us for this add-on to be deliverable.
    *
-   * "sign" collects the words to print on the board and, optionally, a picture
-   * to print beside them. An add-on with no `collects` is just a quantity.
+   * "sign" collects the words to print on the board. An add-on with no
+   * `collects` is just a quantity.
    */
   collects?: "sign"
 }> = [
@@ -396,9 +397,8 @@ const ADD_ONS: Array<{
     title: "Meet & greet sign",
     title_ar: "لافتة استقبال",
     description:
-      "The driver waits in arrivals holding a sign with whatever you write here, and a picture if you add one.",
-    description_ar:
-      "ينتظرك السائق في صالة الوصول حاملًا لافتة تحمل ما تكتبه هنا، مع صورة إن أضفتها.",
+      "The driver waits in arrivals holding a sign with whatever you write here.",
+    description_ar: "ينتظرك السائق في صالة الوصول حاملًا لافتة تحمل ما تكتبه هنا.",
     max_quantity: 1,
     collects: "sign",
   },

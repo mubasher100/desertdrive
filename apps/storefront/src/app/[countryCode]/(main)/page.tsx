@@ -7,6 +7,7 @@ import Faq from "@modules/home/components/faq"
 import { getTranslations } from "@lib/i18n/get-translations"
 import { alternatesFor } from "@lib/util/locale"
 import { getBaseURL } from "@lib/util/env"
+import { CONTACT } from "@lib/data/contact"
 
 type Props = { params: Promise<{ countryCode: string }> }
 
@@ -39,8 +40,41 @@ export default async function Home({ params }: Props) {
   const { countryCode } = await params
   const t = getTranslations(countryCode)
 
+  /**
+   * What search engines read about the business. Airport transfers are the
+   * ONLY service (owner, 2 Nov 2026): Google's summary was listing private
+   * tours and car rental, from the Instagram bio, and this is the site's own
+   * statement of what it sells.
+   */
+  const structured = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: t("common.brand"),
+    legalName: CONTACT.legalName,
+    url: `${getBaseURL()}/${countryCode}`,
+    telephone: CONTACT.phone.e164,
+    email: CONTACT.email,
+    address: { "@type": "PostalAddress", streetAddress: CONTACT.address.en, addressLocality: "Doha", addressCountry: "QA" },
+    areaServed: { "@type": "Country", name: "Qatar" },
+    description: t("search.subtitle"),
+    makesOffer: {
+      "@type": "Offer",
+      itemOffered: {
+        "@type": "Service",
+        serviceType: "Airport transfer",
+        name: t("common.tagline"),
+        areaServed: { "@type": "Country", name: "Qatar" },
+      },
+    },
+  }
+
   return (
     <main>
+      <script
+        type="application/ld+json"
+        // `<` escaped so nothing in the data can close the script element.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structured).replace(/</g, "\\u003c") }}
+      />
       <Hero segment={countryCode} />
       <TrustStrip segment={countryCode} />
       <Fleet segment={countryCode} />
