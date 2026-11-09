@@ -1,7 +1,7 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import { useId, useMemo, useState, type FormEvent } from "react"
+import { useEffect, useId, useMemo, useState, type FormEvent } from "react"
 import LocationPicker from "@modules/booking/components/location-picker"
 import MapPicker from "@modules/booking/components/map-picker"
 import { destinationToQuery, type Destination } from "@lib/booking/destination"
@@ -9,6 +9,7 @@ import type { SearchZone } from "@lib/data/zones"
 import { checkLeadTime, earliestPickupFields, leadTimeLabel, qatarToday } from "@lib/booking/lead-time"
 import { useLanguage, useTranslations } from "@lib/i18n/use-translations"
 import { clx } from "@medusajs/ui"
+import { CHOOSE_CAR_EVENT, type ChooseCarDetail } from "@modules/home/components/fleet/choose-car"
 
 export type Direction = "arrival" | "departure"
 
@@ -67,6 +68,14 @@ export default function SearchWidget({
   const [returnDate, setReturnDate] = useState("")
   const [returnTime, setReturnTime] = useState("")
   const [error, setError] = useState<string | null>(null)
+  /** A car picked from the fleet cards first, carried to results to preselect. */
+  const [car, setCar] = useState<ChooseCarDetail | null>(null)
+
+  useEffect(() => {
+    const onChoose = (e: Event) => setCar((e as CustomEvent<ChooseCarDetail>).detail)
+    window.addEventListener(CHOOSE_CAR_EVENT, onChoose)
+    return () => window.removeEventListener(CHOOSE_CAR_EVENT, onChoose)
+  }, [])
 
   // Qatar has no DST, so "today" in the customer's booking sense is Qatar's
   // today. Computed on the client so a late-night booking abroad does not get
@@ -123,6 +132,7 @@ export default function SearchWidget({
       passengers: String(passengers),
       luggage: String(luggage),
       ...(wantsReturn ? { return_date: returnDate, return_time: returnTime } : {}),
+      ...(car ? { car: car.handle } : {}),
     })
 
     router.push(`/${segment}/results?${query.toString()}`)
@@ -135,11 +145,13 @@ export default function SearchWidget({
 
   return (
     <form
+      id="book"
       onSubmit={onSubmit}
       noValidate
       aria-labelledby={`${ids}-title`}
       className={clx(
-        "rounded-dd-lg bg-dd-surface p-4 shadow-float small:p-6",
+        // scroll-mt clears the sticky header when a fleet card scrolls here.
+        "scroll-mt-24 rounded-dd-lg bg-dd-surface p-4 shadow-float small:p-6",
         // The widget is a white card that usually sits on the dark hero, whose
         // .on-ink inverts the focus ring. Reset it here so focus inside the
         // card is ink-on-white again.
@@ -150,6 +162,19 @@ export default function SearchWidget({
       <h2 id={`${ids}-title`} className="sr-only">
         {t("search.formTitle")}
       </h2>
+
+      {car && (
+        <div role="status" className="mb-4 flex items-center justify-between gap-x-3 rounded-dd bg-dd-accent-soft px-3 py-1">
+          <span className="text-sm font-semibold text-dd-ink">{t("search.car.chosen", { car: car.title })}</span>
+          <button
+            type="button"
+            onClick={() => setCar(null)}
+            className="min-h-touch shrink-0 text-sm font-medium text-dd-accent-text underline underline-offset-4"
+          >
+            {t("search.car.clear")}
+          </button>
+        </div>
+      )}
 
       {/* Direction --------------------------------------------------------- */}
       <fieldset className="mb-4">

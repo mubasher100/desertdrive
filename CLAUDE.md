@@ -433,6 +433,10 @@ Five steps. Build them in this order.
 - Trust strip (licensed drivers, flight tracking, free waiting, fixed price)
 - Service cards, how-it-works, fleet, FAQ
 
+**Loading screen and start-from-a-car (owner, 9 Nov 2026).** Every step has a `loading.tsx` rendering `BookingLoader` (logo, spinner, "Finding your prices…"), and the two server-action buttons — *Continue to payment* and *Pay* — cover the page with its `overlay` form while they run, so nothing is tapped twice. Home's car cards have **Choose this car**: a client event (not a URL parameter — home is prerendered and must stay cacheable) tells the search widget, which shows "Car: SUV · Change car" and sends `car=<handle>` to results, where that car is preselected if it is bookable. The map jumps to a picked place **without animation**: a Leaflet zoom animation finishes on a 250 ms timer that outlives the map once the loading screen unmounts it, and throws `reading '_leaflet_pos'`.
+
+> **Creating the booking is ONE create-cart call** carrying the metadata, the vehicle, the extras and both addresses, then the shipping-option lookup and the `No delivery` method — 3 round trips to Singapore, down from 6 + one per extra (9 Nov 2026). Do not split it back into per-item calls.
+
 **2 · Results** — the three vehicle classes valid for the resolved band and passenger count. Price, capacity, bags, what's included. Cheapest first. The fare shown here is the fare charged — say so explicitly on the page.
 
 **3 · Details** — flight number (required on arrivals, optional on departures), contact name / phone / email, pickup notes, add-ons.

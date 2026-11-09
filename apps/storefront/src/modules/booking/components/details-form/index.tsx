@@ -8,6 +8,7 @@ import { DEFAULT_DIAL_ISO, DIAL_CODES, findDial } from "@lib/data/dial-codes"
 import { createBookingCart } from "@lib/data/booking"
 import type { AddOn, AddOnChoice } from "@lib/data/add-ons"
 import AddOnPicker from "@modules/booking/components/add-on-picker"
+import BookingLoader from "@modules/booking/components/booking-loader"
 import { useTranslations } from "@lib/i18n/use-translations"
 
 /**
@@ -86,6 +87,8 @@ export default function DetailsForm({
 
   return (
     <form onSubmit={onSubmit} noValidate className="mt-6 max-w-xl">
+      {/* Creating the booking is several backend calls; cover the form so it is not tapped twice. */}
+      {pending && <BookingLoader step="saving" overlay />}
       <Field
         id={`${ids}-flight_number`}
         label={t("details.flightNumber")}
