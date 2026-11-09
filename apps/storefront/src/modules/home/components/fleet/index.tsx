@@ -4,6 +4,7 @@ import { getTranslations } from "@lib/i18n/get-translations"
 import { localeOf } from "@lib/util/locale"
 import { fleetImage } from "@lib/data/fleet-images"
 import { formatUsd } from "@lib/util/money"
+import ChooseCar from "./choose-car"
 
 /**
  * The three vehicle classes with their "from" price. Reads the live catalogue,
@@ -118,6 +119,8 @@ function VehicleCard({
             <dd>{t("home.fleet.luggage", { count: vehicle.luggage })}</dd>
           </div>
         </dl>
+
+        <ChooseCar handle={vehicle.handle} title={title} />
       </div>
     </li>
   )

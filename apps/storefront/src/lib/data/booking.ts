@@ -133,7 +133,8 @@ export async function createBookingCart(
     }
   }
 
-  const [quote, chosenExtras] = await Promise.all([
+  // The region alongside the quote: independent, and each is a round trip.
+  const [quote, chosenExtras, region] = await Promise.all([
     getQuote({
       ...tripCoords(trip),
       passengers: trip.passengers,
@@ -143,6 +144,7 @@ export async function createBookingCart(
       test_key: testKey ?? null,
     }),
     priceAddOns(extras ?? {}),
+    getRegion(segment),
   ])
   const vehicle = quote?.vehicles.find((v) => v.variant_id === variantId)
   // An unavailable vehicle is treated exactly like a tampered variant: back to
@@ -153,7 +155,6 @@ export async function createBookingCart(
     redirect(`/${segment}/results?${tripToQuery(trip)}`)
   }
 
-  const region = await getRegion(segment)
   if (!region) {
     return { ok: false, errors: {}, message: t("details.error.generic") }
   }
@@ -168,12 +169,36 @@ export async function createBookingCart(
   const last_name = rest.join(" ") || "-"
 
   try {
-    // 1. The cart, with the trip on its metadata. These key names are the
-    //    contract shared with the confirmation email and the admin screen —
-    //    see CLAUDE.md, "Booking details ride on metadata".
+    /**
+     * 1. The cart in ONE call: trip metadata, the vehicle, the extras and the
+     *    addresses together (9 Nov 2026). This used to be a create, then a
+     *    line item per vehicle and per extra, then an address update — each a
+     *    round trip to Singapore, one after another, while the customer
+     *    watched a button. Medusa's create-cart workflow adds the items and
+     *    prices them exactly as the separate calls did.
+     *
+     *    The metadata key names are the contract shared with the confirmation
+     *    email and the admin screen — see CLAUDE.md, "Booking details ride on
+     *    metadata".
+     *
+     *    The vehicle's quantity is FARE UNITS: one per leg, and the
+     *    short-notice multiplier for any leg under 12 hours away — decided by
+     *    the quote the server just gave. The completion hook re-derives it and
+     *    refuses a short-notice trip carried at the ordinary fare. Extras are
+     *    NOT multiplied by legs: a child seat is fitted for the trip.
+     *
+     *    Addresses are minimal. Nothing is shipped, but Medusa's shipping-option
+     *    lookup and tax calculation both key off the country.
+     */
     const { cart } = await sdk.store.cart.create({
       region_id: region.id,
       email,
+      items: [
+        { variant_id: vehicle.variant_id, quantity: fareUnitsOf(quote, trip) },
+        ...chosenExtras.map((extra) => ({ variant_id: extra.addOn.variant_id, quantity: extra.quantity })),
+      ],
+      shipping_address: { first_name, last_name, address_1: driverAddress, city: "Doha", country_code: "qa", phone },
+      billing_address: { first_name, last_name, address_1: driverAddress, city: "Doha", country_code: "qa" },
       metadata: {
         direction: trip.direction,
         pickup_at: pickupAtIso(trip),
@@ -245,45 +270,7 @@ export async function createBookingCart(
       },
     })
 
-    // 2. The vehicle, at the price the server just resolved.
-    // Quantity is the number of legs, so the fare doubles for a return with
-     // no second price to keep in step. There is no return discount unless the
-     // owner sets one.
-    /**
-     * Quantity is FARE UNITS: one per leg, and the short-notice multiplier for
-     * any leg under 12 hours away — decided by the quote the server just gave,
-     * not by this code. Falls back to legs when an older backend sends no
-     * units. The completion hook re-derives it from the pickup times and
-     * refuses a short-notice trip carried at the ordinary fare.
-     */
-    await sdk.store.cart.createLineItem(cart.id, { variant_id: vehicle.variant_id, quantity: fareUnitsOf(quote, trip) })
-
-    /**
-     * 2b. The extras, at the server's prices.
-     *
-     * Sequential rather than parallel on purpose: Medusa recalculates the cart
-     * on every line-item write, and firing several at once has them racing
-     * over the same totals.
-     *
-     * NOT multiplied by legs. A child seat is fitted to the car for the trip;
-     * the customer is not buying a second one for the way home. If the owner
-     * ever wants a per-leg extra, it is a flag on the add-on, not a rule here.
-     */
-    for (const extra of chosenExtras) {
-      await sdk.store.cart.createLineItem(cart.id, {
-        variant_id: extra.addOn.variant_id,
-        quantity: extra.quantity,
-      })
-    }
-
-    // 3. Minimal addresses. Nothing is shipped, but Medusa's shipping-option
-    //    lookup and tax calculation both key off the country.
-    await sdk.store.cart.update(cart.id, {
-      shipping_address: { first_name, last_name, address_1: driverAddress, city: "Doha", country_code: "qa", phone },
-      billing_address: { first_name, last_name, address_1: driverAddress, city: "Doha", country_code: "qa" },
-    })
-
-    // 4. The zero-cost "No delivery" method. Load-bearing: completeCart
+    // 2. The zero-cost "No delivery" method. Load-bearing: completeCart
     //    refuses without a shipping method. Selected silently, by name.
     const { shipping_options } = await sdk.store.fulfillment.listCartOptions({ cart_id: cart.id })
     const option = shipping_options.find((o) => o.name === NO_DELIVERY) ?? shipping_options[0]

@@ -136,6 +136,7 @@ export default async function ResultsPage({ params, searchParams }: Props) {
               vehicles={quote.vehicles}
               legs={legsOf(trip)}
               units={quote.fare_units?.units}
+              preferred={typeof sp.car === "string" ? sp.car : undefined}
               nextHref={`/details?${tripToQuery(trip, typeof sp.test === "string" ? { test: sp.test } : undefined)}`}
             />
           </div>

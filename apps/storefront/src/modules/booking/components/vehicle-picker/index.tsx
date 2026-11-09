@@ -24,6 +24,7 @@ export default function VehiclePicker({
   nextHref,
   legs = 1,
   units,
+  preferred,
 }: {
   vehicles: QuoteVehicle[]
   /** Details page URL, without the variant. `&variant=` is appended. */
@@ -40,6 +41,8 @@ export default function VehiclePicker({
    * Decided by the server; absent from an older backend, where it is legs.
    */
   units?: number
+  /** Handle of a car chosen on the home page (`?car=`), preselected if bookable. */
+  preferred?: string
 }) {
   const fares = units ?? legs
   const t = useTranslations()
@@ -49,9 +52,12 @@ export default function VehiclePicker({
   const segment = String(params?.countryCode ?? "en-qa")
   const groupId = useId()
 
-  // Default to the cheapest car that is actually free, not simply the first.
+  // The car picked on the home page if it is bookable for this trip; otherwise
+  // the cheapest car that is actually free, not simply the first.
   const [selected, setSelected] = useState<string>(
-    vehicles.find((v) => !isBlocked(v))?.variant_id ?? ""
+    vehicles.find((v) => v.handle === preferred && !isBlocked(v))?.variant_id ??
+      vehicles.find((v) => !isBlocked(v))?.variant_id ??
+      ""
   )
   const chosen = vehicles.find((v) => v.variant_id === selected)
 

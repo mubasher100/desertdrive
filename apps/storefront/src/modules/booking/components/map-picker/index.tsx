@@ -247,7 +247,11 @@ export default function MapPicker({
               })
           }
           if (recentre) {
-            map.setView([lat, lng], Math.max(map.getZoom(), 14))
+            // Not animated: a zoom animation finishes on a 250 ms timer that
+            // outlives the map if the customer taps "See prices" straight away
+            // (the loading screen unmounts it), and throws "reading
+            // '_leaflet_pos'" against the removed map.
+            map.setView([lat, lng], Math.max(map.getZoom(), 14), { animate: false })
           }
         }
 

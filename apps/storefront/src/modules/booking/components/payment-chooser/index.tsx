@@ -6,6 +6,7 @@ import { startCardPayment } from "@lib/data/booking"
 import { whatsappLink } from "@lib/data/contact"
 import { formatQar, formatUsd } from "@lib/util/money"
 import { useTranslations } from "@lib/i18n/use-translations"
+import BookingLoader from "@modules/booking/components/booking-loader"
 
 /**
  * Step 4: pay by card.
@@ -79,6 +80,8 @@ export default function PaymentChooser({
 
   return (
     <div className="mt-6 max-w-xl">
+      {/* Stays up through the redirect: pending lasts until SkipCash's page replaces this one. */}
+      {pending && <BookingLoader step="skipcash" overlay />}
       <div className="rounded-dd-lg border-2 border-dd-accent bg-dd-accent-soft/40 p-4">
         <p className="font-semibold text-dd-ink">{t("payment.card")}</p>
         <p className="mt-0.5 text-sm text-dd-muted">{t("payment.card.help")}</p>
