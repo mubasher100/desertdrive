@@ -30,12 +30,15 @@ export default function AddOnPicker({
   value,
   onChange,
   language,
+  signError,
 }: {
   addOns: AddOn[]
   /** variant id → what was chosen. Absent, or quantity 0, means not taken. */
   value: Record<string, AddOnChoice>
   onChange: (next: Record<string, AddOnChoice>) => void
   language: "en" | "ar"
+  /** Set by the details form when the sign is ticked but blank. */
+  signError?: string
 }) {
   const t = useTranslations()
   const ids = useId()
@@ -166,6 +169,7 @@ export default function AddOnPicker({
                   fieldId={`${ids}-${a.variant_id}-note`}
                   note={choice?.note ?? ""}
                   onNote={(note) => setField(a.variant_id, { note })}
+                  error={signError}
                 />
               )}
             </li>

@@ -13,10 +13,13 @@ export default function SignFields({
   note,
   onNote,
   fieldId,
+  error,
 }: {
   note: string
   onNote: (value: string) => void
   fieldId: string
+  /** Shown when the sign is ticked and the form is submitted with nothing written. */
+  error?: string
 }) {
   const t = useTranslations()
 
@@ -33,11 +36,20 @@ export default function SignFields({
         maxLength={MAX_NOTE_LENGTH}
         placeholder={t("addons.sign.placeholder")}
         aria-describedby={`${fieldId}-hint`}
+        aria-invalid={error ? true : undefined}
+        // The details form finds this to focus it when the board is left blank.
+        data-sign-note=""
         className="mt-1.5 min-h-[48px] w-full rounded-dd border border-dd-line-strong bg-dd-surface px-3 text-base text-dd-ink focus:border-dd-accent focus:outline-none focus:ring-1 focus:ring-dd-accent"
       />
-      <p id={`${fieldId}-hint`} className="mt-1 text-xs text-dd-muted">
-        {t("addons.sign.hint")}
-      </p>
+      {error ? (
+        <p id={`${fieldId}-hint`} role="alert" className="mt-1 text-sm text-dd-danger">
+          {error}
+        </p>
+      ) : (
+        <p id={`${fieldId}-hint`} className="mt-1 text-xs text-dd-muted">
+          {t("addons.sign.hint")}
+        </p>
+      )}
 
     </div>
   )
