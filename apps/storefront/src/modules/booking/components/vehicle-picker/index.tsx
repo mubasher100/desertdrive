@@ -186,7 +186,7 @@ export default function VehiclePicker({
                 */}
                 {v.lead_ok === false ? (
                   <p className="mt-2 text-sm font-medium text-dd-ink-soft">
-                    {t("results.leadTooSoon", { lead: leadLabel(v.min_lead_minutes ?? 1440, language) })}
+                    {t("results.leadTooSoon", { lead: leadLabel(v.min_lead_minutes ?? 2160, language) })}
                     <span className="block font-normal text-dd-muted">{t("results.leadTooSoonHelp")}</span>
                   </p>
                 ) : v.available === false ? (

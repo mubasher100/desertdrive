@@ -88,7 +88,7 @@ export const dictionary = {
     "home.faq.3.q": "How do I pay?",
     "home.faq.3.a": "By card when you book — Visa, Mastercard or a Qatari debit card, through SkipCash. Prices are shown in US dollars; your card is charged the equivalent in Qatari riyals, at the fixed rate of 3.64, which you see before you pay.",
     "home.faq.4.q": "Is the price really fixed?",
-    "home.faq.4.a": "Yes. The fare depends on your destination and your vehicle. Whatever you are shown before paying is what you pay: nothing is added for traffic, time of day or on arrival. Book at least 12 hours ahead — 24 hours for our luxury cars.",
+    "home.faq.4.a": "Yes. The fare depends on your destination and your vehicle. Whatever you are shown before paying is what you pay: nothing is added for traffic, time of day or on arrival. You can book for any time from now; our luxury cars need 36 hours' notice.",
     "home.faq.5.q": "Can I cancel?",
     "home.faq.5.a": "Yes. See our cancellation and refund policy for the terms.",
 
@@ -362,7 +362,7 @@ export const dictionary = {
     "home.faq.3.q": "كيف أدفع؟",
     "home.faq.3.a": "بالبطاقة عند الحجز — فيزا أو ماستركارد أو بطاقة خصم قطرية، عبر سكيب كاش. تظهر الأسعار بالدولار الأمريكي، وتُخصم من بطاقتك بما يعادلها بالريال القطري بسعر ثابت 3.64، وتراه قبل الدفع.",
     "home.faq.4.q": "هل السعر ثابت فعلًا؟",
-    "home.faq.4.a": "نعم. تعتمد الأجرة على وجهتك والمركبة. وما يظهر لك قبل الدفع هو ما تدفعه: لا يُضاف شيء بسبب الازدحام أو الوقت أو عند الوصول. احجز قبل 12 ساعة على الأقل — و24 ساعة لسياراتنا الفاخرة.",
+    "home.faq.4.a": "نعم. تعتمد الأجرة على وجهتك والمركبة. وما يظهر لك قبل الدفع هو ما تدفعه: لا يُضاف شيء بسبب الازدحام أو الوقت أو عند الوصول. يمكنك الحجز لأي موعد بدءًا من الآن، أما سياراتنا الفاخرة فتحتاج إلى حجز مسبق قبل 36 ساعة.",
     "home.faq.5.q": "هل يمكنني الإلغاء؟",
     "home.faq.5.a": "نعم. راجع سياسة الإلغاء والاسترداد للاطلاع على الشروط.",
 

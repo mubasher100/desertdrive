@@ -301,9 +301,13 @@ A vehicle is not stock on a shelf — the same Rush is sellable at 06:00 and aga
 
 > **Both numbers above are assumptions, not the owner's stated rules.** Confirm the slot length and the real unit count per vehicle before launch.
 
-### Booking notice (owner's rules, 30 Sept 2026)
+### Booking notice (owner's rules, 12 Nov 2026 — were 12 h / 24 h from 30 Sept)
 
-**Standard cars: 12 hours. S-Class and V-Class: 24 hours.** Inside that, a pickup cannot be booked online and the customer is sent to WhatsApp. The standard minimum is checked in the widget and on results ("Minimum booking time is 12 hours before pickup"); the luxury minimum is **per vehicle**: `/store/quotes` returns each car's `min_lead_minutes` and `lead_ok`, and a luxury card inside 24 hours is greyed with "Luxury vehicles must be booked at least 24 hours in advance" while the standard cars stay bookable. `CLASS_MIN_LEAD_HOURS` in `lib/fare-units.ts` sets the 24; a product's `min_lead_hours` metadata overrides it from the admin, never below the standard. Both are enforced at cart completion; `NOTICE_RULES_FROM` holds carts from before the change to the old 6 hours.
+**Standard cars: 0 — any time from now. S-Class and V-Class: 36 hours.** The backend reads the standard minimum from **`STANDARD_MIN_LEAD_MINUTES`** (default 0), a new name on purpose: the old `MIN_LEAD_MINUTES` may still sit on Railway at 720 and would silently have kept 12 hours — it is no longer read, delete it. `LUXURY_36H_FROM` holds luxury carts created before the change to the 24 hours they were quoted under, so none is refused after being charged.
+
+The paragraph below describes the 30 Sept rules; the mechanism is unchanged, only the numbers.
+
+**(30 Sept) Standard cars: 12 hours. S-Class and V-Class: 24 hours.** Inside that, a pickup cannot be booked online and the customer is sent to WhatsApp. The standard minimum is checked in the widget and on results ("Minimum booking time is 12 hours before pickup"); the luxury minimum is **per vehicle**: `/store/quotes` returns each car's `min_lead_minutes` and `lead_ok`, and a luxury card inside 24 hours is greyed with "Luxury vehicles must be booked at least 24 hours in advance" while the standard cars stay bookable. `CLASS_MIN_LEAD_HOURS` in `lib/fare-units.ts` sets the 24; a product's `min_lead_hours` metadata overrides it from the admin, never below the standard. Both are enforced at cart completion; `NOTICE_RULES_FROM` holds carts from before the change to the old 6 hours.
 
 **The 2× short-notice fare below is OFF** (`SURGE_MULTIPLIER` defaults to 1). It applied 6–12 hours out, and a 12-hour minimum leaves nothing in that window, so the owner dropped it. The machinery and its tests are kept; set `SURGE_MULTIPLIER=2` and a `SURGE_WINDOW_MINUTES` above the minimum to bring it back.
 
@@ -317,7 +321,7 @@ It is expressed as **fare units** — the vehicle line's quantity — exactly as
 
 **Enforced at cart completion**, alongside card-only: the 6-hour minimum (which previously lived only in the storefront, so the raw Store API took a booking twenty minutes out) and the fare units on the vehicle line. Judged against the cart's **creation** time with ten minutes' grace, never "now" — on the card path completion runs after SkipCash has charged, and a customer who crossed the 12-hour line on the payment page has already paid the price they were shown. `SHORT_NOTICE_ENFORCED_FROM` skips the fare check for carts from before both halves of the deploy were live; it is inert after 28 Sept 2026 22:00 UTC and can be deleted.
 
-Backend env: `MIN_LEAD_MINUTES` (720), `SURGE_WINDOW_MINUTES` (720), `SURGE_MULTIPLIER` (1 — off). The storefront's `NEXT_PUBLIC_MIN_LEAD_MINUTES` (720) must match the first.
+Backend env: `STANDARD_MIN_LEAD_MINUTES` (0), `SURGE_WINDOW_MINUTES` (720), `SURGE_MULTIPLIER` (1 — off). The storefront's `NEXT_PUBLIC_MIN_LEAD_MINUTES` (0) must match the first.
 
 ### Add-ons
 
@@ -874,6 +878,6 @@ Ask the owner. Several of these block real work:
 8. **Cancellation and refund policy** — free cancellation up to **24 hours**, full refund to the card, is live (Booking.com's window, the owner's call). The driver waits **90 minutes** from actual landing, after which it is a no-show — live since 27 Sept 2026. **Inside 24 hours, and a no-show: no refund** (owner, 31 Oct 2026). **Force majeure: full refund** (owner, 2 Nov 2026; `TERMS_VERSION` 2026-11-02). Departure waiting time was dropped from the Terms rather than decided.
 
    > ⚠️ The 90 minutes came from a one-line meeting note, "no show 90 minutes", which admits two readings: how long the driver waits, or how close to pickup a cancellation counts as a no-show. It is written as the **waiting period** — the standard meaning in airport transfer, and the one that fits the words — but it is an interpretation and the owner should confirm it.
-9. **Minimum notice for a booking** — **12 hours**, **24 for the S-Class and V-Class** (owner, 30 Sept 2026), enforced in the funnel and at cart completion. Anything sooner is sent to WhatsApp. The 2× short-notice fare is off.
+9. **Minimum notice for a booking** — **none for standard cars**, **36 hours for the S-Class and V-Class** (owner, 12 Nov 2026), enforced in the funnel and at cart completion. A luxury car sooner is sent to WhatsApp. The 2× short-notice fare is off. ⚠️ With no notice, a customer can pay for a pickup minutes away; the office email is the only alert, so someone has to be watching it.
 10. **How long one transfer occupies a vehicle** — defaulted to **120 minutes** either side of the pickup (`BOOKING_SLOT_MINUTES`). It decides when the same car can be sold again.
 11. ~~Production SkipCash keys and an SMTP sender~~ — both live. The site takes real money and sends real confirmation emails.

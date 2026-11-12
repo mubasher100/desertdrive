@@ -1,5 +1,5 @@
 import { testProof } from "./test-proof"
-import { fareUnits, meetsLeadTime } from "./fare-units"
+import { fareUnits, meetsLeadTime, MIN_LEAD_MINUTES } from "./fare-units"
 
 /** The only payment provider a customer may complete a booking with. */
 export const CARD_PROVIDER = "pp_skipcash_skipcash"
@@ -67,6 +67,16 @@ export const NOTICE_RULES_FROM = new Date("2026-09-30T14:00:00Z")
 const OLD_MIN_LEAD_MINUTES = 360
 
 /**
+ * Carts created before this keep the luxury classes at the 24 hours they were
+ * quoted under (12 Nov 2026 the rule became 36). A luxury car sold 24–36
+ * hours out just before the deploy was a legitimate sale, and refusing it at
+ * completion would land after SkipCash charged the card. The standard minimum
+ * only got shorter, so it needs no such grace. Inert afterwards.
+ */
+export const LUXURY_36H_FROM = new Date("2026-11-12T21:00:00Z")
+const OLD_LUXURY_LEAD_MINUTES = 24 * 60
+
+/**
  * Why a cart may not become an order, or null if it may. Pure, so the gate
  * can be tested without standing up a cart, a payment and a region.
  */
@@ -90,7 +100,12 @@ export function completionProblem(f: CompletionFacts): CompletionProblem | null 
      * was the ONLY place it lived, so the raw Store API would take a booking
      * for twenty minutes from now.
      */
-    const lead = createdAt >= NOTICE_RULES_FROM ? f.trip.minLeadMinutes : OLD_MIN_LEAD_MINUTES
+    const lead =
+      createdAt < NOTICE_RULES_FROM
+        ? OLD_MIN_LEAD_MINUTES
+        : createdAt < LUXURY_36H_FROM
+          ? Math.min(f.trip.minLeadMinutes ?? MIN_LEAD_MINUTES(), OLD_LUXURY_LEAD_MINUTES)
+          : f.trip.minLeadMinutes
     if (!meetsLeadTime(pickupAt, pricedAt, lead)) return "too-soon"
 
     /**

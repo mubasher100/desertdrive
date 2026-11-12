@@ -7,17 +7,18 @@
  * about a refund, so the funnel refuses it at the first step and again on the
  * server before a cart is created.
  *
- * Twelve hours is the OWNER'S RULE (30 Sept 2026), up from six. The 2×
- * short-notice fare that covered 6–12 hours went with it: nothing can be
- * booked that close any more. The luxury classes need 24 hours — that is
- * per vehicle, decided by the backend's quote (`lead_ok`), not here.
+ * ZERO is the OWNER'S RULE (12 Nov 2026; it was 12 hours from 30 Sept): a
+ * standard car can be booked for any time from now, and only a time already
+ * past is refused. The luxury classes need 36 hours — that is per vehicle,
+ * decided by the backend's quote (`lead_ok`), not here. Must match the
+ * backend's STANDARD_MIN_LEAD_MINUTES.
  *
  * Short-notice airport work is still taken by phone, which is exactly what the
  * "too soon" message offers — a WhatsApp link, not a dead end. Overridable with
  * `NEXT_PUBLIC_MIN_LEAD_MINUTES` rather than editing here.
  */
 
-export const MIN_LEAD_MINUTES = Number(process.env.NEXT_PUBLIC_MIN_LEAD_MINUTES ?? 720)
+export const MIN_LEAD_MINUTES = Number(process.env.NEXT_PUBLIC_MIN_LEAD_MINUTES ?? 0)
 
 /** Qatar is UTC+03:00 year-round — no DST, so the offset is a constant. */
 const QATAR_OFFSET_MS = 3 * 60 * 60 * 1000

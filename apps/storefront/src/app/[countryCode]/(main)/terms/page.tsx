@@ -41,8 +41,8 @@ export default async function TermsPage({ params }: Props) {
           <p>يُعد حجزك مؤكدًا فور استلامك رقم الحجز. السعر المعروض عند الحجز هو السعر الذي تدفعه؛ لا رسوم إضافية على الوصول أو الازدحام.</p>
           <h2>مهلة الحجز</h2>
           <p>
-            يمكن حجز الاستقبال عبر الموقع قبل <strong>12 ساعة</strong> على الأقل، وقبل <strong>24 ساعة</strong> على الأقل لسياراتنا
-            الفاخرة. ولأي موعد أقرب راسلنا على واتساب وسنخبرك إن كان ذلك ممكنًا.
+            يمكن حجز الاستقبال عبر الموقع <strong>لأي موعد بدءًا من الآن</strong>، أما سياراتنا الفاخرة فتُحجز قبل
+            <strong>36 ساعة</strong> على الأقل. ولأي موعد أقرب لسيارة فاخرة راسلنا على واتساب وسنخبرك إن كان ذلك ممكنًا.
           </p>
           <h2>الدفع</h2>
           <p>
@@ -88,8 +88,9 @@ export default async function TermsPage({ params }: Props) {
           </p>
           <h2>Booking notice</h2>
           <p>
-            Pickups can be booked online at least <strong>12 hours</strong> ahead, and at least <strong>24 hours</strong> ahead for our
-            luxury vehicles. For anything sooner, message us on WhatsApp and we will tell you whether we can do it.
+            Pickups can be booked online <strong>for any time from now</strong>; our luxury vehicles must be booked at least
+            <strong>36 hours</strong> ahead. For a luxury vehicle sooner than that, message us on WhatsApp and we will tell you
+            whether we can do it.
           </p>
           <h2>Payment</h2>
           <p>
