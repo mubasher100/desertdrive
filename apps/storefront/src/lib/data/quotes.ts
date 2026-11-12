@@ -18,7 +18,7 @@ export type QuoteVehicle = {
   priced_by?: string
   /** False when every one of this vehicle is already out around the pickup time. */
   available?: boolean
-  /** The notice this vehicle needs, in minutes: 720 standard, 1440 for the luxury classes. */
+  /** The notice this vehicle needs, in minutes: 0 standard, 2160 (36 h) for the luxury classes. */
   min_lead_minutes?: number
   /**
    * False when the chosen pickup is inside THIS vehicle's minimum notice — the

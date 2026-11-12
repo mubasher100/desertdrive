@@ -60,7 +60,7 @@ export type QuotedVehicle = {
   luggage: number
   amount: number
   currency_code: string
-  /** Notice this vehicle needs, in minutes: 720 standard, 1440 for the luxury classes. */
+  /** Notice this vehicle needs, in minutes: 0 standard, 2160 (36 h) for the luxury classes. */
   min_lead_minutes: number
 }
 

@@ -342,11 +342,12 @@ async function reserveVehicle(cartId: string): Promise<"ok" | "taken" | "error">
 const SKIPCASH_PROVIDER = "pp_skipcash_skipcash"
 
 /** Bump when the wording of /terms, /cancellation or /privacy changes materially. */
+// 2026-11-12: booking notice — standard cars any time from now, luxury 36 hours.
 // 2026-10-09: privacy — per-visit security logs (IP, approximate location), 7 days.
 // 2026-09-30: 12 hours' notice (24 for luxury), the short-notice fare removed.
 // 2026-09-28: card only, the 90-minute airport wait, USD display with the
 // 3.64 peg, and the short-notice fare. Orders record which terms were agreed.
-const TERMS_VERSION = "2026-11-02"
+const TERMS_VERSION = "2026-11-12"
 
 /**
  * Records the customer's acceptance of the terms on the cart, so it is carried

@@ -29,18 +29,30 @@ const minutes = (name: string, fallback: number) => {
   return Number.isFinite(v) && v > 0 ? v : fallback
 }
 
-/** Below this much notice a pickup cannot be booked online — for a standard car. */
-export const MIN_LEAD_MINUTES = () => minutes("MIN_LEAD_MINUTES", 720)
+/**
+ * Below this much notice a pickup cannot be booked online — for a standard car.
+ *
+ * 0 since 12 Nov 2026 (owner): a standard car can be booked for any time from
+ * now. Read from STANDARD_MIN_LEAD_MINUTES, a NEW name on purpose — the old
+ * MIN_LEAD_MINUTES may still be set to 720 on Railway and would silently keep
+ * the 12 hours. And 0 must be a real value here, which `minutes()` (built for
+ * "unset or positive") would replace with its fallback.
+ */
+export const MIN_LEAD_MINUTES = () => {
+  const raw = process.env.STANDARD_MIN_LEAD_MINUTES
+  const v = raw === undefined || raw.trim() === "" ? NaN : Number(raw)
+  return Number.isFinite(v) && v >= 0 ? v : 0
+}
 
 /**
  * Classes that need MORE notice than the standard minimum, in hours. The
- * owner's rule (30 Sept 2026): the S-Class and V-Class are booked 24 hours
- * ahead. A product's `min_lead_hours` metadata overrides this, so the owner
+ * owner's rule: the S-Class and V-Class are booked 36 hours ahead (12 Nov
+ * 2026; it was 24 from 30 Sept). A product's `min_lead_hours` metadata overrides this, so the owner
  * can change a class's notice in the admin without a deploy.
  */
 export const CLASS_MIN_LEAD_HOURS: Record<string, number> = {
-  "luxury-sedan": 24,
-  "luxury-van": 24,
+  "luxury-sedan": 36,
+  "luxury-van": 36,
 }
 
 /** The notice one vehicle needs, in minutes: its metadata, its class, or the standard. */
