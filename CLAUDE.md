@@ -673,8 +673,9 @@ docs/…    documentation
 | Lint & typecheck | `npm run lint`, then `tsc --noEmit` on both apps |
 | Build backend | `medusa build` with placeholder env vars |
 | Backend tests | unit + HTTP integration against throwaway Postgres and Redis containers |
+| **Journeys (e2e)** | every customer and admin journey in **`docs/user-journeys.md`**, in Chromium at 375 px (site pages at 1280 too): migrates and seeds an empty Postgres, starts the backend, **builds and starts the storefront against it**, runs Playwright (`apps/storefront/e2e/`). Checks outcomes — what lands on the cart — plus no sideways scroll and no serious WCAG AA violations |
 
-CI never touches Supabase. **CI deliberately does not build the storefront** — see the gotcha about `next build` needing a live backend. It lints and typechecks it instead.
+CI never touches Supabase or SkipCash. The `e2e` job is the only place CI builds the storefront, because it is the only one with a backend to build against. **A journey change ships with its test change.** Locally: start both apps, then `E2E_BASE_URL=… E2E_BACKEND_URL=… E2E_PUBLISHABLE_KEY=… npm run test:e2e` in `apps/storefront` (admin journeys also need `E2E_ADMIN_EMAIL` / `_PASSWORD`; without them they skip). Locally it uses installed Chrome (`channel: "chrome"`); CI downloads Chromium.
 
 > GitHub gates branch protection and rulesets behind Pro for private repos. If this repo is private on the Free plan, `main` is protected by convention only. Upgrade to Pro (~$4/mo) or make the repo public if mechanical protection is wanted.
 

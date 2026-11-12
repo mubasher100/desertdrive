@@ -11,6 +11,9 @@ import AddOnPicker from "@modules/booking/components/add-on-picker"
 import BookingLoader from "@modules/booking/components/booking-loader"
 import { useTranslations } from "@lib/i18n/use-translations"
 
+/** The contact fields in the order they appear on screen. */
+const FIELD_ORDER = ["flight_number", "contact_name", "contact_phone", "contact_email", "notes"] as const
+
 /**
  * Step 3: who is travelling and how to reach them.
  *
@@ -45,6 +48,7 @@ export default function DetailsForm({
   const [message, setMessage] = useState<string | null>(null)
   /** variant id -> what was chosen. Only ever a request; the server prices it. */
   const [extras, setExtras] = useState<Record<string, AddOnChoice>>({})
+  const [signError, setSignError] = useState<string | undefined>()
   const [values, setValues] = useState<ContactInput>({
     contact_name: "",
     contact_phone: "",
@@ -68,10 +72,27 @@ export default function DetailsForm({
 
     const local = validateContact(values, { flightRequired }, t)
     setErrors(local)
-    if (Object.keys(local).length) {
-      // Move focus to the first problem so a screen-reader user hears it.
-      const first = Object.keys(local)[0]
+
+    /**
+     * A ticked sign with nothing written on it. The server drops a blank
+     * board rather than charge for it, so without this the customer went to
+     * payment believing a sign was booked when none was (found by the e2e
+     * journey B4, 12 Nov 2026).
+     */
+    const blankSign = addOns.some(
+      (a) => a.collects === "sign" && (extras[a.variant_id]?.quantity ?? 0) > 0 && !extras[a.variant_id]?.note?.trim()
+    )
+    setSignError(blankSign ? t("addons.sign.required") : undefined)
+
+    // Focus the first problem in the order the fields appear on screen, so a
+    // screen-reader user hears it and a thumb lands on it.
+    const first = FIELD_ORDER.find((k) => local[k])
+    if (first) {
       document.getElementById(`${ids}-${first}`)?.focus()
+      return
+    }
+    if (blankSign) {
+      document.querySelector<HTMLInputElement>("[data-sign-note]")?.focus()
       return
     }
 
@@ -233,8 +254,12 @@ export default function DetailsForm({
       <AddOnPicker
         addOns={addOns}
         value={extras}
-        onChange={setExtras}
+        onChange={(next) => {
+          setExtras(next)
+          setSignError(undefined)
+        }}
         language={language}
+        signError={signError}
       />
 
       {message && (

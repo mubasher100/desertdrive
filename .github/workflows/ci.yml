@@ -147,3 +147,113 @@ jobs:
           STORE_CORS: http://localhost:8000
           ADMIN_CORS: http://localhost:9000
           AUTH_CORS: http://localhost:9000
+
+  # ---------------------------------------------------------------------------
+  # Every customer and admin journey (docs/user-journeys.md), in a real browser,
+  # against the whole stack built from an EMPTY database: migrate, seed, start
+  # the backend, build and start the storefront, then Playwright. No secrets,
+  # no Supabase, no SkipCash — the journeys stop at the hand-over to payment.
+  # ---------------------------------------------------------------------------
+  e2e:
+    name: Journeys (e2e)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: medusa
+          POSTGRES_PASSWORD: medusa
+          POSTGRES_DB: medusa
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U medusa"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # Backend
+      DATABASE_URL: postgres://medusa:medusa@localhost:5432/medusa
+      REDIS_URL: redis://localhost:6379
+      JWT_SECRET: ci-jwt-secret-not-a-real-secret
+      COOKIE_SECRET: ci-cookie-secret-not-a-real-secret
+      STORE_CORS: http://localhost:8000
+      ADMIN_CORS: http://localhost:9000
+      AUTH_CORS: http://localhost:9000,http://localhost:8000
+      MEDUSA_BACKEND_URL: http://localhost:9000
+      BOOKING_TOKEN_SECRET: ci-booking-token-secret
+      # Storefront
+      NEXT_PUBLIC_MEDUSA_BACKEND_URL: http://localhost:9000
+      NEXT_PUBLIC_BASE_URL: http://localhost:8000
+      NEXT_PUBLIC_DEFAULT_REGION: qa
+      # Playwright
+      E2E_BASE_URL: http://localhost:8000
+      E2E_BACKEND_URL: http://localhost:9000
+      E2E_ADMIN_EMAIL: e2e-admin@example.invalid
+      E2E_ADMIN_PASSWORD: ci-e2e-password-not-a-secret
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Database — migrate, seed, price book, data patches, admin user
+        working-directory: apps/backend
+        run: |
+          npx medusa db:migrate
+          npx medusa exec ./src/scripts/seed-qatar.ts
+          npx medusa exec ./src/scripts/apply-price-book.ts
+          npx medusa exec ./src/scripts/data-patches.ts
+          npx medusa user -e "$E2E_ADMIN_EMAIL" -p "$E2E_ADMIN_PASSWORD"
+          KEY=$(psql "$DATABASE_URL" -tAc "select token from api_key where type = 'publishable' and revoked_at is null and deleted_at is null limit 1")
+          test -n "$KEY"
+          echo "NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=$KEY" >> "$GITHUB_ENV"
+          echo "E2E_PUBLISHABLE_KEY=$KEY" >> "$GITHUB_ENV"
+
+      - name: Start the backend
+        working-directory: apps/backend
+        run: |
+          nohup npx medusa develop > /tmp/backend.log 2>&1 &
+          for i in $(seq 1 90); do curl -sf http://localhost:9000/health && exit 0; sleep 2; done
+          cat /tmp/backend.log; exit 1
+
+      - name: Build and start the storefront
+        working-directory: apps/storefront
+        run: |
+          npm run build
+          nohup npx next start -p 8000 > /tmp/storefront.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:8000/en-qa && exit 0; sleep 2; done
+          cat /tmp/storefront.log; exit 1
+
+      - name: Install Chromium
+        working-directory: apps/storefront
+        run: npx playwright install --with-deps chromium
+
+      - name: Run the journeys
+        working-directory: apps/storefront
+        run: npx playwright test
+
+      - name: Keep the report and server logs on failure
+        if: failure()
+        run: cp /tmp/backend.log /tmp/storefront.log apps/storefront/playwright-report/ 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-report
+          path: apps/storefront/playwright-report
+          retention-days: 7

@@ -107,8 +107,17 @@ export default function LocationPicker({
 
   const zoneMatches = useMemo(() => {
     const q = normalise(query)
-    if (!q) return zones
-    return zones.filter((z) => normalise(`${z.name_en} ${z.name_ar} ${z.code.replace(/-/g, " ")}`).includes(q))
+    const matching = q ? zones.filter((z) => normalise(`${z.name_en} ${z.name_ar} ${z.code.replace(/-/g, " ")}`).includes(q)) : zones
+    // Two priced areas drawn with the same name read as a broken list; offer
+    // the name once. Which one prices the trip is decided server-side from the
+    // coordinates and the areas' ranks, not by which entry is tapped.
+    const seen = new Set<string>()
+    return matching.filter((z) => {
+      const key = z.name_en.trim().toLowerCase()
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
   }, [query, zones])
 
   /**
@@ -130,7 +139,11 @@ export default function LocationPicker({
         .filter((p) => !zoneNames.has(p.name_en.toLowerCase()) && !areaNames.has(p.name_en.toLowerCase()))
         .map((p) => ({ kind: "indexed" as const, indexed: p })),
       ...places.map((p) => ({ kind: "place" as const, place: p })),
-      ...areaMatches.map((a) => ({ kind: "area" as const, area: a })),
+      // A preset area with the same name as a priced area is the same place
+      // twice ("The Pearl / The Pearl"); the priced area is the owner's and wins.
+      ...areaMatches
+        .filter((a) => !zoneNames.has(a.name_en.toLowerCase()))
+        .map((a) => ({ kind: "area" as const, area: a })),
     ]
   }, [zoneMatches, indexed, places, areaMatches])
 
