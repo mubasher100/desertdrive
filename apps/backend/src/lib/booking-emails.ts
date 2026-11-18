@@ -27,7 +27,17 @@ export type BookingEmailsResult = { reference: string; customer: EmailOutcome; o
 export async function sendBookingEmails(
   container: MedusaContainer,
   orderId: string,
-  opts: { announce: boolean }
+  opts: {
+    announce: boolean
+    /** Send only these (the safety net's retries). Default: both. */
+    only?: Array<"customer" | "office">
+    /**
+     * A retry. Its failure is not reported again, unless it was the last
+     * try, so a long Resend outage is one alert and not one every five
+     * minutes. The booking page shows each email's state either way.
+     */
+    retry?: { lastTry: Array<"customer" | "office"> }
+  }
 ): Promise<BookingEmailsResult | null> {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
@@ -119,8 +129,10 @@ export async function sendBookingEmails(
   const reference = `DD-${order.display_id}`
   const tag = { resource_id: order.id, resource_type: "order" }
 
+  const wants = (which: "customer" | "office") => !opts.only || opts.only.includes(which)
+
   let customer: EmailOutcome = null
-  if (to) {
+  if (to && wants("customer")) {
     customer = await send(notification, logger, reference, "customer confirmation", {
       to,
       channel: "email",
@@ -129,7 +141,7 @@ export async function sendBookingEmails(
       trigger_type: "booking-confirmation",
       ...tag,
     })
-  } else {
+  } else if (!to) {
     logger.warn(`booking emails: ${reference} has no email address, no customer confirmation sent`)
   }
 
@@ -142,7 +154,7 @@ export async function sendBookingEmails(
   const ownerTo = process.env.OWNER_NOTIFY_EMAIL || "desertdrivetransportation@gmail.com"
   const adminBase = (process.env.MEDUSA_BACKEND_URL || "https://ddbackend-production-e9d1.up.railway.app").replace(/\/$/, "")
   const phoneDigits = String(m.contact_phone ?? "").replace(/[^\d]/g, "")
-  const office = await send(notification, logger, reference, "office alert", {
+  const office = !wants("office") ? null : await send(notification, logger, reference, "office alert", {
     to: ownerTo,
     channel: "email",
     template: "booking-owner-alert",
@@ -210,8 +222,15 @@ export async function sendBookingEmails(
   ]
   for (const [label, which, outcome] of outcomes) {
     if (outcome && !outcome.ok) {
+      if (opts.retry && !opts.retry.lastTry.includes(which)) continue
+      const title = opts.retry
+        ? `${label} for ${reference} did not send, after every retry`
+        : `${label} for ${reference} did not send`
+      const next = opts.retry
+        ? " It will not be tried again by itself: use Resend emails on the booking, or contact them on WhatsApp."
+        : " It will be tried again automatically."
       feed.push(
-        feedEntry(order.id, "email_failed", `${label} for ${reference} did not send`, `To ${outcome.to}. ${outcome.reason}`, {
+        feedEntry(order.id, "email_failed", title, `To ${outcome.to}. ${outcome.reason}${next}`, {
           reason: outcome.reason,
           email: which,
         })

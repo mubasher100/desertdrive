@@ -42,13 +42,11 @@ function statusFor(which: keyof typeof TEMPLATES, newestFirst: NotificationRow[]
   const status = latest.status === "success" ? "sent" : latest.status === "failure" ? "failed" : "pending"
   let reason: string | null = null
   if (status === "failed") {
-    // The feed entry written for this failure, at or just after the send.
+    // The newest failure report for this email. Retries do not write one
+    // each time (lib/booking-emails.ts), so this may be an earlier attempt's
+    // reason — the same outage, as a rule.
     const report = newestFirst.find(
-      (r) =>
-        r.channel === "feed" &&
-        r.data?.kind === "email_failed" &&
-        r.data?.email === which &&
-        time(r.created_at) >= time(latest.created_at) - 1000
+      (r) => r.channel === "feed" && r.data?.kind === "email_failed" && r.data?.email === which
     )
     reason = typeof report?.data?.reason === "string" ? report.data.reason : null
   }
