@@ -114,13 +114,13 @@ describe("push devices", () => {
   })
 })
 
-describe("confirmationCopyTo", () => {
-  const { confirmationCopyTo } = require("../booking-emails")
-  it("copies the office's info@ address by default", () => {
-    expect(confirmationCopyTo({})).toBe("info@desertdriverental.com")
+describe("officeAlertCopyTo", () => {
+  const { officeAlertCopyTo } = require("../booking-emails")
+  it("copies every office alert to info@ by default", () => {
+    expect(officeAlertCopyTo({})).toBe("info@desertdriverental.com")
   })
   it("can be pointed elsewhere, or switched off", () => {
-    expect(confirmationCopyTo({ CONFIRMATION_COPY_TO: "ops@example.com" })).toBe("ops@example.com")
-    expect(confirmationCopyTo({ CONFIRMATION_COPY_TO: "none" })).toBeUndefined()
+    expect(officeAlertCopyTo({ OFFICE_ALERT_COPY_TO: "ops@example.com" })).toBe("ops@example.com")
+    expect(officeAlertCopyTo({ OFFICE_ALERT_COPY_TO: "none" })).toBeUndefined()
   })
 })

@@ -3,6 +3,7 @@ import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { completeCartWorkflow } from "@medusajs/medusa/core-flows"
 import type { NotificationRow } from "../lib/booking-email-status"
 import { sendPushToAll } from "../lib/push"
+import { officeAlertCopyTo } from "../lib/booking-emails"
 import { EMAIL_RECORDS_FROM, emailsToRetry, sessionsToCheck, PAID_CHECK_UNTIL_HOURS } from "../lib/booking-safety-net"
 import { SkipCashClient, SkipCashStatus } from "../modules/skipcash/client"
 import { retryBookingEmailsWorkflow } from "../workflows/bookings/retry-booking-emails"
@@ -236,6 +237,7 @@ async function alertPaidWithoutBooking(container: MedusaContainer, logger: Logge
         reason,
         whatsapp_customer_url: digits ? `https://wa.me/${digits}` : null,
         reply_to: String(m.contact_email ?? cart.email ?? "") || undefined,
+        bcc: officeAlertCopyTo(),
       },
     } as never)
   } catch (e) {

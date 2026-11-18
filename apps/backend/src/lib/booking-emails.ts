@@ -137,10 +137,7 @@ export async function sendBookingEmails(
       to,
       channel: "email",
       template: "booking-confirmation",
-      // The office keeps a copy of exactly what the customer was sent
-      // (owner, 18 Nov 2026). Blind, in the same send: it arrives with the
-      // customer's, and a retry carries it again with the retry.
-      data: { ...customerData, bcc: confirmationCopyTo() },
+      data: customerData,
       trigger_type: "booking-confirmation",
       ...tag,
     })
@@ -200,6 +197,9 @@ export async function sendBookingEmails(
         ? `https://wa.me/${phoneDigits}?text=${encodeURIComponent(`Hello ${customerData.contact_name}, this is Desert Drive about your booking ${customerData.reference}.`)}`
         : null,
       reply_to: to || undefined,
+      // info@ gets the same alert (owner, 18 Nov 2026), in the same send, so
+      // it arrives at the same moment and a retry carries it again.
+      bcc: officeAlertCopyTo(),
     },
   })
 
@@ -322,10 +322,10 @@ export function formatPickup(iso: string): string {
 }
 
 /**
- * Who gets a blind copy of every customer confirmation. CONFIRMATION_COPY_TO
- * overrides it; set it to "none" to stop the copies.
+ * The second inbox for every office alert, beside OWNER_NOTIFY_EMAIL.
+ * OFFICE_ALERT_COPY_TO overrides it; "none" stops the copies.
  */
-export function confirmationCopyTo(env: Record<string, string | undefined> = process.env): string | undefined {
-  const v = (env.CONFIRMATION_COPY_TO ?? "info@desertdriverental.com").trim()
+export function officeAlertCopyTo(env: Record<string, string | undefined> = process.env): string | undefined {
+  const v = (env.OFFICE_ALERT_COPY_TO ?? "info@desertdriverental.com").trim()
   return v && v.toLowerCase() !== "none" ? v : undefined
 }
