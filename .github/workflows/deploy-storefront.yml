@@ -72,6 +72,21 @@ jobs:
           # Not a secret — it is printed in every page that shows a picture.
           NEXT_PUBLIC_UPLOADS_PUBLIC_URL: ${{ vars.UPLOADS_PUBLIC_URL }}
 
+      # Remember what is live, so a deploy that breaks the site is put back
+      # without anyone touching it (see "Check the live site" below). From
+      # the Flowershop project.
+      - name: Record the live version
+        id: previous
+        if: steps.config.outputs.ready == 'true'
+        working-directory: apps/storefront
+        run: |
+          id=$(npx wrangler deployments status --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const v=JSON.parse(s).versions||[];const top=v.sort((a,b)=>b.percentage-a.percentage)[0];process.stdout.write(top?top.version_id:"")}catch{}})') || id=""
+          echo "Live before this deploy: ${id:-unknown}"
+          echo "version=$id" >> "$GITHUB_OUTPUT"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       # Plain `wrangler deploy`, not `opennextjs-cloudflare deploy`: the latter
       # first pre-populates the R2 cache through a temporary helper Worker, and
       # that step is both slow and fragile. Nothing user-visible depends on
@@ -94,3 +109,44 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           BOOKING_TOKEN_SECRET: ${{ secrets.BOOKING_TOKEN_SECRET }}
+
+      # A Cloudflare deploy swaps versions atomically, so nobody sees half a
+      # site — but a broken build reaches everyone at once. Walk the pages a
+      # customer books through, past the cache, including a real fare; if any
+      # fails, put the previous version straight back.
+      - name: Check the live site (rolls back if it is broken)
+        if: steps.config.outputs.ready == 'true'
+        working-directory: apps/storefront
+        run: |
+          SITE="${STOREFRONT_BASE_URL%/}"
+          DAY=$(TZ=Asia/Qatar date -d '+3 days' +%F)
+          ok=1
+          for path in en-qa ar-qa en-qa/contact en-qa/terms "en-qa/results?direction=arrival&area=west-bay&date=$DAY&time=12:00&passengers=2&luggage=2"; do
+            sep='?'; case "$path" in *\?*) sep='&';; esac
+            code=000
+            for try in 1 2 3; do
+              code=$(curl -s -A 'Mozilla/5.0 deploy-check' --max-time 45 -o page.html -w '%{http_code}' "$SITE/$path${sep}cb=$RANDOM$try") || code=000
+              if [ "$code" = 200 ]; then
+                case "$path" in
+                  *results*) grep -q "Sedan" page.html && ! grep -q "price this trip online" page.html && break; code="200-but-no-fares" ;;
+                  *) break ;;
+                esac
+              fi
+              sleep 5
+            done
+            echo "$code  $SITE/$path"
+            [ "$code" = 200 ] || ok=0
+          done
+          if [ "$ok" = 1 ]; then exit 0; fi
+          if [ -n "$PREVIOUS" ]; then
+            echo "::error::The new version is failing; rolling back to $PREVIOUS"
+            npx wrangler rollback "$PREVIOUS" -y -m "Automatic rollback: deploy check failed"
+          else
+            echo "::error::The new version is failing and the previous version is unknown — roll back from the Cloudflare dashboard"
+          fi
+          exit 1
+        env:
+          STOREFRONT_BASE_URL: ${{ vars.STOREFRONT_BASE_URL }}
+          PREVIOUS: ${{ steps.previous.outputs.version }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

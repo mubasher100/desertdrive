@@ -374,8 +374,70 @@ export function renderOwnerBookingAlert(d: OwnerAlertData): { subject: string; h
   return { subject: `New booking ${d.reference} · ${pickup} · ${d.vehicle_title}`, html, text }
 }
 
+export type PaymentWithoutBookingData = {
+  amount: string
+  contact_name: string
+  contact_phone: string
+  contact_email: string
+  pickup_at: string
+  address: string
+  vehicle_title: string
+  skipcash_id: string
+  cart_id: string
+  reason: string
+  whatsapp_customer_url: string | null
+}
+
+/**
+ * The office's alarm: SkipCash took a customer's money and no booking exists.
+ * Written by jobs/booking-safety-net.ts after it tried to create the booking
+ * itself and could not. A person has to act — book it by hand or refund it.
+ */
+export function renderPaymentWithoutBooking(d: PaymentWithoutBookingData): { subject: string; html: string; text: string } {
+  const pickup = d.pickup_at ? formatPickup(d.pickup_at, "en") : ""
+  const rows: Array<[string, string]> = [
+    ["Paid", d.amount],
+    ["Customer", d.contact_name],
+    ["Phone", d.contact_phone],
+    ["Email", d.contact_email],
+    ["Pickup", pickup],
+    ["Address", d.address],
+    ["Vehicle", d.vehicle_title],
+    ["Why", d.reason],
+    ["SkipCash payment", d.skipcash_id],
+    ["Cart", d.cart_id],
+  ]
+  const shown = rows.filter(([, v]) => !!v)
+  const rowsHtml = shown
+    .map(
+      ([k, v]) => `<tr><td style="padding:8px 0;color:#5a6366;font-size:13px;width:130px;vertical-align:top">${esc(k)}</td><td style="padding:8px 0;color:#111518;font-size:14px">${esc(v)}</td></tr>`
+    )
+    .join("")
+  const html = `<!doctype html><html><body style="margin:0;background:#f7f7f7;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:24px 12px"><tr><td align="center">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#ffffff;border-radius:12px;padding:24px">
+<tr><td>
+  <p style="margin:0 0 4px;color:#b3261e;font-size:13px;font-weight:600">Action needed</p>
+  <h1 style="margin:0 0 8px;color:#111518;font-size:22px">A customer paid, but no booking was made</h1>
+  <p style="margin:0 0 16px;color:#111518;font-size:15px">SkipCash charged ${esc(d.amount)}. The site could not turn it into a booking by itself. Contact the customer, then either book the trip by hand or refund it from the SkipCash portal.</p>
+  ${d.whatsapp_customer_url ? `<a href="${esc(d.whatsapp_customer_url)}" style="display:inline-block;margin:0 0 8px;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;background:#0a4fb3;color:#ffffff">Message on WhatsApp</a>` : ""}
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:12px;border-top:1px solid #d9dcdd">${rowsHtml}</table>
+</td></tr></table></td></tr></table></body></html>`
+  const text = [
+    "Action needed: a customer paid, but no booking was made.",
+    `SkipCash charged ${d.amount}. Contact the customer, then book the trip by hand or refund it from the SkipCash portal.`,
+    "",
+    ...shown.map(([k, v]) => `${k}: ${v}`),
+    "",
+    d.whatsapp_customer_url ? `Message on WhatsApp: ${d.whatsapp_customer_url}` : "",
+  ].join("\n")
+  return { subject: `Action needed: ${d.contact_name || "a customer"} paid ${d.amount} but has no booking`, html, text }
+}
+
 export function renderTemplate(template: string, data: Record<string, unknown>) {
   switch (template) {
+    case "payment-without-booking":
+      return renderPaymentWithoutBooking(data as PaymentWithoutBookingData)
     case "booking-confirmation":
       return renderBookingConfirmation(data as BookingEmailData)
     case "booking-owner-alert":

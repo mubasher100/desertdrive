@@ -60,6 +60,7 @@ When a journey changes, change its test in the same pull request.
 | A7 | Notifications panel on Bookings: new bookings and failed emails, alerts on this device | `admin.spec.ts` A7 (panel renders); delivery of the feed is unit-tested |
 | A8 | A booking's emails: Sent / Not sent with the reason, and Resend emails | **manual** — needs an order; status logic unit-tested |
 | A9 | Push notifications with the admin closed: Add to Home Screen (iPhone), Turn on notifications, Send test notification, then a real booking | **manual** on a real phone — verified 18 Nov in Chrome through Google's push service, end to end; iOS needs a device |
+| A10 | Safety net: a failed or never-sent booking email is resent by itself; a paid cart with no booking is completed, or the office is alerted | **unit-tested** (`booking-safety-net.unit.spec.ts`) and run against the local backend 18 Nov: lost event → announced + both sent, quiet retry, success after mail server returned, idempotent completion, one alert on failure |
 
 ## Found by walking these journeys (12 Nov 2026)
 

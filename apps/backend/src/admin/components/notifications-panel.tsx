@@ -30,7 +30,7 @@ type FeedEntry = {
   data?: {
     title?: string
     description?: string
-    kind?: "new_booking" | "email_failed"
+    kind?: "new_booking" | "email_failed" | "paid_no_booking"
     order_id?: string
   } | null
 }
@@ -89,7 +89,7 @@ export function NotificationsPanel() {
   }, [data]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const unread = entries.filter((e) => Date.parse(e.created_at) > readAt)
-  const failing = unread.some((e) => e.data?.kind === "email_failed")
+  const failing = unread.some((e) => (e.data?.kind === "email_failed" || e.data?.kind === "paid_no_booking"))
   const shown = expanded ? entries : entries.slice(0, 3)
 
   const markRead = () => {
@@ -169,7 +169,7 @@ export function NotificationsPanel() {
         <ul className="flex flex-col divide-y rounded-md border">
           {shown.map((e) => {
             const isUnread = Date.parse(e.created_at) > readAt
-            const failed = e.data?.kind === "email_failed"
+            const failed = (e.data?.kind === "email_failed" || e.data?.kind === "paid_no_booking")
             const body = (
               <div className="flex flex-col gap-0.5 px-3 py-3">
                 <div className="flex items-start justify-between gap-2">
@@ -211,7 +211,7 @@ export function NotificationsPanel() {
 
 function announce(e: FeedEntry, alerts: boolean, pushOn: boolean) {
   const title = e.data?.title ?? "Desert Drive"
-  const failed = e.data?.kind === "email_failed"
+  const failed = (e.data?.kind === "email_failed" || e.data?.kind === "paid_no_booking")
   if (failed) toast.error(title)
   else toast.info(title, { description: e.data?.description?.split("\n")[0] })
   if (!alerts) return

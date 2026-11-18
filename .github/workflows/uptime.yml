@@ -1,0 +1,63 @@
+name: Uptime
+
+# Every 30 minutes, the pages a customer books through — and a real price.
+# Taken from the Flowershop project, where the homepage went down twice a day
+# after a deploy that had looked fine: a check that runs only at deploy time
+# cannot catch a site that breaks later, or a backend that falls over at 3am.
+#
+# GitHub emails the repository owner when a scheduled workflow fails; that
+# email is the alert.
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Pages, the backend, and a real fare
+        env:
+          SITE: https://desertdriverental.com
+          BACKEND: https://ddbackend-production-e9d1.up.railway.app
+        run: |
+          set -u
+          FAILED=0
+
+          # ?cb= on purpose: a plain request can be answered by the edge cache
+          # and hide a broken origin.
+          fetch() { curl -s -A 'Mozilla/5.0 uptime-check' --max-time 45 -o "$2" -w '%{http_code}' "$1" || echo 000; }
+
+          check() {
+            local code
+            for try in 1 2 3; do
+              code=$(fetch "$1?cb=$RANDOM$try" /dev/null)
+              [ "$code" = 200 ] && break
+              sleep 10
+            done
+            if [ "$code" = 200 ]; then echo "ok   $code  $1"; else echo "::error::$1 returned $code"; FAILED=1; fi
+          }
+
+          check "$SITE/en-qa"
+          check "$SITE/ar-qa"
+          check "$SITE/en-qa/contact"
+          check "$SITE/en-qa/terms"
+          check "$SITE/en-qa/cancellation"
+          check "$BACKEND/health"
+
+          # A page that answers 200 can still be unable to sell anything. This
+          # asks for a real fare to West Bay three days out and checks cars
+          # came back, which only happens if the Worker, the backend, the
+          # database and the price list all work.
+          DAY=$(TZ=Asia/Qatar date -d '+3 days' +%F)
+          URL="$SITE/en-qa/results?direction=arrival&area=west-bay&date=$DAY&time=12:00&passengers=2&luggage=2&cb=$RANDOM"
+          ok=0
+          for try in 1 2 3; do
+            code=$(fetch "$URL" page.html)
+            if [ "$code" = 200 ] && grep -q "Sedan" page.html && ! grep -q "price this trip online" page.html; then ok=1; break; fi
+            sleep 10
+          done
+          if [ "$ok" = 1 ]; then echo "ok   fares are being quoted"; else echo "::error::The results page is not quoting fares (HTTP $code)"; FAILED=1; fi
+
+          exit $FAILED
