@@ -296,7 +296,7 @@ function usePush() {
       setState("on")
       return true
     } catch (e) {
-      toast.error(`Notifications could not be turned on: ${(e as Error).message}`)
+      toast.error(errorText(e, "Notifications could not be turned on"))
       return false
     } finally {
       setBusy(false)
@@ -321,17 +321,30 @@ function usePush() {
   const test = async () => {
     setBusy(true)
     try {
-      const r = await sdk.client.fetch<{ sent: number; failed: number }>("/admin/push/test", { method: "POST" })
-      if (r.sent) toast.success(`Test sent to ${r.sent} ${r.sent === 1 ? "device" : "devices"}. Close the app to see it arrive.`)
-      else toast.error("No device received it. Turn notifications off and on again on this device.")
+      const r = await sdk.client.fetch<{ sent: number; failed: number; errors?: string[] }>("/admin/push/test", { method: "POST" })
+      const why = r.errors?.length ? ` ${r.errors.join(" · ")}` : ""
+      if (r.sent && !r.failed) toast.success(`Test sent to ${r.sent} ${r.sent === 1 ? "device" : "devices"}. Close the app to see it arrive.`)
+      else if (r.sent) toast.warning(`Sent to ${r.sent}, not to ${r.failed}.${why}`)
+      else toast.error(`No device received it.${why || " Turn notifications off and on again on this device."}`)
     } catch (e) {
-      toast.error((e as Error).message || "The test did not send")
+      toast.error(errorText(e, "The test did not send"))
     } finally {
       setBusy(false)
     }
   }
 
   return { state, busy, subscribe, unsubscribe, test }
+}
+
+/**
+ * The SDK's error message is empty when the server answers without a JSON
+ * message (a gateway error, a restart), which is how the first failure on
+ * the owner's iPhone read only "The test did not send". Always say the status.
+ */
+function errorText(e: unknown, what: string): string {
+  const err = e as { message?: string; status?: number; statusText?: string }
+  const detail = [err.status ? `HTTP ${err.status}` : null, err.message || err.statusText || null].filter(Boolean).join(" — ")
+  return `${what}${detail ? `: ${detail}` : "."}`
 }
 
 async function detect(): Promise<PushState> {
