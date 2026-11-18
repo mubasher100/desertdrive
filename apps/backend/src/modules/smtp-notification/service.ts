@@ -121,10 +121,16 @@ export default class SmtpNotificationService extends AbstractNotificationProvide
       typeof notification.data?.reply_to === "string" && notification.data.reply_to
         ? notification.data.reply_to
         : this.replyTo
+    // A blind copy, sent with the email itself (lib/booking-emails.ts puts the
+    // office's address on the customer's confirmation). Never the recipient.
+    const bcc =
+      typeof notification.data?.bcc === "string" && notification.data.bcc && notification.data.bcc !== notification.to
+        ? notification.data.bcc
+        : undefined
 
     const id = this.resendApiKey
-      ? await this.sendViaResend({ from, to: notification.to, replyTo, subject, html, text, attachments: notification.attachments })
-      : await this.sendViaSmtp({ from, to: notification.to, replyTo, subject, html, text, attachments: notification.attachments })
+      ? await this.sendViaResend({ from, to: notification.to, bcc, replyTo, subject, html, text, attachments: notification.attachments })
+      : await this.sendViaSmtp({ from, to: notification.to, bcc, replyTo, subject, html, text, attachments: notification.attachments })
 
     this.logger.info(`Email: sent "${notification.template}" to ${notification.to} (${id})`)
     return { id }
@@ -139,6 +145,7 @@ export default class SmtpNotificationService extends AbstractNotificationProvide
         body: JSON.stringify({
           from: m.from,
           to: [m.to],
+          ...(m.bcc ? { bcc: [m.bcc] } : {}),
           ...(m.replyTo ? { reply_to: m.replyTo } : {}),
           subject: m.subject,
           html: m.html,
@@ -164,6 +171,7 @@ export default class SmtpNotificationService extends AbstractNotificationProvide
       from: m.from,
       ...(m.replyTo ? { replyTo: m.replyTo } : {}),
       to: m.to,
+      ...(m.bcc ? { bcc: m.bcc } : {}),
       subject: m.subject,
       html: m.html,
       text: m.text,
@@ -181,6 +189,7 @@ export default class SmtpNotificationService extends AbstractNotificationProvide
 type Mail = {
   from: string
   to: string
+  bcc?: string
   replyTo?: string
   subject: string
   html: string
