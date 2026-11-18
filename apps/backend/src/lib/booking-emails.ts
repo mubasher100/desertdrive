@@ -137,7 +137,10 @@ export async function sendBookingEmails(
       to,
       channel: "email",
       template: "booking-confirmation",
-      data: customerData,
+      // The office keeps a copy of exactly what the customer was sent
+      // (owner, 18 Nov 2026). Blind, in the same send: it arrives with the
+      // customer's, and a retry carries it again with the retry.
+      data: { ...customerData, bcc: confirmationCopyTo() },
       trigger_type: "booking-confirmation",
       ...tag,
     })
@@ -316,4 +319,13 @@ export function formatPickup(iso: string): string {
     minute: "2-digit",
     hourCycle: "h23",
   }).format(d)
+}
+
+/**
+ * Who gets a blind copy of every customer confirmation. CONFIRMATION_COPY_TO
+ * overrides it; set it to "none" to stop the copies.
+ */
+export function confirmationCopyTo(env: Record<string, string | undefined> = process.env): string | undefined {
+  const v = (env.CONFIRMATION_COPY_TO ?? "info@desertdriverental.com").trim()
+  return v && v.toLowerCase() !== "none" ? v : undefined
 }
