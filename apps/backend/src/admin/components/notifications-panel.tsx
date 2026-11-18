@@ -321,7 +321,7 @@ function usePush() {
   const test = async () => {
     setBusy(true)
     try {
-      const r = await sdk.client.fetch<{ sent: number; failed: number; errors?: string[] }>("/admin/push/test", { method: "POST" })
+      const r = await sdk.client.fetch<{ sent: number; failed: number; errors?: string[] }>("/admin/push/send-test", { method: "POST" })
       const why = r.errors?.length ? ` ${r.errors.join(" · ")}` : ""
       if (r.sent && !r.failed) toast.success(`Test sent to ${r.sent} ${r.sent === 1 ? "device" : "devices"}. Close the app to see it arrive.`)
       else if (r.sent) toast.warning(`Sent to ${r.sent}, not to ${r.failed}.${why}`)
