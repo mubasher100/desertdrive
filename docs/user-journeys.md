@@ -55,8 +55,10 @@ When a journey changes, change its test in the same pull request.
 | A2 | Download the WhatsApp offers list (or be told nobody has opted in) | A2 |
 | A3 | Prices: every area and band, in dollars | A3 |
 | A4 | Open a booking → Message on WhatsApp, pickup on map, cancel, record a refund | **manual** — needs a paid order |
-| A5 | New booking email to the office with Open booking / Message on WhatsApp | **manual** — "Send test email" button; delivery checked in Gmail |
+| A5 | New booking email to the office with Open booking / Message on WhatsApp | **manual** — "Send test email" button, which now shows the real reason when it fails; delivery checked in Gmail |
 | A6 | Draw a priced area on the map | **manual** |
+| A7 | Notifications panel on Bookings: new bookings and failed emails, alerts on this device | `admin.spec.ts` A7 (panel renders); delivery of the feed is unit-tested |
+| A8 | A booking's emails: Sent / Not sent with the reason, and Resend emails | **manual** — needs an order; status logic unit-tested |
 
 ## Found by walking these journeys (12 Nov 2026)
 
@@ -67,3 +69,4 @@ When a journey changes, change its test in the same pull request.
 | "The Pearl" listed twice when a preset area or a second priced area had the same name | **Fixed** — each name offered once (R4) |
 | Admin login page says "Welcome to Medusa", not Desert Drive | Open — cosmetic; Medusa's login has no setting for it |
 | With 0 notice a customer can pay for a pickup minutes away, and the office email is the only alert | Open — owner's call; someone must watch the office inbox |
+| No email had ever left production: Railway blocks SMTP, every send timed out, bookings completed silently, and the test button said only "An unknown error occurred" (DD-13, 17 Nov 2026) | **Fixed** 18 Nov — Resend HTTPS API, real reasons shown, per-booking email status with Resend, Notifications panel (A7, A8) |

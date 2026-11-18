@@ -133,6 +133,8 @@ const BookingPage = () => {
         </div>
       </Container>
 
+      <EmailsCard orderId={order.id} />
+
       <Container className="divide-y p-0">
         <Row label="Pickup">{pickup.date} · {pickup.time}</Row>
         <Row label="Route">{routeLabel(booking)}</Row>
@@ -142,7 +144,7 @@ const BookingPage = () => {
           </Row>
         )}
         <Row label="Flight">{booking.flight_number ?? "—"}</Row>
-        <Row label="Passengers">{booking.passengers} passengers · {booking.luggage} bags</Row>
+        <Row label="Passengers">{plural(booking.passengers, "passenger")} · {plural(booking.luggage, "bag")}</Row>
         {booking.add_ons.length > 0 && (
           <Row label="Extras">
             <span className="flex flex-col gap-1">
@@ -269,6 +271,94 @@ function RefundDrawer({
       </Drawer.Content>
     </Drawer>
   )
+}
+
+type EmailStatus = { status: "sent" | "failed" | "pending" | "unknown"; to: string | null; at: string | null; reason: string | null }
+
+/**
+ * Did this booking's emails go out? A failed send never stops a booking, so
+ * without this the owner had no way to know a customer was never confirmed
+ * (DD-13, 17 Nov 2026). "Resend emails" sends both again.
+ */
+function EmailsCard({ orderId }: { orderId: string }) {
+  const queryClient = useQueryClient()
+  const queryKey = ["booking-emails", orderId]
+  const { data, isLoading } = useQuery({
+    queryKey,
+    queryFn: () => sdk.client.fetch<{ emails: { customer: EmailStatus; office: EmailStatus } }>(`/admin/bookings/${orderId}/emails`),
+  })
+
+  const resend = useMutation({
+    mutationFn: () =>
+      sdk.client.fetch<{ customer: { ok: boolean; reason?: string } | null; office: { ok: boolean; reason?: string } | null }>(
+        `/admin/bookings/${orderId}/emails`,
+        { method: "POST" }
+      ),
+    onSuccess: (r) => {
+      const failed = [r.customer, r.office].filter((x) => x && !x.ok) as Array<{ reason?: string }>
+      if (failed.length) toast.error(failed[0].reason || "An email did not send")
+      else toast.success("Both emails sent")
+      queryClient.invalidateQueries({ queryKey })
+    },
+    onError: (e: Error) => toast.error(e.message || "The emails did not send"),
+  })
+
+  const emails = data?.emails
+  const anyProblem = !!emails && (emails.customer.status !== "sent" || emails.office.status !== "sent")
+
+  return (
+    <Container className="flex flex-col gap-3 px-4 py-4 small:px-6">
+      <Text size="small" weight="plus">Emails</Text>
+      {isLoading || !emails ? (
+        <Text size="small" className="text-ui-fg-subtle">Checking…</Text>
+      ) : (
+        <div className="flex flex-col gap-2">
+          <EmailLine label="Customer confirmation" e={emails.customer} />
+          <EmailLine label="Office email" e={emails.office} />
+        </div>
+      )}
+      <Button
+        variant={anyProblem ? "primary" : "secondary"}
+        size="large"
+        className="min-h-[44px] w-full xsmall:w-auto xsmall:self-start"
+        isLoading={resend.isPending}
+        disabled={resend.isPending}
+        onClick={() => resend.mutate()}
+      >
+        Resend emails
+      </Button>
+    </Container>
+  )
+}
+
+function EmailLine({ label, e }: { label: string; e: EmailStatus }) {
+  const badge =
+    e.status === "sent"
+      ? { color: "green" as const, text: "Sent" }
+      : e.status === "failed"
+        ? { color: "red" as const, text: "Not sent" }
+        : e.status === "pending"
+          ? { color: "orange" as const, text: "Sending" }
+          : { color: "grey" as const, text: "No record" }
+  const when = e.at ? new Date(e.at).toLocaleString("en-GB", { timeZone: "Asia/Qatar", dateStyle: "medium", timeStyle: "short" }) : null
+  return (
+    <div className="flex flex-col gap-0.5">
+      <div className="flex flex-wrap items-center gap-2">
+        <Text size="small">{label}</Text>
+        <Badge size="2xsmall" color={badge.color}>{badge.text}</Badge>
+      </div>
+      <Text size="small" className="text-ui-fg-subtle break-words">
+        {e.status === "unknown"
+          ? "Taken before email tracking began (18 Nov 2026), so it is not known whether this one went out."
+          : [e.to, when].filter(Boolean).join(" · ")}
+      </Text>
+      {e.reason && <Text size="small" className="text-ui-fg-error break-words">{e.reason}</Text>}
+    </div>
+  )
+}
+
+function plural(n: number, word: string) {
+  return `${n} ${word}${n === 1 ? "" : "s"}`
 }
 
 function BigButton(props: { variant: "primary" | "secondary" | "danger"; onClick: () => void; isLoading?: boolean; children: ReactNode }) {

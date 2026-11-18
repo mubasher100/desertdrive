@@ -6,6 +6,7 @@ import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { sdk } from "../../lib/client"
 import "../../lib/simplify"
+import { NotificationsPanel } from "../../components/notifications-panel"
 import { formatPickup, money, readBooking, readPayment, routeLabel, statusBadge } from "../../lib/booking"
 
 type Tab = "upcoming" | "past" | "cancelled"
@@ -82,6 +83,8 @@ const BookingsPage = () => {
   const list = rows[tab]
 
   return (
+    <div className="flex flex-col gap-3">
+    <NotificationsPanel />
     <Container className="divide-y p-0">
       <div className="flex flex-col gap-3 px-4 py-4 small:px-6">
         <div className="flex flex-col gap-3 xsmall:flex-row xsmall:items-start xsmall:justify-between">
@@ -173,6 +176,7 @@ const BookingsPage = () => {
         </ul>
       )}
     </Container>
+    </div>
   )
 }
 

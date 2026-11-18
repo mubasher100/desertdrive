@@ -8,12 +8,17 @@ import nodemailer, { type Transporter } from "nodemailer"
 import { renderTemplate } from "./templates"
 
 type Options = {
-  host: string
-  port: number
+  /**
+   * A Resend API key (re_...). When set, mail goes over Resend's HTTPS API
+   * and the SMTP settings are not used. See the class comment for why.
+   */
+  resendApiKey?: string
+  host?: string
+  port?: number
   /** true for 465, false for 587 (STARTTLS). */
-  secure: boolean
-  user: string
-  pass: string
+  secure?: boolean
+  user?: string
+  pass?: string
   /** "Desert Drive <bookings@desertdriverental.com>" */
   from: string
   /**
@@ -28,18 +33,39 @@ type Options = {
   replyTo?: string
 }
 
+/**
+ * The Resend key to use, if any: RESEND_API_KEY, or the SMTP password when
+ * the SMTP settings point at Resend (its SMTP password IS the API key), so a
+ * deployment configured for Resend-over-SMTP moves to the API with no new
+ * variable.
+ */
+export function resendKeyFrom(env: Record<string, string | undefined>): string | undefined {
+  const explicit = env.RESEND_API_KEY?.trim()
+  if (explicit) return explicit
+  const host = env.SMTP_HOST?.trim().toLowerCase()
+  const pass = env.SMTP_PASS?.trim()
+  if (host === "smtp.resend.com" && pass?.startsWith("re_")) return pass
+  return undefined
+}
+
 type InjectedDependencies = { logger: Logger }
 
 /**
- * Email over plain SMTP.
+ * Email: Resend's HTTPS API when a Resend key is configured, plain SMTP
+ * otherwise.
  *
- * Chosen over a vendor SDK because SMTP is the one interface every provider
- * offers, so switching costs nothing but the SMTP_* variables. That turned
- * out to matter: the original plan was to send through the business's own
- * Outlook mailbox, and **Microsoft disabled basic authentication for personal
- * Outlook accounts on 16 September 2024** — which is the only thing an app
- * password works with — while Microsoft 365 tenants lose SMTP AUTH at the end
- * of December 2026. An Outlook mailbox cannot be an SMTP sender any more.
+ * ⚠️ **Railway blocks outbound SMTP** (ports 25, 465, 587) on its Trial and
+ * Hobby plans; only Pro and above may open them. A connection to
+ * smtp.resend.com from production simply times out — every confirmation and
+ * every office alert failed this way, while the booking itself completed and
+ * looked fine (DD-13, 17 Nov 2026). HTTPS on 443 is never blocked, so with a
+ * Resend key the mail goes over the API instead.
+ *
+ * SMTP is kept for any other provider, and because it was chosen for a reason:
+ * the original plan was the business's own Outlook mailbox, and Microsoft
+ * disabled basic authentication for personal Outlook accounts on
+ * 16 September 2024 — the only thing an app password works with — while
+ * Microsoft 365 tenants lose SMTP AUTH at the end of December 2026.
  *
  * The template lives in code (templates.ts) so the confirmation email is
  * versioned with the funnel it describes.
@@ -50,7 +76,8 @@ export default class SmtpNotificationService extends AbstractNotificationProvide
   static identifier = "smtp"
 
   protected readonly logger: Logger
-  protected readonly transporter: Transporter
+  protected readonly transporter?: Transporter
+  protected readonly resendApiKey?: string
   protected readonly from: string
   protected readonly replyTo?: string
 
@@ -59,49 +86,104 @@ export default class SmtpNotificationService extends AbstractNotificationProvide
     this.logger = container.logger
     this.from = options.from
     this.replyTo = options.replyTo
-    this.transporter = nodemailer.createTransport({
-      host: options.host,
-      port: options.port,
-      secure: options.secure,
-      auth: { user: options.user, pass: options.pass },
-    })
+    this.resendApiKey = options.resendApiKey || undefined
+    if (!this.resendApiKey) {
+      this.transporter = nodemailer.createTransport({
+        host: options.host,
+        port: options.port,
+        secure: options.secure,
+        auth: { user: options.user, pass: options.pass },
+        // Fail in seconds, not minutes, when the port is blocked.
+        connectionTimeout: 15_000,
+        greetingTimeout: 15_000,
+      })
+    }
   }
 
   static validateOptions(options: Record<string, unknown>) {
-    const missing = ["host", "port", "user", "pass", "from"].filter((k) => !options[k])
+    if (!options.from) {
+      throw new MedusaError(MedusaError.Types.INVALID_DATA, "Email provider is missing SMTP_FROM.")
+    }
+    if (options.resendApiKey) return
+    const missing = ["host", "port", "user", "pass"].filter((k) => !options[k])
     if (missing.length) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
-        `SMTP notification provider is missing options: ${missing.join(", ")}. Set the SMTP_* variables.`
+        `Email provider is missing options: ${missing.join(", ")}. Set RESEND_API_KEY, or the SMTP_* variables.`
       )
     }
   }
 
   async send(notification: ProviderSendNotificationDTO): Promise<ProviderSendNotificationResultsDTO> {
     const { subject, html, text } = renderTemplate(notification.template, notification.data ?? {})
-
-    const info = await this.transporter.sendMail({
-      from: notification.from || this.from,
-      // A notification may name its own reply-to — the owner's copy of a
-      // booking replies to the customer. Otherwise the configured address.
-      ...(typeof notification.data?.reply_to === "string" && notification.data.reply_to
-        ? { replyTo: notification.data.reply_to }
+    const from = notification.from || this.from
+    const replyTo =
+      typeof notification.data?.reply_to === "string" && notification.data.reply_to
+        ? notification.data.reply_to
         : this.replyTo
-          ? { replyTo: this.replyTo }
-          : {}),
-      to: notification.to,
-      subject,
-      html,
-      text,
-      attachments: notification.attachments?.map((a) => ({
+
+    const id = this.resendApiKey
+      ? await this.sendViaResend({ from, to: notification.to, replyTo, subject, html, text, attachments: notification.attachments })
+      : await this.sendViaSmtp({ from, to: notification.to, replyTo, subject, html, text, attachments: notification.attachments })
+
+    this.logger.info(`Email: sent "${notification.template}" to ${notification.to} (${id})`)
+    return { id }
+  }
+
+  private async sendViaResend(m: Mail): Promise<string> {
+    let res: Response
+    try {
+      res = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${this.resendApiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from: m.from,
+          to: [m.to],
+          ...(m.replyTo ? { reply_to: m.replyTo } : {}),
+          subject: m.subject,
+          html: m.html,
+          text: m.text,
+          ...(m.attachments?.length
+            ? { attachments: m.attachments.map((a) => ({ filename: a.filename, content: a.content })) }
+            : {}),
+        }),
+        signal: AbortSignal.timeout(20_000),
+      })
+    } catch (e) {
+      throw new Error(`Could not reach Resend: ${(e as Error).message}`)
+    }
+    const body = (await res.json().catch(() => ({}))) as { id?: string; message?: string; name?: string }
+    if (!res.ok || !body.id) {
+      throw new Error(`Resend refused the email (HTTP ${res.status}): ${body.message ?? body.name ?? "no reason given"}`)
+    }
+    return body.id
+  }
+
+  private async sendViaSmtp(m: Mail): Promise<string> {
+    const info = await this.transporter!.sendMail({
+      from: m.from,
+      ...(m.replyTo ? { replyTo: m.replyTo } : {}),
+      to: m.to,
+      subject: m.subject,
+      html: m.html,
+      text: m.text,
+      attachments: m.attachments?.map((a) => ({
         filename: a.filename,
         content: a.content,
         contentType: a.content_type,
         encoding: "base64",
       })),
     })
-
-    this.logger.info(`SMTP: sent "${notification.template}" to ${notification.to} (${info.messageId})`)
-    return { id: info.messageId }
+    return info.messageId
   }
+}
+
+type Mail = {
+  from: string
+  to: string
+  replyTo?: string
+  subject: string
+  html: string
+  text: string
+  attachments?: ProviderSendNotificationDTO["attachments"]
 }
