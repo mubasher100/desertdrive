@@ -2,7 +2,7 @@ import type { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/frame
 import { sendPushToAll } from "../../../../lib/push"
 
 /**
- * POST /admin/push/test — a sample notification to every subscribed device,
+ * POST /admin/push/send-test — a sample notification to every subscribed device,
  * so the owner can close the app and check one arrives.
  *
  * Always answers 200 with what happened per device. A thrown error would

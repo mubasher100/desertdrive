@@ -787,6 +787,8 @@ A wrong port does not fail at boot. It surfaces later as intermittent `prepared 
 
 **Turbo runs in strict env mode.** Environment variables are not passed through to tasks unless declared in `turbo.json` (`globalPassThroughEnv`, or a task's `env` array). A var that works in your shell but is empty inside a turbo task is a missing declaration, not a shell problem.
 
+**`medusa build` silently drops any folder named `test`, `unit-tests` or `integration-tests`.** The push test route lived at `api/admin/push/test/` and worked locally. In production it answered 404, and the owner's iPhone showed "The test did not send: HTTP 404" (18 Nov 2026). It is now `push/send-test`. `build-ignored-folders.unit.spec.ts` fails if such a folder appears anywhere in the backend source again.
+
 **`medusa build` emits a standalone app into `.medusa/server`** — with its own `package.json`. That directory is what runs in production. Starting from `apps/backend` fails with `Could not find index.html in the admin build directory`.
 
 **`medusa start` forces `NODE_ENV=production`,** even locally. If `medusa-config.ts` guards against a missing Redis in production, running a production build on a dev machine needs `ALLOW_INMEMORY_INFRA=true`. **Never set that on Railway** — it disables the guard that stops a Redis-less deploy.
