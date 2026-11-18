@@ -15,11 +15,11 @@ import { sdk } from "../lib/client"
  *
  *  - checked every 30 seconds while the admin is open
  *  - unread entries are marked, and "Mark all read" clears them, per device
- *  - "Turn on alerts" asks the browser's permission, then a new booking
- *    plays a short chime and shows a system notification, even when the tab
- *    is in the background. iPhone Safari only allows system notifications
- *    for a site added to the Home Screen; the chime and the on-page message
- *    work regardless.
+ *  - "Turn on notifications" subscribes this device to web push
+ *    (lib/push.ts): a system notification for every new booking and failed
+ *    email, even when the admin is CLOSED. Android Chrome works anywhere;
+ *    iPhone only for the admin added to the Home Screen (iOS 16.4+), and the
+ *    panel says how. While the admin is open there is also a chime.
  *
  * The same entries also appear under Medusa's own bell, top right.
  */
@@ -56,6 +56,7 @@ function save(key: string, value: string) {
 export function NotificationsPanel() {
   const [readAt, setReadAt] = useState<number>(() => Number(Date.parse(load(READ_KEY) ?? "")) || 0)
   const [alerts, setAlerts] = useState<boolean>(() => load(ALERTS_KEY) === "on")
+  const push = usePush()
   const [expanded, setExpanded] = useState(false)
   /** The newest entry seen so far; anything newer, after the first load, is announced. */
   const newestSeen = useRef<number | null>(null)
@@ -84,7 +85,7 @@ export function NotificationsPanel() {
     }
     const fresh = entries.filter((e) => Date.parse(e.created_at) > (newestSeen.current ?? 0))
     newestSeen.current = Math.max(newest, newestSeen.current)
-    for (const e of fresh.reverse()) announce(e, alerts)
+    for (const e of fresh.reverse()) announce(e, alerts, push.state === "on")
   }, [data]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const unread = entries.filter((e) => Date.parse(e.created_at) > readAt)
@@ -97,28 +98,28 @@ export function NotificationsPanel() {
     setReadAt(Date.parse(now))
   }
 
-  const toggleAlerts = async () => {
-    if (alerts) {
-      setAlerts(false)
-      save(ALERTS_KEY, "off")
-      toast.info("Alerts are off on this device")
-      return
-    }
-    // Ask now, while the owner has just tapped — browsers only allow the
-    // prompt from a tap — and unlock audio for the chime the same way.
+  // Browsers only allow the permission prompt, and audio, from a tap — so
+  // both happen here, on the tap that turns notifications on.
+  const turnOn = async () => {
     chime(true)
-    let permission: NotificationPermission | "unsupported" = "unsupported"
-    if (typeof Notification !== "undefined") {
-      permission = Notification.permission === "default" ? await Notification.requestPermission() : Notification.permission
-    }
     setAlerts(true)
     save(ALERTS_KEY, "on")
-    toast.success(
-      permission === "granted"
-        ? "Alerts on: a chime and a notification for every new booking while the admin is open"
-        : "Alerts on: a chime for every new booking while the admin is open. This browser did not allow system notifications."
-    )
+    if (push.state === "available") {
+      const ok = await push.subscribe()
+      if (ok) toast.success("Notifications on for this device. They arrive even when the admin is closed.")
+      return
+    }
+    toast.success("Alerts on: a chime and a message for every new booking while the admin is open")
   }
+
+  const turnOff = async () => {
+    setAlerts(false)
+    save(ALERTS_KEY, "off")
+    if (push.state === "on") await push.unsubscribe()
+    toast.info("Notifications are off on this device")
+  }
+
+  const on = push.state === "on" || (push.state !== "available" && alerts)
 
   return (
     <Container className="flex flex-col gap-3 px-4 py-4 small:px-6">
@@ -132,9 +133,22 @@ export function NotificationsPanel() {
           )}
         </div>
         <div className="flex flex-col gap-2 xsmall:flex-row">
-          <Button size="small" variant="secondary" className="min-h-[44px] w-full xsmall:w-auto" onClick={toggleAlerts}>
-            {alerts ? "Turn off alerts" : "Turn on alerts"}
-          </Button>
+          {on ? (
+            <>
+              {push.state === "on" && (
+                <Button size="small" variant="secondary" className="min-h-[44px] w-full xsmall:w-auto" isLoading={push.busy} onClick={push.test}>
+                  Send test notification
+                </Button>
+              )}
+              <Button size="small" variant="secondary" className="min-h-[44px] w-full xsmall:w-auto" onClick={turnOff}>
+                Turn off notifications
+              </Button>
+            </>
+          ) : (
+            <Button size="small" variant="primary" className="min-h-[44px] w-full xsmall:w-auto" isLoading={push.busy} onClick={turnOn}>
+              Turn on notifications
+            </Button>
+          )}
           {unread.length > 0 && (
             <Button size="small" variant="secondary" className="min-h-[44px] w-full xsmall:w-auto" onClick={markRead}>
               Mark all read
@@ -142,6 +156,8 @@ export function NotificationsPanel() {
           )}
         </div>
       </div>
+
+      <PushStatus state={push.state} />
 
       {isLoading ? (
         <Text size="small" className="text-ui-fg-subtle">Loading…</Text>
@@ -193,13 +209,15 @@ export function NotificationsPanel() {
   )
 }
 
-function announce(e: FeedEntry, alerts: boolean) {
+function announce(e: FeedEntry, alerts: boolean, pushOn: boolean) {
   const title = e.data?.title ?? "Desert Drive"
   const failed = e.data?.kind === "email_failed"
   if (failed) toast.error(title)
   else toast.info(title, { description: e.data?.description?.split("\n")[0] })
   if (!alerts) return
   chime(false)
+  // A device with push already gets the system notification from the push.
+  if (pushOn) return
   try {
     if (typeof Notification !== "undefined" && Notification.permission === "granted") {
       const n = new Notification(title, { body: e.data?.description ?? "", tag: e.id })
@@ -238,6 +256,154 @@ function chime(silent: boolean) {
   } catch {
     // No audio is not worth an error.
   }
+}
+
+type PushState = "checking" | "on" | "available" | "ios-needs-home-screen" | "blocked" | "unsupported"
+
+/**
+ * Push on this device: whether it can be had, and turning it on and off.
+ * The subscription lives in the browser; the backend keeps a copy to send to.
+ */
+function usePush() {
+  const [state, setState] = useState<PushState>("checking")
+  const [busy, setBusy] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    detect().then((next) => {
+      if (!cancelled) setState(next)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const subscribe = async (): Promise<boolean> => {
+    setBusy(true)
+    try {
+      const permission = await Notification.requestPermission()
+      if (permission !== "granted") {
+        setState("blocked")
+        toast.error("Notifications were not allowed. Allow them for this site in the settings, then try again.")
+        return false
+      }
+      const reg = await registration()
+      const { public_key } = await sdk.client.fetch<{ public_key: string }>("/admin/push/public-key")
+      const sub =
+        (await reg.pushManager.getSubscription()) ??
+        (await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: base64UrlToBytes(public_key) }))
+      await sdk.client.fetch("/admin/push/subscriptions", { method: "POST", body: sub.toJSON() })
+      setState("on")
+      return true
+    } catch (e) {
+      toast.error(`Notifications could not be turned on: ${(e as Error).message}`)
+      return false
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const unsubscribe = async () => {
+    setBusy(true)
+    try {
+      const reg = await registration()
+      const sub = await reg.pushManager.getSubscription()
+      if (sub) {
+        await sdk.client.fetch("/admin/push/unsubscribe", { method: "POST", body: { endpoint: sub.endpoint } }).catch(() => undefined)
+        await sub.unsubscribe()
+      }
+      setState("available")
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const test = async () => {
+    setBusy(true)
+    try {
+      const r = await sdk.client.fetch<{ sent: number; failed: number }>("/admin/push/test", { method: "POST" })
+      if (r.sent) toast.success(`Test sent to ${r.sent} ${r.sent === 1 ? "device" : "devices"}. Close the app to see it arrive.`)
+      else toast.error("No device received it. Turn notifications off and on again on this device.")
+    } catch (e) {
+      toast.error((e as Error).message || "The test did not send")
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return { state, busy, subscribe, unsubscribe, test }
+}
+
+async function detect(): Promise<PushState> {
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent)
+  const standalone =
+    window.matchMedia?.("(display-mode: standalone)").matches || (navigator as unknown as { standalone?: boolean }).standalone === true
+  const supported = "serviceWorker" in navigator && "PushManager" in window && typeof Notification !== "undefined"
+  if (ios && !standalone) return "ios-needs-home-screen"
+  if (!supported) return "unsupported"
+  if (Notification.permission === "denied") return "blocked"
+  try {
+    const reg = await registration()
+    const sub = await reg.pushManager.getSubscription()
+    if (sub && Notification.permission === "granted") {
+      // Keep the backend's copy current: it may have been dropped as stale.
+      sdk.client.fetch("/admin/push/subscriptions", { method: "POST", body: sub.toJSON() }).catch(() => undefined)
+      return "on"
+    }
+  } catch {
+    return "unsupported"
+  }
+  return "available"
+}
+
+async function registration(): Promise<ServiceWorkerRegistration> {
+  const existing = await navigator.serviceWorker.getRegistration("/app/")
+  if (existing) return existing
+  await navigator.serviceWorker.register("/push/sw", { scope: "/app/" })
+  return navigator.serviceWorker.ready
+}
+
+function base64UrlToBytes(b64url: string): Uint8Array<ArrayBuffer> {
+  const pad = "=".repeat((4 - (b64url.length % 4)) % 4)
+  const raw = atob((b64url + pad).replace(/-/g, "+").replace(/_/g, "/"))
+  const out = new Uint8Array(new ArrayBuffer(raw.length))
+  for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i)
+  return out
+}
+
+function PushStatus({ state }: { state: PushState }) {
+  if (state === "on") {
+    return (
+      <Text size="small" className="text-ui-fg-subtle">
+        This device gets a notification for every new booking, even when the admin is closed.
+      </Text>
+    )
+  }
+  if (state === "ios-needs-home-screen") {
+    return (
+      <div className="flex flex-col gap-1 rounded-md bg-ui-bg-subtle p-3">
+        <Text size="small" weight="plus">To get notifications on this iPhone</Text>
+        <Text size="small" className="text-ui-fg-subtle">1. Tap the Share button, then “Add to Home Screen”.</Text>
+        <Text size="small" className="text-ui-fg-subtle">2. Open “DD Bookings” from the Home Screen and log in.</Text>
+        <Text size="small" className="text-ui-fg-subtle">3. Tap “Turn on notifications” there.</Text>
+      </div>
+    )
+  }
+  if (state === "blocked") {
+    return (
+      <Text size="small" className="text-ui-fg-error">
+        Notifications are blocked for this site. Allow them in the browser or phone settings, then reload.
+      </Text>
+    )
+  }
+  if (state === "unsupported") {
+    return (
+      <Text size="small" className="text-ui-fg-subtle">
+        This browser cannot get notifications while closed. Alerts still work while the admin is open.
+      </Text>
+    )
+  }
+  return null
 }
 
 function ago(iso: string): string {

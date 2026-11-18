@@ -40,7 +40,7 @@ test("A3 · Prices shows every area and band", async ({ page }) => {
 test("A7 · the Notifications panel is on Bookings, and the test email gives a real answer", async ({ page }) => {
   await logIn(page)
   await expect(page.getByText("Notifications", { exact: true })).toBeVisible()
-  await expect(page.getByRole("button", { name: /Turn (on|off) alerts/ })).toBeVisible()
+  await expect(page.getByRole("button", { name: /Turn (on|off) notifications/ })).toBeVisible()
   await page.getByRole("button", { name: "Send test email" }).click()
   // Sent, or not sent WITH the reason — never Medusa's "An unknown error occurred."
   const answer = page.getByText(/Test email sent to|The test email to .+ did not send\. \S/).first()

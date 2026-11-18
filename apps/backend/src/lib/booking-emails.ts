@@ -2,6 +2,7 @@ import type { Logger, MedusaContainer } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys, MathBN, Modules } from "@medusajs/framework/utils"
 import { bookingLookupUrl } from "./booking-token"
 import { emailFailureReason } from "./email-failure"
+import { sendPushToAll } from "./push"
 
 /** What happened to one email. `null` when there was nobody to send it to. */
 export type EmailOutcome = { to: string; ok: true } | { to: string; ok: false; reason: string } | null
@@ -223,6 +224,19 @@ export async function sendBookingEmails(
     } catch (e) {
       logger.error(`booking emails: admin feed for ${reference} failed — ${(e as Error).message}`)
     }
+  }
+
+  // The same alerts as push notifications, to the owner's phone even when
+  // the admin is closed (lib/push.ts). Never throws.
+  for (const entry of feed as Array<ReturnType<typeof feedEntry>>) {
+    await sendPushToAll(container, {
+      title: entry.data.title,
+      body: entry.data.description,
+      url: `/app/bookings/${order.id}`,
+      // Distinct per alert, so the customer's and the office's failures do
+      // not replace each other on the phone.
+      tag: [entry.data.kind, (entry.data as { email?: string }).email, order.id].filter(Boolean).join("-"),
+    })
   }
 
   return { reference, customer, office }

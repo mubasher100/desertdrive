@@ -1,3 +1,6 @@
+// Installable app + push notifications, loaded on every admin page with this file.
+import "./pwa"
+
 /**
  * The owner's admin, simplified (owner's ask, 21 Oct 2026): Bookings and
  * Prices, nothing else in the menu, and Bookings is where you land.
