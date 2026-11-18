@@ -59,6 +59,7 @@ When a journey changes, change its test in the same pull request.
 | A6 | Draw a priced area on the map | **manual** |
 | A7 | Notifications panel on Bookings: new bookings and failed emails, alerts on this device | `admin.spec.ts` A7 (panel renders); delivery of the feed is unit-tested |
 | A8 | A booking's emails: Sent / Not sent with the reason, and Resend emails | **manual** — needs an order; status logic unit-tested |
+| A9 | Push notifications with the admin closed: Add to Home Screen (iPhone), Turn on notifications, Send test notification, then a real booking | **manual** on a real phone — verified 18 Nov in Chrome through Google's push service, end to end; iOS needs a device |
 
 ## Found by walking these journeys (12 Nov 2026)
 

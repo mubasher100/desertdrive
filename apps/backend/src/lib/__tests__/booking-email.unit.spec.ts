@@ -97,3 +97,19 @@ describe("feed entries", () => {
     expect(formatPickup("")).toBe("")
   })
 })
+
+describe("push devices", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { deviceName, newVapidKeys } = require("../push") as typeof import("../push")
+  it("names a device from its browser, so the owner can tell them apart", () => {
+    expect(deviceName("Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15")).toBe("iPhone")
+    expect(deviceName("Mozilla/5.0 (Linux; Android 14; Pixel 8) Chrome/131.0")).toBe("Android")
+    expect(deviceName("Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/131.0")).toBe("Windows")
+    expect(deviceName(undefined)).toBe("Browser")
+  })
+  it("makes a VAPID key pair a push service accepts (P-256, base64url)", () => {
+    const k = newVapidKeys()
+    expect(k.public_key).toMatch(/^[A-Za-z0-9_-]{87}$/)
+    expect(k.private_key).toMatch(/^[A-Za-z0-9_-]{43}$/)
+  })
+})

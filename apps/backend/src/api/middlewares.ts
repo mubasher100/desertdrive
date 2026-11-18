@@ -4,6 +4,7 @@ import { reservationMiddlewares } from "./store/reservations/middlewares"
 import { fareZoneMiddlewares } from "./admin/fare-zones/middlewares"
 import { signImageMiddlewares } from "./store/sign-image/middlewares"
 import { bookingAdminMiddlewares } from "./admin/bookings/middlewares"
+import { pushMiddlewares } from "./admin/push/middlewares"
 
 export default defineMiddlewares({
   routes: [
@@ -12,5 +13,6 @@ export default defineMiddlewares({
     ...fareZoneMiddlewares,
     ...signImageMiddlewares,
     ...bookingAdminMiddlewares,
+    ...pushMiddlewares,
   ],
 })

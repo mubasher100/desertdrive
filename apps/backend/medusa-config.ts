@@ -207,6 +207,7 @@ module.exports = defineConfig({
     { resolve: "./src/modules/booking-slot" },
     { resolve: "./src/modules/fare-zone" },
     { resolve: "./src/modules/place-index" },
+    { resolve: "./src/modules/web-push" },
 
     /**
      * Payment. The manual provider (pp_system_default) is always present and is
