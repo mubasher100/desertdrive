@@ -13,6 +13,18 @@ const IS_PRODUCTION = process.env.NODE_ENV === "production"
  * Redis-less deploy, and a Redis-less deploy silently loses scheduled jobs,
  * subscribers and any workflow that outlives a restart.
  */
+/**
+ * The Resend API key, if email is meant to go through Resend: RESEND_API_KEY,
+ * or the SMTP password when SMTP points at Resend (that password IS the API
+ * key). Mirrors resendKeyFrom() in src/modules/smtp-notification/service.ts,
+ * which is unit-tested; the config cannot import from src.
+ */
+const EMAIL_RESEND_KEY =
+  process.env.RESEND_API_KEY?.trim() ||
+  (process.env.SMTP_HOST?.trim().toLowerCase() === "smtp.resend.com" && process.env.SMTP_PASS?.trim().startsWith("re_")
+    ? process.env.SMTP_PASS.trim()
+    : undefined)
+
 const ALLOW_INMEMORY_INFRA = process.env.ALLOW_INMEMORY_INFRA === "true"
 
 const DATABASE_URL = process.env.DATABASE_URL
@@ -225,36 +237,49 @@ module.exports = defineConfig({
     },
 
     /**
-     * Email. Plain SMTP, so the business's existing Microsoft 365 mailbox works
-     * today and any other provider works later by changing SMTP_* only.
-     * Registered only when configured — without it, order.placed logs that no
-     * confirmation was sent and the order is unaffected.
+     * Notifications: email to customers and the office, and the admin's own
+     * feed (the bell, and the alerts on the Bookings page).
+     *
+     * Email goes over Resend's HTTPS API when a Resend key is configured —
+     * RESEND_API_KEY, or SMTP_PASS when SMTP_HOST is smtp.resend.com — because
+     * Railway blocks outbound SMTP below its Pro plan (see the provider). Any
+     * other SMTP_HOST is used as plain SMTP. With neither, there is no email
+     * provider: sends fail, are recorded as failed, and the admin says so.
+     *
+     * The feed is always on: it is how a booking reaches the owner even when
+     * email is down.
      */
-    ...(process.env.SMTP_HOST
-      ? [
-          {
-            resolve: "@medusajs/medusa/notification",
-            options: {
-              providers: [
+    {
+      resolve: "@medusajs/medusa/notification",
+      options: {
+        providers: [
+          ...(EMAIL_RESEND_KEY || process.env.SMTP_HOST
+            ? [
                 {
                   resolve: "./src/modules/smtp-notification",
                   id: "smtp",
                   options: {
                     channels: ["email"],
+                    resendApiKey: EMAIL_RESEND_KEY,
                     host: process.env.SMTP_HOST,
                     port: Number(process.env.SMTP_PORT || 587),
                     secure: process.env.SMTP_SECURE === "true",
                     user: process.env.SMTP_USER,
                     pass: process.env.SMTP_PASS,
-                    from: process.env.SMTP_FROM,
+                    from: process.env.SMTP_FROM || "Desert Drive <bookings@desertdriverental.com>",
                     replyTo: process.env.SMTP_REPLY_TO,
                   },
                 },
-              ],
-            },
+              ]
+            : []),
+          {
+            resolve: "@medusajs/medusa/notification-local",
+            id: "feed",
+            options: { channels: ["feed"] },
           },
-        ]
-      : []),
+        ],
+      },
+    },
 
     /**
      * File storage for customer uploads — today, the picture a customer wants

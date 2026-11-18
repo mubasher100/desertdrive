@@ -53,7 +53,7 @@ The customer flow is: pick a destination → see a fixed fare per vehicle class 
 | Storefront | **Next.js 16** (App Router) | Cloudflare Workers via `@opennextjs/cloudflare` | Edge delivery, cheap, global |
 | Destination lookup | Google Maps Platform — Places Autocomplete (New) | — | Address entry only. **Never** used to calculate a fare |
 | Payments | SkipCash | — | Qatar Central Bank licensed; required for QAR card payments |
-| Email | Resend, via Medusa's notification module | — | Booking confirmations and the signed lookup link |
+| Email | Resend **HTTPS API**, via Medusa's notification module | — | Booking confirmations and the signed lookup link. Never SMTP from Railway — see below |
 
 **Request path:** Browser → Cloudflare Worker (storefront) → Railway (Medusa Store API) → Supabase (Postgres) + Railway Redis.
 
@@ -468,6 +468,14 @@ The admin is cut down to **Bookings and Prices** (`admin/lib/simplify.ts` hides 
 - There is **no login lockout** — the owner's explicit call.
 - **Download WhatsApp offers list** (Bookings page) — a CSV of everyone who ticked *Send me offers on WhatsApp* under the phone number on the details step (owner, 2 Nov 2026): one row per number, latest opt-in wins, cells made formula-safe (`lib/whatsapp-optins.ts`). The tick is optional and unticked by default, and is stored as `whatsapp_offers` + `whatsapp_offers_at` on the booking; `/privacy` describes it and how to opt out.
 
+### Email and the owner's notifications (18 Nov 2026)
+
+> **⚠️ Railway blocks outbound SMTP (25/465/587) below its Pro plan.** Email went to `smtp.resend.com:587` and timed out, so **every customer confirmation and every office alert failed** — found when DD-13 (17 Nov) arrived with no email to anyone. The booking itself completed and looked fine, because a failed email never touches an order, and the admin's *Send test email* showed only "An unknown error occurred." (Medusa replaces every 500's message). Email now goes over **Resend's HTTPS API** (`modules/smtp-notification`), picked automatically when the SMTP settings point at Resend, so production needed no new variable. Do not move it back to SMTP while the backend is on Railway Hobby.
+
+- **Every email is recorded against its booking** (`resource_id` = order id) by `lib/booking-emails.ts`, shared by `order.placed` and **Resend emails** on the booking page, which shows *Sent / Not sent / No record* per email with the reason. Bookings before 18 Nov have no record.
+- **The admin has a Notifications panel** at the top of Bookings, fed by Medusa's `feed` channel (`notification-local` provider, always registered): *New booking DD-n* for every order, and *… did not send* with the reason for every failed email. Polled every 30 s; **Turn on alerts** adds a chime and a system notification on that device (iPhone only shows system notifications for a Home-Screen web app). The same rows appear under Medusa's own bell. This exists because email is not a reliable alert, and with no minimum notice a pickup can be minutes away.
+- Errors are put into words in `lib/email-failure.ts`; *Send test email* answers 502 with that sentence instead of throwing.
+
 ### Booking lookup without an account
 
 The confirmation email carries a **signed link** back to the confirmation page: an HMAC of the order id using `BOOKING_TOKEN_SECRET`. Unguessable, no password, no account.
@@ -625,8 +633,9 @@ Traps worth not walking into:
 | `AUTH_CORS` | Origins allowed to hit auth endpoints |
 | `MEDUSA_BACKEND_URL` | Public backend URL; used by the admin build |
 | `MEDUSA_WORKER_MODE` | `shared` for now; split to `server` + `worker` when traffic warrants |
-| `RESEND_API_KEY` | Confirmation email |
-| `RESEND_FROM_EMAIL` | Verified sender |
+| `RESEND_API_KEY` | Email over Resend's HTTPS API. If unset, `SMTP_PASS` is used as the key when `SMTP_HOST=smtp.resend.com` |
+| `SMTP_FROM` / `SMTP_REPLY_TO` | Sender (`bookings@`, verified in Resend) and where replies land (`info@`) |
+| `OWNER_NOTIFY_EMAIL` | The office alert's address. Default `desertdrivetransportation@gmail.com` |
 | `BOOKING_TOKEN_SECRET` | HMAC secret for the signed booking-lookup link. **Set the same value on the storefront** — the backend signs the email link, the storefront verifies it |
 | `BOOKING_SLOT_MINUTES` | How long one transfer occupies a vehicle, either side of the pickup. Default 120 |
 | `BOOKING_HOLD_MINUTES` | How long an unpaid checkout holds a car. Default 30 |
@@ -803,7 +812,7 @@ Run `npm run build` in `apps/storefront`, not just `tsc`, before pushing anythin
 | 5 | Booking funnel — search widget, results, details | ✅ Done — all five steps, both languages |
 | 6 | Google Places + server-side band resolution | ✅ Built — Places merged into the destination field behind `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`, curated list as the fallback. **Needs a key from the owner to go live**; verified against a stubbed Maps API, not against Google |
 | 7 | Checkout — SkipCash card (cash removed 27 Sept 2026) | ✅ **Live on PRODUCTION keys** (26 Sept 2026) — signature verified against `api.skipcash.app`, webhook pointed at Medusa. Sandbox verified earlier incl. 3DS. **No real card has been run end to end yet** |
-| 8 | Confirmation email + signed-token lookup | ✅ Done — **Resend** over SMTP from `bookings@desertdriverental.com`, domain verified, reply-to `info@desertdriverental.com`. A real message was delivered. ⚠️ **Outlook can never be the sender**: an app password needs basic auth, which Microsoft disabled for personal Outlook on 16 Sept 2024 and removes from M365 tenants end of Dec 2026 |
+| 8 | Confirmation email + signed-token lookup | ✅ Done — **Resend** (HTTPS API since 18 Nov 2026 — SMTP was blocked by Railway and no email had been leaving production) from `bookings@desertdriverental.com`, domain verified, reply-to `info@desertdriverental.com`. A real message was delivered. ⚠️ **Outlook can never be the sender**: an app password needs basic auth, which Microsoft disabled for personal Outlook on 16 Sept 2024 and removes from M365 tenants end of Dec 2026 |
 | 9 | Admin Bookings screen | ✅ Done — simplified to Bookings + Prices (21 Oct 2026): cancel / record refund / WhatsApp buttons, office email per booking (paid = confirmed), mobile-first. *Mark cash collected* stays on the order card |
 | 10 | Arabic / RTL | 🟡 Locale routing, dictionary, RTL, fonts done; native review pending |
 | 11 | Accessibility audit — target zero axe violations | ✅ 0 violations (axe-core, 7 pages × en/ar × 375/1280, 2026-09-21); re-run after UI changes |
